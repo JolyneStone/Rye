@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{215176BD-3D59-4345-8D89-4B567EFCD759}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kira.AlasFx", "src\Kira.AlasFx\Kira.AlasFx.csproj", "{7545720C-1411-4913-A71A-8240C4E26B00}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kira.AlasFx.EntityFrameworkCore", "src\Kira.AlasFx.EntityFrameworkCore\Kira.AlasFx.EntityFrameworkCore.csproj", "{8E36A53B-C33F-4F49-B447-AE0FB85676E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kira.AlasFx.EntityFrameworkCore.SqlServer", "src\Kira.AlasFx.EntityFrameworkCore.SqlServer\Kira.AlasFx.EntityFrameworkCore.SqlServer.csproj", "{B47271DB-BF8B-4129-A7FE-6390D9C48249}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kira.AlasFx.EntityFrameworkCore.Sqlite", "src\Kira.AlasFx.EntityFrameworkCore.Sqlite\Kira.AlasFx.EntityFrameworkCore.Sqlite.csproj", "{FC61DE58-2C4E-46B0-92A2-F6EEEE6F9502}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kira.AlasFx.EntityFrameworkCore.MySql", "src\Kira.AlasFx.EntityFrameworkCore.MySql\Kira.AlasFx.EntityFrameworkCore.MySql.csproj", "{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7545720C-1411-4913-A71A-8240C4E26B00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7545720C-1411-4913-A71A-8240C4E26B00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7545720C-1411-4913-A71A-8240C4E26B00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7545720C-1411-4913-A71A-8240C4E26B00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E36A53B-C33F-4F49-B447-AE0FB85676E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E36A53B-C33F-4F49-B447-AE0FB85676E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E36A53B-C33F-4F49-B447-AE0FB85676E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E36A53B-C33F-4F49-B447-AE0FB85676E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B47271DB-BF8B-4129-A7FE-6390D9C48249}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B47271DB-BF8B-4129-A7FE-6390D9C48249}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B47271DB-BF8B-4129-A7FE-6390D9C48249}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B47271DB-BF8B-4129-A7FE-6390D9C48249}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC61DE58-2C4E-46B0-92A2-F6EEEE6F9502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC61DE58-2C4E-46B0-92A2-F6EEEE6F9502}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC61DE58-2C4E-46B0-92A2-F6EEEE6F9502}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC61DE58-2C4E-46B0-92A2-F6EEEE6F9502}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7545720C-1411-4913-A71A-8240C4E26B00} = {215176BD-3D59-4345-8D89-4B567EFCD759}
+		{8E36A53B-C33F-4F49-B447-AE0FB85676E7} = {215176BD-3D59-4345-8D89-4B567EFCD759}
+		{B47271DB-BF8B-4129-A7FE-6390D9C48249} = {215176BD-3D59-4345-8D89-4B567EFCD759}
+		{FC61DE58-2C4E-46B0-92A2-F6EEEE6F9502} = {215176BD-3D59-4345-8D89-4B567EFCD759}
+		{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA} = {215176BD-3D59-4345-8D89-4B567EFCD759}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9C43E25F-90B8-4370-9470-A77C131B5EB6}
+	EndGlobalSection
+EndGlobal
