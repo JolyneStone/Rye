@@ -9,11 +9,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kira.AlasFx", "src\Kira.Ala
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kira.AlasFx.EntityFrameworkCore", "src\Kira.AlasFx.EntityFrameworkCore\Kira.AlasFx.EntityFrameworkCore.csproj", "{8E36A53B-C33F-4F49-B447-AE0FB85676E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kira.AlasFx.EntityFrameworkCore.SqlServer", "src\Kira.AlasFx.EntityFrameworkCore.SqlServer\Kira.AlasFx.EntityFrameworkCore.SqlServer.csproj", "{B47271DB-BF8B-4129-A7FE-6390D9C48249}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kira.AlasFx.EntityFrameworkCore.SqlServer", "src\Kira.AlasFx.EntityFrameworkCore.SqlServer\Kira.AlasFx.EntityFrameworkCore.SqlServer.csproj", "{B47271DB-BF8B-4129-A7FE-6390D9C48249}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kira.AlasFx.EntityFrameworkCore.Sqlite", "src\Kira.AlasFx.EntityFrameworkCore.Sqlite\Kira.AlasFx.EntityFrameworkCore.Sqlite.csproj", "{FC61DE58-2C4E-46B0-92A2-F6EEEE6F9502}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kira.AlasFx.EntityFrameworkCore.Sqlite", "src\Kira.AlasFx.EntityFrameworkCore.Sqlite\Kira.AlasFx.EntityFrameworkCore.Sqlite.csproj", "{FC61DE58-2C4E-46B0-92A2-F6EEEE6F9502}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kira.AlasFx.EntityFrameworkCore.MySql", "src\Kira.AlasFx.EntityFrameworkCore.MySql\Kira.AlasFx.EntityFrameworkCore.MySql.csproj", "{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kira.AlasFx.EntityFrameworkCore.MySql", "src\Kira.AlasFx.EntityFrameworkCore.MySql\Kira.AlasFx.EntityFrameworkCore.MySql.csproj", "{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B6D86199-8075-41B3-ACF9-F26438A5CB41}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kira.AlasFx.Test", "test\Kira.AlasFx.Test\Kira.AlasFx.Test.csproj", "{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +45,10 @@ Global
 		{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,6 +59,7 @@ Global
 		{B47271DB-BF8B-4129-A7FE-6390D9C48249} = {215176BD-3D59-4345-8D89-4B567EFCD759}
 		{FC61DE58-2C4E-46B0-92A2-F6EEEE6F9502} = {215176BD-3D59-4345-8D89-4B567EFCD759}
 		{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA} = {215176BD-3D59-4345-8D89-4B567EFCD759}
+		{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF} = {B6D86199-8075-41B3-ACF9-F26438A5CB41}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C43E25F-90B8-4370-9470-A77C131B5EB6}

@@ -97,16 +97,6 @@ namespace Kira.AlasFx.EntityFrameworkCore
         public ReadOnlyRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
-
-        public TEntity Get(TKey key)
-        {
-            return _set.FirstOrDefault(entity => key.Equals(entity.Key));
-        }
-
-        public async Task<TEntity> GetAsync(TKey key)
-        {
-            return await _set.FirstOrDefaultAsync(entity => key.Equals(entity.Key));
-        }
     }
 
     public class Repository<TEntity> : ReadOnlyRepository<TEntity>, IRepository<TEntity>
@@ -235,48 +225,6 @@ namespace Kira.AlasFx.EntityFrameworkCore
     {
         public Repository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
-        }
-
-        public void BatchDelete(IEnumerable<TKey> keys)
-        {
-            Check.NotNull(keys, nameof(keys));
-            _set.Where(entity => keys.Contains(entity.Key)).Delete();
-        }
-
-        public async Task BatchDeleteAsync(IEnumerable<TKey> keys)
-        {
-            Check.NotNull(keys, nameof(keys));
-            await _set.Where(entity => keys.Contains(entity.Key)).DeleteAsync();
-        }
-
-        public void Delete(TKey key)
-        {
-            var entity = _set.FirstOrDefault(entity => key.Equals(entity.Key));
-            if(entity != null)
-            {
-                _set.Remove(entity);
-            }
-        }
-
-        public async Task DeleteAsync(TKey key)
-        {
-            var entity = _set.FirstOrDefault(entity => key.Equals(entity.Key));
-            if (entity != null)
-            {
-                _set.Remove(entity);
-            }
-
-            await Task.CompletedTask;
-        }
-
-        public TEntity Get(TKey key)
-        {
-            return _set.FirstOrDefault(entity => key.Equals(entity.Key));
-        }
-
-        public async Task<TEntity> GetAsync(TKey key)
-        {
-            return await _set.FirstOrDefaultAsync(entity => key.Equals(entity.Key));
         }
     }
 }

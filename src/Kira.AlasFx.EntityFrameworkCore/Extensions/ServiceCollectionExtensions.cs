@@ -1,4 +1,5 @@
-﻿using Kira.AlasFx.EntityFrameworkCore.Options;
+﻿using Kira.AlasFx.Domain;
+using Kira.AlasFx.EntityFrameworkCore.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -8,6 +9,19 @@ namespace Kira.AlasFx.EntityFrameworkCore
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// 添加AlasFx框架对数据库的支持
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddAlasFxDatabase(this IServiceCollection services)
+        {
+            services.TryAddScoped<IDbProvider, DbProvider>();
+            services.TryAddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
+            services.TryAddSingleton<IRepositoryFactory, RepositoryFactory>();
+            return services;
+        }
+
         /// <summary>
         /// 添加DbContextOptionsBuilderOptions配置选项
         /// </summary>
@@ -19,10 +33,7 @@ namespace Kira.AlasFx.EntityFrameworkCore
         {
             var builder = new DbContextOptionsBuilder();
             builderAction(builder);
-            services.TryAddSingleton(
-                ServiceDescriptor.Singleton(
-                    typeof(DbContextOptionsBuilderOptions), 
-                    implementationInstance: new DbContextOptionsBuilderOptions(builder, dbName)));
+            services.TryAddSingleton<DbContextOptionsBuilderOptions>(new DbContextOptionsBuilderOptions(builder, dbName));
             return services;
         }
 
@@ -38,10 +49,7 @@ namespace Kira.AlasFx.EntityFrameworkCore
         {
             var builder = new DbContextOptionsBuilder<TContext>();
             builderAction(builder);
-            services.TryAddSingleton(
-                ServiceDescriptor.Singleton(
-                    typeof(DbContextOptionsBuilderOptions),
-                    implementationInstance: new DbContextOptionsBuilderOptions(builder, dbName, typeof(TContext))));
+            services.TryAddSingleton<DbContextOptionsBuilderOptions>(new DbContextOptionsBuilderOptions(builder, dbName, typeof(TContext)));
             return services;
         }
     }

@@ -4,6 +4,7 @@ using Kira.AlasFx.Exceptions;
 using Kira.AlasFx.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -47,7 +48,7 @@ namespace Kira.AlasFx.EntityFrameworkCore
 
                 IDbContext dbContext;
                 key += DateTime.Now.Ticks.ToString();
-                var dbConnectionOptionsMap = _serviceProvider.GetRequiredService<AlasFx.Options.AlasFxOptions>().DbConnections;
+                var dbConnectionOptionsMap = _serviceProvider.GetRequiredService<IOptions<AlasFx.Options.AlasFxOptions>>().Value.DbConnections;
                 if (dbConnectionOptionsMap == null || dbConnectionOptionsMap.Count <= 0)
                 {
                     throw new AlasFxException("无法获取数据库配置");

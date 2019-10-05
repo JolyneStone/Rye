@@ -62,22 +62,10 @@ namespace Kira.AlasFx.Domain
         IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> predicate, bool isTracking = true);
     }
 
-    public interface IReadOnlyRepository<TEntity, TKey>
+    public interface IReadOnlyRepository<TEntity, TKey>: IReadOnlyRepository<TEntity>
         where TEntity : class, IEntity<TKey>
         where TKey : IEquatable<TKey>
     {
-        /// <summary>
-        /// 根据key获取实体
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        TEntity Get(TKey key);
-        /// <summary>
-        /// 根据key异步获取实体
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        Task<TEntity> GetAsync(TKey key);
     }
 
     /// <summary>
@@ -216,32 +204,5 @@ namespace Kira.AlasFx.Domain
         where TEntity : class, IEntity<TKey>
         where TKey : IEquatable<TKey>
     {
-        /// <summary>
-        /// 根据Key删除实体
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        void Delete(TKey key);
-
-        /// <summary>
-        /// 根据Key异步删除实体
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        Task DeleteAsync(TKey key);
-
-        /// <summary>
-        /// 根据Key批量删除实体
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        void BatchDelete(IEnumerable<TKey> keys);
-
-        /// <summary>
-        /// 根据Key异步批量删除实体
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        Task BatchDeleteAsync(IEnumerable<TKey> key);
     }
 }

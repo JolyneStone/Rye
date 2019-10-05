@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Kira.AlasFx.Domain
@@ -10,7 +11,8 @@ namespace Kira.AlasFx.Domain
     /// <typeparam name="TKey"></typeparam>
     public abstract class EntityBase<TKey> : IEntity<TKey> where TKey : IEquatable<TKey>
     {
-        public virtual TKey Key { get; set; }
+        [NotMapped]
+        public virtual TKey Key { get; }
 
         public override bool Equals(object obj)
         {

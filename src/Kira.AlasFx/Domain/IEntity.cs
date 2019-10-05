@@ -15,8 +15,8 @@ namespace Kira.AlasFx.Domain
     public interface IEntity<TKey> : IEntity where TKey : IEquatable<TKey>
     {
         /// <summary>
-        /// 主键, 如果使用EF Core, 请将该属性设置为计算列
+        /// 主键, 如果使用EF Core, 请将该属性设置为Ignore
         /// </summary>
-        TKey Key { get; set; }
+        TKey Key { get; }
     }
 }
