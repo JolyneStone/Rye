@@ -1,5 +1,6 @@
 ﻿using Kira.AlasFx.Domain;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,10 +9,10 @@ namespace Kira.AlasFx.EntityFrameworkCore
 {
     public class EFCoreTransaction : ITransaction
     {
-        private DbTransaction _dbTransaction;
+        private IDbTransaction _dbTransaction;
         private IDbContextTransaction _dbContextTransaction;
 
-        public EFCoreTransaction(DbTransaction dbTransaction)
+        public EFCoreTransaction(IDbTransaction dbTransaction)
         {
             Check.NotNull(dbTransaction, nameof(DbTransaction));
             _dbTransaction = dbTransaction;
@@ -32,7 +33,14 @@ namespace Kira.AlasFx.EntityFrameworkCore
         public async Task CommitAsync(CancellationToken cancellationToken = default)
         {
             await _dbContextTransaction?.CommitAsync(cancellationToken);
-            await _dbTransaction?.CommitAsync(cancellationToken);
+            if (_dbTransaction is DbTransaction transaction)
+            {
+                await transaction.CommitAsync(cancellationToken);
+            }
+            else
+            {
+                _dbTransaction?.Commit();
+            }
         }
 
         public void Rollback()
@@ -44,7 +52,14 @@ namespace Kira.AlasFx.EntityFrameworkCore
         public async Task RollbackAsync(CancellationToken cancellationToken = default)
         {
             await _dbContextTransaction?.RollbackAsync(cancellationToken);
-            await _dbTransaction?.RollbackAsync(cancellationToken);
+            if (_dbTransaction is DbTransaction transaction)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+            }
+            else
+            {
+                _dbTransaction?.Commit();
+            }
         }
 
         public void Dispose()
