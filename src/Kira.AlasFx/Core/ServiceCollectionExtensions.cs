@@ -1,9 +1,13 @@
-﻿using Kira.AlasFx.Options;
+﻿using Kira.AlasFx.DependencyInjection;
+using Kira.AlasFx.Log;
+using Kira.AlasFx.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 
-namespace Kira.AlasFx.Core
+namespace Kira.AlasFx
 {
     public static class ServiceCollectionExtensions
     {
@@ -16,7 +20,21 @@ namespace Kira.AlasFx.Core
         {
             serviceCollection.AddOptions();
             serviceCollection.TryAddSingleton<IConfigureOptions<AlasFxOptions>, AlasFxOptionsSetup>();
+            serviceCollection.AddLogging(builder => builder.AddAlasFxLog());
+
+            SingleServiceLocator.SetServiceCollection(serviceCollection);
             return serviceCollection;
+        }
+
+        public static ILoggingBuilder AddAlasFxLog(this ILoggingBuilder builder)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, AlasFxLoggerProvider>());
+            return builder;
         }
     }
 }
