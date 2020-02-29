@@ -1,53 +1,51 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace Kira.AlasFx.Domain
 {
     /// <summary>
-    /// 实体类基类
+    /// 实体基类
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     public abstract class EntityBase<TKey> : IEntity<TKey> where TKey : IEquatable<TKey>
     {
         [NotMapped]
-        public virtual TKey Key { get; }
+        public abstract TKey Key { get; }
 
+        /// <summary>
+        /// 判断实体是否相同
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if (obj == null)
+            if(obj == null)
             {
                 return false;
             }
-            if (!(obj is EntityBase<TKey> entity))
+            if(!(obj is EntityBase<TKey> other))
             {
                 return false;
             }
-            return IsKeyEqual(entity.Key, Key);
+
+            var key1 = Key;
+            var key2 = other.Key;
+            if(key1 == null || key2 == null)
+            {
+                return false;
+            }
+
+            return key1.Equals(key2);
         }
 
         /// <summary>
-        /// 实体Key是否相等
+        /// 获取哈希值
         /// </summary>
-        public static bool IsKeyEqual(TKey id1, TKey id2)
-        {
-            if (id1 == null && id2 == null)
-            {
-                return true;
-            }
-            if (id1 == null || id2 == null)
-            {
-                return false;
-            }
-
-            return id1.Equals(id2);
-        }
-
+        /// <returns></returns>
         public override int GetHashCode()
         {
             var key = Key;
-            return key == null ? default : key.GetHashCode();
+            return key == null ? 0 : key.GetHashCode();
         }
     }
 }

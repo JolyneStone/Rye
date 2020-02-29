@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B6D86199-8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kira.AlasFx.Test", "test\Kira.AlasFx.Test\Kira.AlasFx.Test.csproj", "{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kira.AlasFx.Entities", "src\Kira.AlasFx.Entities\Kira.AlasFx.Entities.csproj", "{EEC9C8C5-F92C-4BBB-A06F-FA0BF60F6204}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEC9C8C5-F92C-4BBB-A06F-FA0BF60F6204}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEC9C8C5-F92C-4BBB-A06F-FA0BF60F6204}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEC9C8C5-F92C-4BBB-A06F-FA0BF60F6204}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEC9C8C5-F92C-4BBB-A06F-FA0BF60F6204}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 		{FC61DE58-2C4E-46B0-92A2-F6EEEE6F9502} = {215176BD-3D59-4345-8D89-4B567EFCD759}
 		{EA603D29-DC1A-4DA3-87A7-7E45DCD169AA} = {215176BD-3D59-4345-8D89-4B567EFCD759}
 		{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF} = {B6D86199-8075-41B3-ACF9-F26438A5CB41}
+		{EEC9C8C5-F92C-4BBB-A06F-FA0BF60F6204} = {215176BD-3D59-4345-8D89-4B567EFCD759}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C43E25F-90B8-4370-9470-A77C131B5EB6}
