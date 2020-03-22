@@ -208,5 +208,37 @@ namespace Kira.AlasFx
             NotNull(filename, paramName);
             Require<FileNotFoundException>(File.Exists(filename), string.Format(Resources.ParameterCheck_FileNotExists, filename));
         }
+
+        /// <summary>
+        /// 检查参数必须大于[或可等于，参数canEqual]指定值，否则抛出<see cref="ArgumentOutOfRangeException"/>异常。
+        /// </summary>
+        /// <typeparam name="T">参数类型。</typeparam>
+        /// <param name="value">需比较的值</param>
+        /// <param name="target">要比较的值。</param>
+        /// <param name="canEqual">是否可等于。</param>
+        /// <param name="paramName">参数名称。</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static void CheckGreaterThan<T>(T value, T target, bool canEqual = false, string paramName = "") where T : IComparable<T>
+        {
+            bool flag = canEqual ? value.CompareTo(target) >= 0 : value.CompareTo(target) > 0;
+            string format = canEqual ? Resources.ParameterCheck_NotGreaterThanOrEqual : Resources.ParameterCheck_NotGreaterThan;
+            Require<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
+        }
+
+        /// <summary>
+        /// 检查参数必须小于[或可等于，参数canEqual]指定值，否则抛出<see cref="ArgumentOutOfRangeException"/>异常。
+        /// </summary>
+        /// <typeparam name="T">参数类型。</typeparam>
+        /// <param name="value">需比较的值</param>
+        /// <param name="target">要比较的值。</param>
+        /// <param name="canEqual">是否可等于。</param>
+        /// <param name="paramName">参数名称。</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static void CheckLessThan<T>(this T value, T target, bool canEqual = false, string paramName = "") where T : IComparable<T>
+        {
+            bool flag = canEqual ? value.CompareTo(target) <= 0 : value.CompareTo(target) < 0;
+            string format = canEqual ? Resources.ParameterCheck_NotLessThanOrEqual : Resources.ParameterCheck_NotLessThan;
+            Require<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
+        }
     }
 }
