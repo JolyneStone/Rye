@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Kira.AlasFx.Domain;
-using Kira.AlasFx.Domain.Model;
 using Microsoft.EntityFrameworkCore;
 using Z.EntityFramework.Plus;
 

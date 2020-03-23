@@ -1,5 +1,4 @@
-﻿using Kira.AlasFx.Core;
-using Kira.AlasFx.Domain;
+﻿using Kira.AlasFx.Domain;
 using Kira.AlasFx.EntityFrameworkCore;
 using Kira.AlasFx.Test.domain;
 using Microsoft.Extensions.Configuration;

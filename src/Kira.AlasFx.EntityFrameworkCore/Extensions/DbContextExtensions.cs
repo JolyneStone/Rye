@@ -1,7 +1,6 @@
 ﻿using Kira.AlasFx.Domain;
-using Kira.AlasFx.Domain.Model;
 using Kira.AlasFx.Exceptions;
-
+using Kira.AlasFx.Filter;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
