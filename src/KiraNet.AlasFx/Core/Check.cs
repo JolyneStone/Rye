@@ -20,7 +20,7 @@ namespace KiraNet.AlasFx
         /// <typeparam name="TException">异常类型</typeparam>
         /// <param name="assertion">要验证的断言。</param>
         /// <param name="message">异常消息。</param>
-        private static void Require<TException>(bool assertion, string message)
+        public static void Required<TException>(bool assertion, string message)
             where TException : Exception
         {
             if (assertion)
@@ -36,38 +36,6 @@ namespace KiraNet.AlasFx
         }
 
         /// <summary>
-        /// 验证指定值的断言表达式是否为真，不为值抛出<see cref="Exception"/>异常
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="assertionFunc">要验证的断言表达式</param>
-        /// <param name="message">异常消息</param>
-        public static void Required<T>(T value, Func<T, bool> assertionFunc, string message)
-        {
-            if (assertionFunc == null)
-            {
-                throw new ArgumentNullException(nameof(assertionFunc));
-            }
-            Require<Exception>(assertionFunc(value), message);
-        }
-
-        /// <summary>
-        /// 验证指定值的断言表达式是否为真，不为真抛出<typeparamref name="TException"/>异常
-        /// </summary>
-        /// <typeparam name="T">要判断的值的类型</typeparam>
-        /// <typeparam name="TException">抛出的异常类型</typeparam>
-        /// <param name="value">要判断的值</param>
-        /// <param name="assertionFunc">要验证的断言表达式</param>
-        /// <param name="message">异常消息</param>
-        public static void Required<T, TException>(T value, Func<T, bool> assertionFunc, string message) where TException : Exception
-        {
-            if (assertionFunc == null)
-            {
-                throw new ArgumentNullException("assertionFunc");
-            }
-            Require<TException>(assertionFunc(value), message);
-        }
-
-        /// <summary>
         /// 检查参数不能为空引用，否则抛出<see cref="ArgumentNullException"/>异常。
         /// </summary>
         /// <param name="value"></param>
@@ -75,7 +43,7 @@ namespace KiraNet.AlasFx
         /// <exception cref="ArgumentNullException"></exception>
         public static void NotNull<T>(T value, string paramName)
         {
-            Require<ArgumentNullException>(value != null, string.Format(Resources.ParameterCheck_NotNull, paramName));
+            Required<ArgumentNullException>(value != null, string.Format(Resources.ParameterCheck_NotNull, paramName));
         }
 
         /// <summary>
@@ -87,7 +55,7 @@ namespace KiraNet.AlasFx
         /// <exception cref="ArgumentException"></exception>
         public static void NotNullOrEmpty(string value, string paramName)
         {
-            Require<ArgumentException>(!string.IsNullOrEmpty(value), string.Format(Resources.ParameterCheck_NotNullOrEmpty_String, paramName));
+            Required<ArgumentException>(!string.IsNullOrEmpty(value), string.Format(Resources.ParameterCheck_NotNullOrEmpty_String, paramName));
         }
 
         /// <summary>
@@ -98,7 +66,7 @@ namespace KiraNet.AlasFx
         /// <exception cref="ArgumentException"></exception>
         public static void NotEmpty(Guid value, string paramName)
         {
-            Require<ArgumentException>(value != Guid.Empty, string.Format(Resources.ParameterCheck_NotEmpty_Guid, paramName));
+            Required<ArgumentException>(value != Guid.Empty, string.Format(Resources.ParameterCheck_NotEmpty_Guid, paramName));
         }
 
         /// <summary>
@@ -112,7 +80,7 @@ namespace KiraNet.AlasFx
         public static void NotNullOrEmpty<T>(IReadOnlyList<T> list, string paramName)
         {
             NotNull(list, paramName);
-            Require<ArgumentException>(list.Any(), string.Format(Resources.ParameterCheck_NotNullOrEmpty_Collection, paramName));
+            Required<ArgumentException>(list.Any(), string.Format(Resources.ParameterCheck_NotNullOrEmpty_Collection, paramName));
         }
 
         /// <summary>
@@ -121,7 +89,7 @@ namespace KiraNet.AlasFx
         public static void HasNoNulls<T>(IReadOnlyList<T> list, string paramName)
         {
             NotNull(list, paramName);
-            Require<ArgumentException>(list.All(m => m != null), string.Format(Resources.ParameterCheck_NotContainsNull_Collection, paramName));
+            Required<ArgumentException>(list.All(m => m != null), string.Format(Resources.ParameterCheck_NotContainsNull_Collection, paramName));
         }
 
         /// <summary>
@@ -137,7 +105,7 @@ namespace KiraNet.AlasFx
         {
             bool flag = canEqual ? value.CompareTo(target) <= 0 : value.CompareTo(target) < 0;
             string format = canEqual ? Resources.ParameterCheck_NotLessThanOrEqual : Resources.ParameterCheck_NotLessThan;
-            Require<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
+            Required<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
         }
 
         /// <summary>
@@ -153,7 +121,7 @@ namespace KiraNet.AlasFx
         {
             bool flag = canEqual ? value.CompareTo(target) >= 0 : value.CompareTo(target) > 0;
             string format = canEqual ? Resources.ParameterCheck_NotGreaterThanOrEqual : Resources.ParameterCheck_NotGreaterThan;
-            Require<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
+            Required<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
         }
 
         /// <summary>
@@ -174,13 +142,13 @@ namespace KiraNet.AlasFx
             string message = startEqual
                 ? string.Format(Resources.ParameterCheck_Between, paramName, start, end)
                 : string.Format(Resources.ParameterCheck_BetweenNotEqual, paramName, start, end, start);
-            Require<ArgumentOutOfRangeException>(flag, message);
+            Required<ArgumentOutOfRangeException>(flag, message);
 
             flag = endEqual ? value.CompareTo(end) <= 0 : value.CompareTo(end) < 0;
             message = endEqual
                 ? string.Format(Resources.ParameterCheck_Between, paramName, start, end)
                 : string.Format(Resources.ParameterCheck_BetweenNotEqual, paramName, start, end, end);
-            Require<ArgumentOutOfRangeException>(flag, message);
+            Required<ArgumentOutOfRangeException>(flag, message);
         }
 
         /// <summary>
@@ -193,7 +161,7 @@ namespace KiraNet.AlasFx
         public static void DirectoryExists(string directory, string paramName = null)
         {
             NotNull(directory, paramName);
-            Require<DirectoryNotFoundException>(Directory.Exists(directory), string.Format(Resources.ParameterCheck_DirectoryNotExists, directory));
+            Required<DirectoryNotFoundException>(Directory.Exists(directory), string.Format(Resources.ParameterCheck_DirectoryNotExists, directory));
         }
 
         /// <summary>
@@ -206,7 +174,7 @@ namespace KiraNet.AlasFx
         public static void FileExists(string filename, string paramName = null)
         {
             NotNull(filename, paramName);
-            Require<FileNotFoundException>(File.Exists(filename), string.Format(Resources.ParameterCheck_FileNotExists, filename));
+            Required<FileNotFoundException>(File.Exists(filename), string.Format(Resources.ParameterCheck_FileNotExists, filename));
         }
 
         /// <summary>
@@ -222,7 +190,7 @@ namespace KiraNet.AlasFx
         {
             bool flag = canEqual ? value.CompareTo(target) >= 0 : value.CompareTo(target) > 0;
             string format = canEqual ? Resources.ParameterCheck_NotGreaterThanOrEqual : Resources.ParameterCheck_NotGreaterThan;
-            Require<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
+            Required<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
         }
 
         /// <summary>
@@ -238,7 +206,7 @@ namespace KiraNet.AlasFx
         {
             bool flag = canEqual ? value.CompareTo(target) <= 0 : value.CompareTo(target) < 0;
             string format = canEqual ? Resources.ParameterCheck_NotLessThanOrEqual : Resources.ParameterCheck_NotLessThan;
-            Require<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
+            Required<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
         }
     }
 }

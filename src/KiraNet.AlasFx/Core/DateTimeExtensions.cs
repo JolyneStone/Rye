@@ -1,233 +1,83 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace KiraNet.AlasFx
 {
-    public static class TryParse
+    public static class DateTimeExtensions
     {
-        public static short TryParseByInt16(this object obj, short defaultValue = 0)
+        /// <summary>
+        /// 当前时间是否周末
+        /// </summary>
+        /// <param name="dateTime">时间点</param>
+        /// <returns></returns>
+        public static bool IsWeekend(this DateTime dateTime)
         {
-            short temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            return short.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
-        }
-        public static int TryParseByInt(this object obj, int defaultValue = 0)
-        {
-            int temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            return int.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
-        }
-        public static string TryParseByString(this object obj, string defaultValue = "")
-        {
-            if (obj == null)
-            {
-                return string.Empty;
-            }
-            else
-            {
-                return obj.ToString();
-            }
-        }
-
-        public static int TryParseByIntMax(this object obj)
-        {
-            int temp = int.MaxValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            return int.TryParse(obj.ToString(), out temp) ? temp : int.MaxValue;
-        }
-        public static short TryParseByShort(this object obj, short defaultValue = 0)
-        {
-            short temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            return short.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
-        }
-        public static long TryParseByLong(this object obj, long defaultValue = 0)
-        {
-            long temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            return long.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
-        }
-
-
-        public static uint TryParseByUInt32(this object obj, uint defaultValue = 0)
-        {
-            uint temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            uint.TryParse(obj.ToString(), out temp);
-            return uint.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
-        }
-        public static ushort TryParseByUInt16(this object obj, ushort defaultValue = 0)
-        {
-            ushort temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            return ushort.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
-        }
-        public static ulong TryParseByUlong(this object obj, ulong defaultValue = 0)
-        {
-            ulong temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            return ulong.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
-        }
-
-        public static decimal TryParseByDecimal(this object obj, decimal defaultValue = 0)
-        {
-            decimal temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            string _decimalContent = obj.ToString();
-            if (_decimalContent.Contains("E"))
-            {
-                try
-                {
-                    return Convert.ToDecimal(decimal.Parse(_decimalContent, System.Globalization.NumberStyles.Float));
-                }
-                catch
-                {
-
-                }
-                return defaultValue;
-            }
-            else
-            {
-                return decimal.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
-            }
-        }
-
-        public static decimal TryParseByDecimal(this object obj, int precision)
-        {
-            return Math.Round(TryParseByDecimal(obj, 0m), precision);
-        }
-
-        public static float TryParseByFloat(this object obj, float defaultValue = 0)
-        {
-            float temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            return float.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
-        }
-        public static double TryParseByDouble(this object obj, double defaultValue = 0)
-        {
-            double temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            string _doubleContent = obj.ToString();
-            if (_doubleContent.Contains("E"))
-            {
-                try
-                {
-                    return Convert.ToDouble(double.Parse(_doubleContent, System.Globalization.NumberStyles.Float));
-                }
-                catch
-                {
-
-                }
-                return defaultValue;
-            }
-            else
-            {
-                return double.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
-            }
-
-
-
+            return dateTime.DayOfWeek == DayOfWeek.Saturday || dateTime.DayOfWeek == DayOfWeek.Sunday;
         }
 
         /// <summary>
-        /// obj.ToString之后DateTime.TryParse
+        /// 当前时间是否工作日
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="dateTime">时间点</param>
         /// <returns></returns>
-        public static DateTime TryParseByDateTime(this object obj)
+        public static bool IsWeekday(this DateTime dateTime)
         {
-            DateTime temp = DateTime.MinValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            if (DateTime.TryParse(obj.ToString(), out temp))
-            {
-                return Convert.ToDateTime(obj);
-            }
-            return temp;
+            return IsWeekend(dateTime);
         }
 
         /// <summary>
-        /// obj.ToString之后DateTime.TryParse带格式
+        /// 获取时间相对唯一字符串
         /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="format"></param>
+        /// <param name="dateTime"></param>
+        /// <param name="milsec">是否使用毫秒</param>
         /// <returns></returns>
-        public static DateTime TryParseExactByDateTime(this object obj, string format)
+        public static string ToUniqueString(this DateTime dateTime, bool milsec = false)
         {
-            DateTime temp = DateTime.MinValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            try
-            {
-                return DateTime.ParseExact(obj.ToString(), format, System.Globalization.CultureInfo.InvariantCulture);
-            }
-            catch { }
-            return temp;
+            int seconds = dateTime.Hour * 3600 + dateTime.Minute * 60 + dateTime.Second;
+            string value = $"{dateTime:yy}{dateTime.DayOfYear}{seconds}";
+            return milsec ? value + dateTime.ToString("fff") : value;
         }
-        public static bool TryParseByBool(this object obj, bool defaultValue = false)
+
+        /// <summary>
+        /// 将当前时区时间转换为UTC时间
+        /// </summary>
+        public static DateTime ToUtcTime(this DateTime dateTime)
         {
-            bool temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            return bool.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+            return TimeZoneInfo.ConvertTimeToUtc(dateTime, TimeZoneInfo.Local);
         }
-    }
-    public static class Unix
-    {
+
+        /// <summary>
+        /// 将指定UTC时间转换为当前时区的时间
+        /// </summary>
+        public static DateTime FromUtcTime(this DateTime dateTime)
+        {
+            return TimeZoneInfo.ConvertTimeFromUtc(dateTime, TimeZoneInfo.Local);
+        }
+
+        /// <summary>
+        /// 将时间转换为JS时间格式(Date.getTime())
+        /// </summary>
+        public static string ToJsGetTime(this DateTime dateTime, bool milsec = true)
+        {
+            DateTime utc = dateTime.ToUniversalTime();
+            TimeSpan span = utc.Subtract(new DateTime(1970, 1, 1));
+            return Math.Round(milsec ? span.TotalMilliseconds : span.TotalSeconds).ToString();
+        }
+
+        /// <summary>
+        /// 将JS时间格式的数值转换为时间
+        /// </summary>
+        public static DateTime FromJsGetTime(this long jsTime)
+        {
+            int length = jsTime.ToString().Length;
+            Check.Required<ArgumentException>(length != 10 || length != 13, "JS时间数值的长度不正确，必须为10位或13位");
+            DateTime start = new DateTime(1970, 1, 1);
+            DateTime result = length == 10 ? start.AddSeconds(jsTime) : start.AddMilliseconds(jsTime);
+            return result.FromUtcTime();
+        }
+
         /// <summary>
         /// 适合所有时区的输入
         /// </summary>
@@ -305,7 +155,7 @@ namespace KiraNet.AlasFx
         }
 
         /// <summary>
-        /// 返回UTC时间。
+        /// 返回UTC时间
         /// </summary>
         /// <param name="timesTamp"></param>
         /// <returns></returns>
@@ -315,7 +165,7 @@ namespace KiraNet.AlasFx
         }
 
         /// <summary>
-        /// 返回UTC时间。
+        /// 返回UTC时间
         /// </summary>
         /// <param name="timesTamp"></param>
         /// <returns></returns>

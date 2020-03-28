@@ -1,4 +1,5 @@
-﻿using KiraNet.AlasFx.DependencyInjection;
+﻿using KiraNet.AlasFx.Caching;
+using KiraNet.AlasFx.DependencyInjection;
 using KiraNet.AlasFx.Log;
 using KiraNet.AlasFx.Options;
 using KiraNet.AlasFx.Reflection;
@@ -44,7 +45,8 @@ namespace KiraNet.AlasFx
             serviceCollection.AddOptions();
             serviceCollection.AddLogging(builder => builder.AddAlasFxLog());
             serviceCollection.AddDistributedMemoryCache();
-            serviceCollection.AddSingleton<ISearcher<Assembly>, AssemblySeracher>();
+            serviceCollection.TryAddSingleton<ICacheService, CacheService>();
+            serviceCollection.TryAddSingleton<ISearcher<Assembly>, AssemblySeracher>();
 
             var services = serviceCollection.BuildServiceProvider();
             using(var scope = services.CreateScope())

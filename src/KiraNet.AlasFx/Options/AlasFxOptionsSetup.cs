@@ -1,6 +1,7 @@
 ﻿using KiraNet.AlasFx.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -37,9 +38,14 @@ namespace KiraNet.AlasFx.Options
             options.Jwt = jwt;
             if (jwt != null)
             {
-                if (jwt.Secret == null)
+                //if (jwt.Secret == null)
+                //{
+                //    jwt.Secret = section.GetValue<string>("Secret");
+                //}
+                var encrypt = section.GetValue<string>("Encrypt");
+                if (encrypt.IsNullOrEmpty())
                 {
-                    jwt.Secret = _configuration["AlasFx:Jwt:Secret"];
+                    jwt.Encrypt = SecurityAlgorithms.HmacSha256;
                 }
             }
         }

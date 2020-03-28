@@ -22,17 +22,17 @@
         }
 
         /// <summary>
-        /// 获取或设置 页索引
+        /// 页索引
         /// </summary>
         public int PageIndex { get; set; }
 
         /// <summary>
-        /// 获取或设置 页大小
+        /// 页大小
         /// </summary>
         public int PageSize { get; set; }
 
         /// <summary>
-        /// 获取或设置 排序条件组
+        /// 排序条件组
         /// </summary>
         public SortCondition[] SortConditions { get; set; }
     }
