@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Kira.AlasFx.Test.domain
+namespace KiraNet.AlasFx.Test.domain
 {
     public class DbTestConfiguration : IEntityTypeConfiguration<DbTest>
     {

@@ -21,9 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Kira.AlasFx.EntityFrameworkCore.SqlServer\Kira.AlasFx.EntityFrameworkCore.SqlServer.csproj" />
-    <ProjectReference Include="..\..\src\Kira.AlasFx.EntityFrameworkCore\Kira.AlasFx.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Kira.AlasFx\Kira.AlasFx.csproj" />
+    <ProjectReference Include="..\..\src\KiraNet.AlasFx.EntityFrameworkCore.SqlServer\KiraNet.AlasFx.EntityFrameworkCore.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\KiraNet.AlasFx.EntityFrameworkCore\KiraNet.AlasFx.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\KiraNet.AlasFx\KiraNet.AlasFx.csproj" />
   </ItemGroup>
 
   <ItemGroup>

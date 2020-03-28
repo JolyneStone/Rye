@@ -1,13 +1,13 @@
-﻿using Kira.AlasFx.Domain;
-using Kira.AlasFx.EntityFrameworkCore;
-using Kira.AlasFx.Test.domain;
+﻿using KiraNet.AlasFx.Domain;
+using KiraNet.AlasFx.EntityFrameworkCore;
+using KiraNet.AlasFx.Test.domain;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using Xunit;
 
-namespace Kira.AlasFx.Test
+namespace KiraNet.AlasFx.Test
 {
     public class WriteReadTest
     {
@@ -22,7 +22,6 @@ namespace Kira.AlasFx.Test
                 .AddSingleton<IConfigurationRoot>(config)
                 .AddSingleton<IConfiguration>(config)
                 .AddAlasFx()
-                .AddAlasFxDatabase()
                 .AddAlasFxSqlServer()
                 .AddDbBuilderOptions<TestDbContext>(null, builder =>
                 {

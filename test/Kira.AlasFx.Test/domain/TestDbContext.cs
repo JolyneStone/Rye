@@ -1,11 +1,11 @@
-﻿using Kira.AlasFx.EntityFrameworkCore;
+﻿using KiraNet.AlasFx.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Kira.AlasFx.Test.domain
+namespace KiraNet.AlasFx.Test.domain
 {
     public class TestDbContext : DbContextBase
     {

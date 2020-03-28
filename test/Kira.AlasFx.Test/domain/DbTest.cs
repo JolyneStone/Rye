@@ -1,7 +1,7 @@
-﻿using Kira.AlasFx.Domain;
+﻿using KiraNet.AlasFx.Domain;
 using System;
 
-namespace Kira.AlasFx.Test.domain
+namespace KiraNet.AlasFx.Test.domain
 {
     public class DbTest : EntityBase<int>
     {

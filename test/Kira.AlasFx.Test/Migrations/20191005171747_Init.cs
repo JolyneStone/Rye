@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Kira.AlasFx.Test.Migrations
+namespace KiraNet.AlasFx.Test.Migrations
 {
     public partial class Init : Migration
     {
