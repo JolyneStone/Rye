@@ -119,7 +119,7 @@ namespace KiraNet.AlasFx.Jwt
                 expires = now.AddMinutes(minutes);
             }
             SecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-            SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+            SigningCredentials credentials = new SigningCredentials(key, _jwtOptions.Encrypt);
 
             SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor()
             {
