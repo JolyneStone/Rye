@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using KiraNet.AlasFx.Reflection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -189,9 +190,82 @@ namespace KiraNet.AlasFx
             {
                 return double.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
             }
+        }
 
+        public static TEnum TryParseByEnum<TEnum>(this object obj, TEnum defaultValue = default)
+            where TEnum: Enum
+        {
+            if (obj == null && default(TEnum) == null)
+            {
+                return defaultValue;
+            }
+            var type = typeof(TEnum);
+            if (obj.GetType() == type)
+            {
+                return (TEnum)obj;
+            }
+            
+            return (TEnum)Enum.Parse(type, obj.ToString());
+        }
 
+        public static bool TryParseByBool(this object obj, bool defaultValue = false)
+        {
+            bool temp = defaultValue;
+            if (obj == null)
+            {
+                return temp;
+            }
 
+            return bool.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+        }
+
+        public static object TryPase(this object value, Type conversionType)
+        {
+            try
+            {
+                if (value == null)
+                {
+                    return null;
+                }
+                if (conversionType.IsNullableType())
+                {
+                    conversionType = conversionType.GetUnNullableType();
+                }
+                if (conversionType.IsEnum)
+                {
+                    return Enum.Parse(conversionType, value.ToString());
+                }
+                if (conversionType == typeof(Guid))
+                {
+                    return Guid.Parse(value.ToString());
+                }
+                return Convert.ChangeType(value, conversionType);
+            }
+            catch
+            {
+                return default;
+            }
+        }
+
+        public static T TryParse<T>(this object obj, T defaultValue= default)
+        {
+            try
+            {
+                if (obj == null && default(T) == null)
+                {
+                    return default;
+                }
+                if (obj.GetType() == typeof(T))
+                {
+                    return (T)obj;
+                }
+                object result = TryParse(obj, typeof(T));
+                return (T)result;
+            }
+            catch (Exception)
+            {
+                return defaultValue;
+            }
         }
 
         /// <summary>
@@ -235,16 +309,7 @@ namespace KiraNet.AlasFx
             catch { }
             return temp;
         }
-        public static bool TryParseByBool(this object obj, bool defaultValue = false)
-        {
-            bool temp = defaultValue;
-            if (obj == null)
-            {
-                return temp;
-            }
 
-            return bool.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
-        }
         #endregion
     }
 }

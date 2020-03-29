@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KiraNet.AlasFx.Test", "test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KiraNet.AlasFx.Entities", "src\KiraNet.AlasFx.Entities\KiraNet.AlasFx.Entities.csproj", "{EEC9C8C5-F92C-4BBB-A06F-FA0BF60F6204}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KiraNet.AlasFx.Redis", "src\KiraNet.AlasFx.Redis\KiraNet.AlasFx.Redis.csproj", "{EF45F343-206E-4C35-8FB9-7B0AF6B55CDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KiraNet.AlasFx.Redis", "src\KiraNet.AlasFx.Redis\KiraNet.AlasFx.Redis.csproj", "{EF45F343-206E-4C35-8FB9-7B0AF6B55CDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KiraNet.AlasFx.Jwt", "src\KiraNet.AlasFx.Jwt\KiraNet.AlasFx.Jwt.csproj", "{341CE742-B99C-40C1-BB52-15528281A593}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +63,10 @@ Global
 		{EF45F343-206E-4C35-8FB9-7B0AF6B55CDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF45F343-206E-4C35-8FB9-7B0AF6B55CDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF45F343-206E-4C35-8FB9-7B0AF6B55CDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{341CE742-B99C-40C1-BB52-15528281A593}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{341CE742-B99C-40C1-BB52-15528281A593}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{341CE742-B99C-40C1-BB52-15528281A593}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{341CE742-B99C-40C1-BB52-15528281A593}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +80,7 @@ Global
 		{B6F4CFF5-1920-46ED-BAB7-CD64509BB6DF} = {B6D86199-8075-41B3-ACF9-F26438A5CB41}
 		{EEC9C8C5-F92C-4BBB-A06F-FA0BF60F6204} = {215176BD-3D59-4345-8D89-4B567EFCD759}
 		{EF45F343-206E-4C35-8FB9-7B0AF6B55CDC} = {215176BD-3D59-4345-8D89-4B567EFCD759}
+		{341CE742-B99C-40C1-BB52-15528281A593} = {215176BD-3D59-4345-8D89-4B567EFCD759}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C43E25F-90B8-4370-9470-A77C131B5EB6}

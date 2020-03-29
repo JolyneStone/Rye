@@ -55,6 +55,16 @@ namespace KiraNet.AlasFx
                 LoadInjector.Load(serviceCollection, scope.ServiceProvider.GetRequiredService<ISearcher<Assembly>>(), options.AssemblyPatterns);
             }
 
+            return serviceCollection;
+        }
+
+        /// <summary>
+        /// 添加SingleServiceLocator支持，建议将此方法放在最后调用
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <returns></returns>
+        private static IServiceCollection AddSignleServiceLocator(this IServiceCollection serviceCollection)
+        {
             SingleServiceLocator.SetServiceCollection(serviceCollection);
             return serviceCollection;
         }

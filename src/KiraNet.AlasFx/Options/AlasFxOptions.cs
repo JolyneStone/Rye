@@ -17,7 +17,7 @@ namespace KiraNet.AlasFx.Options
 
         public IDictionary<string, OAuth2Options> OAuth2s { get; set; } = new Dictionary<string, OAuth2Options>();
 
-        public JwtOptions Jwt { get; set; } = new JwtOptions();
+        //public JwtOptions Jwt { get; set; } = new JwtOptions();
 
         //public RedisOptions Redis { get; set; }
         public string[] AssemblyPatterns { get; set; }

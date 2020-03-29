@@ -26,29 +26,29 @@ namespace KiraNet.AlasFx.Options
         public void Configure(AlasFxOptions options)
         {
             SetDbConnectionsOptions(options);
-            SetJwtOptions(options);
+            //SetJwtOptions(options);
             SetOAuth2Options(options);
             SetAssemblyPatterns(options);
         }
 
-        private void SetJwtOptions(AlasFxOptions options)
-        {
-            var section = _configuration.GetSection("AlasFx:Jwt");
-            JwtOptions jwt = section.Get<JwtOptions>();
-            options.Jwt = jwt;
-            if (jwt != null)
-            {
-                //if (jwt.Secret == null)
-                //{
-                //    jwt.Secret = section.GetValue<string>("Secret");
-                //}
-                var encrypt = section.GetValue<string>("Encrypt");
-                if (encrypt.IsNullOrEmpty())
-                {
-                    jwt.Encrypt = SecurityAlgorithms.HmacSha256;
-                }
-            }
-        }
+        //private void SetJwtOptions(AlasFxOptions options)
+        //{
+        //    var section = _configuration.GetSection("AlasFx:Jwt");
+        //    JwtOptions jwt = section.Get<JwtOptions>();
+        //    options.Jwt = jwt;
+        //    if (jwt != null)
+        //    {
+        //        //if (jwt.Secret == null)
+        //        //{
+        //        //    jwt.Secret = section.GetValue<string>("Secret");
+        //        //}
+        //        var encrypt = section.GetValue<string>("Encrypt");
+        //        if (encrypt.IsNullOrEmpty())
+        //        {
+        //            jwt.Encrypt = SecurityAlgorithms.HmacSha256;
+        //        }
+        //    }
+        //}
 
         private void SetOAuth2Options(AlasFxOptions options)
         {
