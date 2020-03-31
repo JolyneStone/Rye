@@ -43,7 +43,7 @@ namespace KiraNet.AlasFx
         private static IServiceCollection AddAlasFxCore(IServiceCollection serviceCollection)
         {
             serviceCollection.AddOptions();
-            serviceCollection.AddLogging(builder => builder.AddAlasFxLog());
+            //serviceCollection.AddLogging(builder => builder.AddAlasFxLog());
             serviceCollection.AddDistributedMemoryCache();
             serviceCollection.TryAddSingleton<ICacheService, CacheService>();
             serviceCollection.TryAddSingleton<ISearcher<Assembly>, AssemblySeracher>();
@@ -63,21 +63,28 @@ namespace KiraNet.AlasFx
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        private static IServiceCollection AddSignleServiceLocator(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddSignleServiceLocator(this IServiceCollection serviceCollection)
         {
             SingleServiceLocator.SetServiceCollection(serviceCollection);
             return serviceCollection;
         }
 
-        private static ILoggingBuilder AddAlasFxLog(this ILoggingBuilder builder)
+        /// <summary>
+        /// 添加日志支持
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <param name="useQueue">是否使用队列读写日志</param>
+        /// <returns></returns>
+        public static IServiceCollection AddAlasFxLog(this IServiceCollection serviceCollection, bool useQueue = false)
         {
-            if (builder == null)
+            if (serviceCollection == null)
             {
-                throw new ArgumentNullException(nameof(builder));
+                throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, AlasFxLoggerProvider>());
-            return builder;
+            serviceCollection.AddLogging(builder => builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, AlasFxLoggerProvider>()));
+            LogRecord.Initialize(useQueue);
+            return serviceCollection;
         }
 
         /// <summary>
