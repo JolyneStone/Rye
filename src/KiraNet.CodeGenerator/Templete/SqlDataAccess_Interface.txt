@@ -1,0 +1,59 @@
+﻿using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
+using Dapper;
+
+namespace @Model.AppNameSpace
+{
+	
+    public interface I@(Model.AppClassName)Service
+    {
+		#region CRUD
+		/// <summary>
+        /// 分页查询
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        Task<PostResultList<@(Model.DtoName)>>> GetListAsync(@(Model.DtoName)Page info);
+       
+		
+		/// <summary>
+        /// 添加
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        Task<PostResult<int>> InsertAsync(@Model.DtoName info);
+        
+		
+		/// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        Task<PostResult<int>> UpdateAsync(@Model.DtoName info);
+        
+
+		@if(Model.Status==1)
+		{
+        @:/// <summary>
+        @:/// 修改状态
+        @:/// </summary>
+        @:/// <param name="id"></param>
+        @:/// <returns></returns>
+		@:Task<PostResult<int>> UpdateStateAsync(int? id, string status);
+        
+		}
+		
+		/// <summary>
+        /// 根据ID删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<PostResult<int>> DeleteAsync(int? id);
+        
+		
+		#endregion
+    }
+}

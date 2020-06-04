@@ -23,9 +23,9 @@ namespace Microsoft.Extensions.DependencyInjection
             Policy = policy;
         }
 
-        public InjectionAttribute(Type serviceType, 
-            ServiceLifetime lifetime = ServiceLifetime.Scoped, 
-            InjectionPolicy policy = InjectionPolicy.Append)
+        public InjectionAttribute(ServiceLifetime lifetime = ServiceLifetime.Scoped, 
+            InjectionPolicy policy = InjectionPolicy.Append,
+            Type serviceType = null)
         {
             ServiceType = serviceType;
             Lifetime = lifetime;

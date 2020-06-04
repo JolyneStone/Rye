@@ -30,7 +30,9 @@ namespace KiraNet.AlasFx.DependencyInjection
             var classList = new List<Type>();
             var ignoreInjectionAttrType = typeof(IgnoreInjectionAttribute);
             var injectionAttrType = typeof(InjectionAttribute);
-            foreach (var assembly in assemblies)
+            var alasFxAssemblies = assemblies.Where(d => d.FullName.StartsWith("KiraNet."));
+            var otherAssemblies = assemblies.Where(d => !d.FullName.StartsWith("KiraNet."));
+            foreach (var assembly in alasFxAssemblies.Concat(otherAssemblies))
             {
                 foreach (var type in assembly.GetExportedTypes())
                 {
