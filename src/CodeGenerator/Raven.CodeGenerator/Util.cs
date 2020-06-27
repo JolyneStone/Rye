@@ -36,21 +36,23 @@ namespace Raven.CodeGenerator
                 case "datetime":
                 case "datetime2":
                 case "smalldatetime":
+                    csType = allowNull ? "DateTime?" : "DateTime";
+                    break;
                 case "datetimeoffset":
-                    csType = "DateTime";
+                    csType = allowNull ? "DateTimeOffset?" : "DateTimeOffset";
                     break;
 
                 case "tinyint":
-                    csType = "byte";
+                    csType = allowNull? "byte?": "byte";
                     break;
 
                 case "sbyte":
                 case "unsigned tinyint":
-                    csType = "sbyte";
+                    csType = allowNull? "sbyte?" : "sbyte";
                     break;
 
                 case "unsigned smallint":
-                    csType = "ushort";
+                    csType = allowNull ? "ushort?" : "ushort";
                     break;
 
                 case "unsigned":
@@ -58,14 +60,14 @@ namespace Raven.CodeGenerator
                 case "number":
                 case "integer":
                 case "mediumint":
-                    csType = "int";
+                    csType = allowNull ? "int?" : "int";
                     break;
 
                 case "unsigned int":
                 case "unsigned number":
                 case "unsigned integer":
                 case "unsigned mediumint":
-                    csType = "uint";
+                    csType = allowNull ? "uint?" : "uint";
                     break;
 
                 case "bigint":
@@ -73,11 +75,11 @@ namespace Raven.CodeGenerator
                     break;
 
                 case "unsigned bigint":
-                    csType = "ulong";
+                    csType = allowNull ? "ulong?" : "ulong";
                     break;
 
                 case "float":
-                    csType = "double";
+                    csType = allowNull ? "double?" : "double";
                     break;
 
                 case "numeric":
@@ -85,15 +87,15 @@ namespace Raven.CodeGenerator
                 case "money":
                 case "smallmoney":
                 case "double":
-                    csType = "decimal";
+                    csType = allowNull ? "decimal?" : "decimal";
                     break;
 
                 case "real":
-                    csType = "single";
+                    csType = allowNull ? "single?" : "single";
                     break;
 
                 case "bit":
-                    csType = "bool";
+                    csType = allowNull ? "bool?" : "bool";
                     break;
 
                 case "binary":
@@ -109,7 +111,7 @@ namespace Raven.CodeGenerator
                     break;
 
                 case "uniqueidentifier":
-                    csType = "Guid";
+                    csType = allowNull ? "Guid?" : "Guid";
                     break;
 
                 case "xml":
@@ -126,70 +128,7 @@ namespace Raven.CodeGenerator
                     break;
             }
 
-            if (allowNull && csType != "object")
-            {
-                csType += "?";
-            }
-
             return csType;
-        }
-
-        /// <summary>
-        /// 获取默认值
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="defaultValueStr"></param>
-        /// <returns></returns>
-        public static bool TryGetDefaultValue(Type type, string defaultValueStr, out object defaultValue)
-        {
-            defaultValue = null;
-            if (type == null || string.IsNullOrEmpty(defaultValueStr))
-            {
-                return false;
-            }
-
-            defaultValueStr = defaultValueStr.Replace("((", "").Replace("))", "");
-            switch (defaultValueStr.Trim().ToLower())
-            {
-                case "":
-                    if (type == typeof(string))
-                    {
-                        defaultValue = "";
-                        return true;
-                    }
-                    return false;
-                case "getdate()":
-                case "now()":
-                    if (type == typeof(DateTime) || type==typeof(DateTime?))
-                    {
-                        defaultValue = DateTime.Now;
-                        return true;
-                    }
-                    return false;
-                case "newid()":
-                case "uuid()":
-                    if (type == typeof(Guid) || type==typeof(Guid?))
-                    {
-                        defaultValue = Guid.NewGuid();
-                        return true;
-                    }
-                    else if(type == typeof(string))
-                    {
-                        defaultValue = Guid.NewGuid().ToString();
-                        return true;
-                    }
-                    return false;
-                default:
-                    try
-                    {
-                        defaultValue = ConvertFromString(type, defaultValueStr);
-                        return defaultValue != null;
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-            }
         }
 
         /// <summary>
@@ -199,65 +138,74 @@ namespace Raven.CodeGenerator
         /// <param name="defaultValueStr"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public static bool TryGetDefaultValueString(Type type, string defaultValueStr, out string defaultValue)
+        public static string GetDefaultValueString(string type, string defaultValueStr)
         {
-            defaultValue = null;
-            if (type == null || string.IsNullOrEmpty(defaultValueStr))
+            var defaultValue = string.Empty;
+            if (string.IsNullOrEmpty(type) || string.IsNullOrEmpty(defaultValueStr))
             {
-                return false;
+                return defaultValue;
             }
 
-            if (defaultValueStr.StartsWith("(("))
+            if (defaultValueStr[0] == '(')
             {
-                defaultValueStr = defaultValueStr.Replace("((", "").Replace("))", "");
-            }
-            else if (defaultValueStr.StartsWith("("))
-            {
-                defaultValueStr = defaultValueStr.Replace("(", "").Replace(")", "");
+                var i = 1;
+                for (; i < defaultValueStr.Length; i++)
+                    if (defaultValueStr[i] != '(')
+                        break;
+                if (defaultValueStr.Length < 2 * (i - 1))
+                {
+                    throw new InvalidOperationException("无法解析的默认值");
+                }
+
+                defaultValueStr = defaultValueStr.Substring(i, defaultValueStr.Length - i * 2);
             }
 
-            switch (defaultValueStr.Trim().ToLower())
+            var lowerType = type.ToLowerInvariant();
+            switch (defaultValueStr.Trim().ToLowerInvariant())
             {
                 case "":
-                    if (type == typeof(string))
+                    if(lowerType == "string")
                     {
-                        defaultValue = string.Empty;
-                        return true;
+                        defaultValue = "string.Empty";
                     }
-                    return false;
+                    break;
                 case "getdate()":
                 case "now()":
-                    if (type == typeof(DateTime) || type == typeof(DateTime?))
+                    if (lowerType == "datetime" || lowerType == "datetime?")
                     {
                         defaultValue = "DateTime.Now";
-                        return true;
                     }
-                    return false;
+                    else if(lowerType == "datetimeoffset" || lowerType == "datetimeoffset?")
+                    {
+                        defaultValue = "DateTimeOffset.Now";
+                    }
+                    break;
                 case "newid()":
                 case "uuid()":
-                    if (type == typeof(Guid) || type == typeof(Guid?))
+                    if (lowerType == "guid" || lowerType == "guid?")
                     {
                         defaultValue = "Guid.NewGuid()";
-                        return true;
                     }
-                    else if (type == typeof(string))
+                    else if (lowerType == "string")
                     {
                         defaultValue = Guid.NewGuid().ToString();
-                        return true;
                     }
-                    return false;
+                    break;
                 default:
                     try
                     {
-                        var value = ConvertFromString(type, defaultValueStr);
-                        defaultValue = value != null ? value.ToString() : null;
-                        return defaultValue != null;
+                        var value = ConvertFromString(Type.GetType(type), defaultValueStr);
+                        defaultValue = value != null ? value.ToString() : string.Empty;
+
                     }
                     catch
                     {
-                        return false;
+                        defaultValue = string.Empty;
                     }
+                    break;
             }
+
+            return defaultValue;
         }
 
         /// <summary>
@@ -331,7 +279,7 @@ namespace Raven.CodeGenerator
         /// <param name="type"></param>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static object ConvertFromString(Type type,string str)
+        public static object ConvertFromString(Type type, string str)
         {
             if (string.IsNullOrEmpty(str))
                 return null;
@@ -397,56 +345,6 @@ namespace Raven.CodeGenerator
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
             File.WriteAllText(path, content);
             return path;
-        }
-
-        /// <summary>
-        /// 将小驼峰字符串的第一个字符大写
-        /// </summary>
-        public static string UpperFirstChar(string str)
-        {
-            if (string.IsNullOrEmpty(str) || !char.IsLower(str[0]))
-            {
-                return str;
-            }
-            if (str.Length == 1)
-            {
-                return char.ToUpper(str[0]).ToString();
-            }
-            return char.ToUpper(str[0]) + str.Substring(1, str.Length - 1);
-        }
-
-        /// <summary>
-        /// 将下划线大写方式命名的字符串转换为驼峰式。如果转换前的下划线大写方式命名的字符串为空，则返回空字符串。
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static string ToCamelName(string name)
-        {
-            StringBuilder result = new StringBuilder();
-            // 快速检查
-            if (name == null || string.IsNullOrEmpty(name))
-            {
-                // 没必要转换
-                return "";
-            }
-            else if (!name.Contains("_"))
-            {
-                // 不含下划线，仅将首字母大写
-                return UpperFirstChar(name);
-            }
-            // 用下划线将原始字符串分割
-            string[] camels = name.Split('_');
-            foreach (string camel in camels)
-            {
-                // 跳过原始字符串中开头、结尾的下换线或双重下划线
-                if (string.IsNullOrEmpty(camel))
-                {
-                    continue;
-                }
-
-                result.Append(UpperFirstChar(camel));
-            }
-            return result.ToString();
         }
     }
 }

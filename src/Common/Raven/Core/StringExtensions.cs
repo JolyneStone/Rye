@@ -41,7 +41,7 @@ namespace Raven
         /// <param name="value"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static object ToObject(this string value, JsonSerializerSettings? settings = null)
+        public static object ToObject(this string value, JsonSerializerSettings settings = null)
         {
             if (value != null)
             {
@@ -58,7 +58,7 @@ namespace Raven
         /// <param name="value"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static T ToObject<T>(this string value, JsonSerializerSettings? settings = null)
+        public static T ToObject<T>(this string value, JsonSerializerSettings settings = null)
         {
             if (value != null)
             {
@@ -208,13 +208,52 @@ namespace Raven
                     str = str.Substring(upperIndex, str.Length - upperIndex);
                     continue;
                 }
-                str = char.ToLower(str[0]) + str.Substring(1, str.Length - 1);
+                str = char.ToLowerInvariant(str[0]) + str.Substring(1, str.Length - 1);
             }
             return words.ExpandAndToString(splitStr);
         }
 
         /// <summary>
-        /// 将驼峰字符串的第一个字符小写
+        /// 将驼峰字符串按单词拆分并转换成大写，再以特定字符串分隔
+        /// </summary>
+        /// <param name="str">待转换的字符串</param>
+        /// <param name="splitStr">分隔符字符</param>
+        /// <returns></returns>
+        public static string LowerToUpperAndSplit(this string str, string splitStr = "-")
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+            List<string> words = new List<string>();
+            while (str.Length > 0)
+            {
+                char c = str.FirstOrDefault(char.IsUpper);
+                if (c == default(char))
+                {
+                    words.Add(str);
+                    str = str.UpperFirstChar();
+                    break;
+                }
+                int upperIndex = str.IndexOf(c);
+                if (upperIndex < 0) //admin
+                {
+                    return str;
+                }
+                if (upperIndex > 0) //adminAdmin
+                {
+                    string first = str.Substring(0, upperIndex);
+                    words.Add(first);
+                    str = str.Substring(upperIndex, str.Length - upperIndex);
+                    continue;
+                }
+                str = char.ToUpperInvariant(str[0]) + str[1..];
+            }
+            return words.ExpandAndToString(splitStr);
+        }
+
+        /// <summary>
+        /// 将第一个字符小写
         /// </summary>
         public static string LowerFirstChar(this string str)
         {
@@ -222,27 +261,123 @@ namespace Raven
             {
                 return str;
             }
-            if (str.Length == 1)
+            if (char.IsUpper(str[0]))
             {
-                return char.ToLower(str[0]).ToString();
+                if (str.Length == 1)
+                {
+                    return char.ToLowerInvariant(str[0]).ToString();
+                }
+
+                return char.ToLowerInvariant(str[0]) + str[1..];
             }
-            return char.ToLower(str[0]) + str.Substring(1, str.Length - 1);
+            return str;
         }
 
         /// <summary>
-        /// 将小驼峰字符串的第一个字符大写
+        /// 将第一个字符大写
         /// </summary>
         public static string UpperFirstChar(this string str)
         {
-            if (string.IsNullOrEmpty(str) || !char.IsLower(str[0]))
+            if (string.IsNullOrEmpty(str))
             {
                 return str;
             }
-            if (str.Length == 1)
+            if (char.IsLower(str[0]))
             {
-                return char.ToUpper(str[0]).ToString();
+                if (str.Length == 1)
+                {
+                    return char.ToUpperInvariant(str[0]).ToString();
+                }
+
+                return char.ToUpperInvariant(str[0]) + str[1..];
             }
-            return char.ToUpper(str[0]) + str.Substring(1, str.Length - 1);
+            return str;
+        }
+
+        /// <summary>
+        /// 将字符串转化为符合大驼峰命名的字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ToUpperCamelCase(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+
+            var splitStr = str.Split('_');
+            var list = new List<string>(splitStr.Length);
+            foreach (var s in splitStr)
+            {
+                list.Add(s.UpperFirstChar());
+            }
+
+            return string.Join("", list);
+        }
+
+        /// <summary>
+        /// 将字符串转化为符合小驼峰命名的字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ToLowerCamelCase(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+
+            var splitStr = str.Split('_');
+            var list = new List<string>(splitStr.Length);
+            foreach (var s in splitStr)
+            {
+                list.Add(s.LowerFirstChar());
+            }
+
+            return string.Join("", list);
+        }
+
+        /// <summary>
+        /// 将字符串转化为符合蛇形命名的字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ToSnakeCase(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+
+            if (str.FirstOrDefault(char.IsUpper) == default)
+            {
+                return str;
+            }
+
+            var list = new List<char>();
+            for (var i = 0; i < str.Length; i++)
+            {
+                var c = str[i];
+                if (char.IsUpper(c))
+                {
+                    if (i == 0)
+                    {
+                        list.Add(char.ToLowerInvariant(c));
+                    }
+                    else
+                    {
+                        list.Add('_');
+                        list.Add(char.ToLowerInvariant(c));
+                    }
+                }
+                else
+                {
+                    list.Add(c);
+                }
+            }
+
+            return new string(list.ToArray());
         }
     }
 }

@@ -4,6 +4,6 @@ namespace Raven.CodeGenerator.Abstracts
 {
     public interface ICodeCompiler<TConfig> where TConfig : CodeConfig
     {
-        Task<RazorPageGeneratorResult> GenerateAsync(TConfig config);
+        Task GenerateAsync(TConfig config);
     }
 }

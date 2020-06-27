@@ -25,7 +25,7 @@ namespace Raven.AspectFlare.DependencyInjection
 
         public void Add(ServiceDescriptor item)
         {
-            // 目前我还不能实现对已实例化的对象进行动态代理，因此直接注入
+            // 目前还不能实现对已实例化的对象进行动态代理，因此直接注入
             if (item.ImplementationInstance != null && item.ImplementationFactory == null)
             {
                 _services.Add(item);

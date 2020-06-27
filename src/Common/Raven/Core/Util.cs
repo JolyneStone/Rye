@@ -60,7 +60,7 @@ namespace Raven
                     var value = (T)parse.Invoke(null, new object[] { item });
                     list.Add(value);
                 }
-                catch (Exception e)
+                catch
                 {
                     return (false, list);
                 }

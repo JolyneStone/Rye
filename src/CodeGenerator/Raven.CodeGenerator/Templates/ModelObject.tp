@@ -1,0 +1,17 @@
+﻿using System;
+
+namespace @Model.NameSpace
+{
+    [Serializable]
+    public partial class @Model.Name
+    {
+    @foreach (var property in Model.Properties)
+    {
+        @Raw("\t\t/// <summary>")
+        @Raw($"\t\t/// {property.Description}")
+        @Raw("\t\t/// </summary>")
+        @Raw($"\t\tpublic {property.Type} {property.Name} {{ get; set; }}{(string.IsNullOrEmpty(property.DefaultValue)? "" : (" = ") + property.DefaultValue + ";")}")
+
+    }
+    }
+}

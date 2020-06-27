@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\CodeGenerator\Raven.CodeGenerator\Raven.CodeGenerator.csproj" />
     <ProjectReference Include="..\..\src\Common\Raven\Raven.csproj" />
     <ProjectReference Include="..\..\src\Domain\Raven.DataAccess\Raven.DataAccess.csproj" />
     <ProjectReference Include="..\..\src\Domain\Raven.EntityFrameworkCore.SqlServer\Raven.EntityFrameworkCore.SqlServer.csproj" />
