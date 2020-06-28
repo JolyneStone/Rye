@@ -17,11 +17,11 @@
                 {
                     if (string.IsNullOrEmpty(s))
                     {
-                        s = column.Type + column.Name.LowerFirstChar();
+                        s = column.Type + " " + column.Name.LowerFirstChar();
                     }
                     else
                     {
-                        s += ", " + column.Type + column.Name.LowerFirstChar();
+                        s += ", " + column.Type + " " + column.Name.LowerFirstChar();
                     }
                 }
             }

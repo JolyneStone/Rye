@@ -25,7 +25,7 @@
     <None Update="Templates\ModelObject.tp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Templates\SqlDataAccess_Interface.tp">
+    <None Update="Templates\Interface.tp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

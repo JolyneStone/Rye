@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace Raven.CodeGenerator.CodeGenerator.SqlServer.Tests
 {
-    public class SqlServerModelCompilerTests
+    public class SqlServerCompilerTests
     {
         [Fact()]
-        public async Task GenerateAsyncTest()
+        public async Task GenerateModelAsyncTest()
         {
             var generator = new SqlServerModelCompiler();
             await generator.GenerateAsync(new ModelConfig
@@ -24,13 +24,18 @@ namespace Raven.CodeGenerator.CodeGenerator.SqlServer.Tests
                 NameSpace = "Raven.DataAccess.Model",
                 FilePath = Directory.GetCurrentDirectory()
             });
+        }
 
+        [Fact()]
+        public async Task GenerateInterfaceAsyncTest()
+        {
+            var generator = new SqlServerInterfaceCompiler();
             await generator.GenerateAsync(new ModelConfig
             {
                 ConnectionString = "Persist Security Info=False;User ID=sa;Password=sqlzzq;Initial Catalog=test;Data Source=localhost;",
                 Database = "test",
                 Schema = "dbo",
-                Table = "Test2",
+                Table = "Test1",
                 NameSpace = "Raven.DataAccess.Model",
                 FilePath = Directory.GetCurrentDirectory()
             });

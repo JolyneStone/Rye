@@ -13,7 +13,7 @@ namespace Raven.CodeGenerator.SqlServer
 
         protected override string GetTemplate()
         {
-            return "SqlDataAccess_Interface.tp";
+            return "Interface.tp";
         }
     }
 }
