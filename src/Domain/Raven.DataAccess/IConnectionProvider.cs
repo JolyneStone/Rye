@@ -1,16 +1,18 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Data;
 
 namespace Raven.DataAccess
 {
     [Injection(ServiceLifetime.Singleton, InjectionPolicy.Replace)]
-    public interface IConnectionProvider
+    public interface IConnectionProvider : IDisposable
     {
-        IDbConnection GetDbConnection(string connectionString, bool open = true);
+        IDbConnection GetDbConnection(string connectionString);
+        IDbConnection GetDbConnectionByName(string connectionName);
 
-        IDbConnection GetConnection(bool open = true);
+        IDbConnection GetConnection();
 
-        IDbConnection GetReadOnlyConnection(bool open = true);
+        IDbConnection GetReadOnlyConnection();
 
         string GetConnectionString(string connectionName);
 

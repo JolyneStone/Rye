@@ -1,6 +1,5 @@
 ﻿using Xunit;
 using Raven.CodeGenerator.SqlServer;
-
 using System;
 using System.Collections.Generic;
 using System.Text;

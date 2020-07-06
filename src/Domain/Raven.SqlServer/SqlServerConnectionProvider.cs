@@ -7,22 +7,16 @@ namespace Raven.SqlServer
 {
     public abstract class SqlServerConnectionProvider : ConnectionProvider
     {
-        public override IDbConnection GetDbConnection(string connectionString, bool open = true)
+        protected override IDbConnection GetDbConnectionCore(string connectionString)
         {
             DbConnection connection = SqlClientFactory.Instance.CreateConnection();
             connection.ConnectionString = connectionString;
-            if (open && connection.State != ConnectionState.Open)
+            if (connection.State != ConnectionState.Open)
             {
                 connection.Open();
             }
 
             return connection;
         }
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //protected abstract string GetWriteDbConnectionString();
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //protected abstract string GetRealOnlyDbConnectionString();
     }
 }

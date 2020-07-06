@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Data;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace @Model.NameSpace
 {
-	@Raw($"public interface I{Model.Name}:IDataBaseOperate<{Model.Name}>")
+    @Raw($"[Injection(ServiceLifetime.Singleton, InjectionPolicy.Replace)]")
+	@Raw($"public interface I{Model.Name} : IDataBaseOperate<{Model.Name}>")
 	{
 		@Raw($"bool Delete({GetPrimaryKeyParams()});")        
         @Raw($"bool Delete({GetPrimaryKeyParams()}, object trans, IDbConnection conn);")     
@@ -13,7 +15,8 @@ namespace @Model.NameSpace
         
         @Raw($"{Model.Name} GetModel({GetPrimaryKeyParams()});")
         @Raw($"Task<{Model.Name}> GetModelAsync({GetPrimaryKeyParams()});")
-        
+        @Raw($"{Model.Name} GetModelByWriteDb({GetPrimaryKeyParams()});")
+        @Raw($"Task<{Model.Name}> GetModelByWriteDbAsync({GetPrimaryKeyParams()});")
         @Raw($"bool Exists({GetPrimaryKeyParams()});")        
         @Raw($"Task<bool> ExistsAsync({GetPrimaryKeyParams()});")
 	}

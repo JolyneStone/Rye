@@ -43,7 +43,7 @@ namespace Raven.CodeGenerator.SqlServer
             {
                 //InheritsDirective.Register(builder);
                 builder.SetNamespace("Raven.CodeGenerator.Razor")
-                    .SetBaseType($"Raven.CodeGenerator.Razor.EntityRazorPageView")
+                    .SetBaseType($"Raven.CodeGenerator.Razor.SqlServerRazorPageView")
                     .SetCSharpLanguageVersion(LanguageVersion.Default)
                     .AddDefaultImports(new string[]
                     {

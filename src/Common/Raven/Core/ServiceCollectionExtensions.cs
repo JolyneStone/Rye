@@ -60,8 +60,19 @@ namespace Raven
             }
             serviceCollection.TryAddSingleton<IConfigureOptions<RavenOptions>, RavenOptionsSetup>();
             serviceCollection.TryAddSingleton<ISearcher<Assembly>, AssemblySeracher>();
+
+            return serviceCollection;
+        }
+
+        /// <summary>
+        /// 自动注入
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <returns></returns>
+        private static IServiceCollection AutoInject(this IServiceCollection serviceCollection)
+        {
             var services = serviceCollection.BuildServiceProvider();
-            using(var scope = services.CreateScope())
+            using (var scope = services.CreateScope())
             {
                 var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
                 var section = configuration.GetSection("Raven:AssemblyPatterns");
@@ -69,7 +80,6 @@ namespace Raven
                 //var options = scope.ServiceProvider.GetRequiredService<IOptions<RavenOptions>>().Value;
                 LoadInjector.Load(serviceCollection, scope.ServiceProvider.GetRequiredService<ISearcher<Assembly>>(), patterns);
             }
-
             return serviceCollection;
         }
 
