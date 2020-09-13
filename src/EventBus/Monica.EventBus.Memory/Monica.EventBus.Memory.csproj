@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Disruptor" Version="3.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Monica\Monica.csproj" />
+    <ProjectReference Include="..\Monica.EventBus.Abstractions\Monica.EventBus.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.7" />
+    <PackageReference Include="Microsoft.TestPlatform" Version="16.7.0" />
+    <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="16.7.0" />
+    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="16.7.0" />
+    <PackageReference Include="Microsoft.VisualStudio.TestPlatform" Version="14.0.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CodeGenerator\Monica.CodeGenerator\Monica.CodeGenerator.csproj" />
+    <ProjectReference Include="..\..\src\Common\Monica\Monica.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Monica.DataAccess\Monica.DataAccess.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Monica.EntityFrameworkCore.SqlServer\Monica.EntityFrameworkCore.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Monica.EntityFrameworkCore\Monica.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Monica.SqlServer\Monica.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\EventBus\Monica.EventBus.Memory\Monica.EventBus.Memory.csproj" />
+    <ProjectReference Include="..\..\src\Log\Monica.Loggerger\Monica.Loggerger.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+</Project>

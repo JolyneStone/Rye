@@ -1,0 +1,32 @@
+﻿using System;
+using System.Data;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace @Model.NameSpace
+{
+    @RawInline($"[Injection(ServiceLifetime.Singleton, InjectionPolicy.Replace)]")
+	@RawInline($"public interface I{Model.Name} : IDataBaseOperate<{Model.Name}>")
+	{
+		@RawInline($"bool Delete({GetPrimaryKeyParams()});")        
+        @RawInline($"bool Delete({GetPrimaryKeyParams()}, IDbTransaction trans, IDbConnection conn);")     
+        @RawInline($"Task<bool> DeleteAsync({GetPrimaryKeyParams()});")
+        @RawInline($"Task<bool> DeleteAsync({GetPrimaryKeyParams()}, IDbTransaction trans, IDbConnection conn);")
+        @RawInline($"{Model.Name} GetModel({GetPrimaryKeyParams()});")
+        @RawInline($"{Model.Name} GetModelByWriteDb({GetPrimaryKeyParams()});")
+        @RawInline($"Task<{Model.Name}> GetModelAsync({GetPrimaryKeyParams()});")
+        @RawInline($"Task<{Model.Name}> GetModelByWriteDbAsync({GetPrimaryKeyParams()});")
+        @RawInline($"{Model.Name} GetModel({GetPrimaryKeyParams()}, IDbTransaction trans, IDbConnection conn);")
+        @RawInline($"Task<{Model.Name}> GetModelAsync({GetPrimaryKeyParams()}, IDbTransaction trans, IDbConnection conn);")
+        @RawInline($"bool Exists({GetPrimaryKeyParams()});")
+        @RawInline($"bool ExistsByWriteDb({GetPrimaryKeyParams()});")
+        @RawInline($"Task<bool> ExistsAsync({GetPrimaryKeyParams()});")
+        @RawInline($"Task<bool> ExistsByWriteDbAsync({GetPrimaryKeyParams()});")
+        @RawInline($"bool Exists({GetPrimaryKeyParams()}, IDbTransaction trans, IDbConnection conn);")
+        @RawInline($"Task<bool> ExistsAsync({GetPrimaryKeyParams()}, IDbTransaction trans, IDbConnection conn);")
+        @if(HasIdentity(out var identityProperty))
+        {
+        @Raw($"\t\t{identityProperty.Type} GetLastIdentity();")
+        }
+	}
+}

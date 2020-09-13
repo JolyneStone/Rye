@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Monica\Monica.csproj" />
+    <ProjectReference Include="..\Monica.DataAccess\Monica.DataAccess.csproj" />
+  </ItemGroup>
+
+</Project>
