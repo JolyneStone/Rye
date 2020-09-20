@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Monica.CodeGenerator.SqlServer
+﻿namespace Monica.CodeGenerator.SqlServer
 {
     public class SqlServerModelConfig : ModelConfig
     {

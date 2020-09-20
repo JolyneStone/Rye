@@ -23,7 +23,7 @@ namespace Monica.DataAccess.Model
 		public long GetLastIdentity()
 		{
 			IDbConnection conn = ConnectionProvider.GetConnection();
-			return conn.ExecuteScalar<long>("SELECT IDENT_CURRENT('ExternNews')");
+			return conn.ExecuteScalar<long>("SELECT SCOPE_IDENTITY()");
 		}
 
         public int Insert(ExternNews model, IDbTransaction trans, IDbConnection conn)
@@ -58,24 +58,40 @@ namespace Monica.DataAccess.Model
             return await InsertAsync(model, null, conn);
         }
 
+        public int BatchInsert(IEnumerable<ExternNews> items, IDbTransaction trans, IDbConnection conn)
+        {
+        	string sql = "INSERT INTO [ExternNews] ([SourceType],[SourceId],[IsPublish],[PublishTime],[BannerType],[IsHot],[IsRecommend],[Sort],[RealReadNum],[DefaultReadNum],[RealCollectionNum],[DefaultCollectionNum],[Title],[Summary],[LinkUrl],[Tags],[CoverImg],[Html],[BannerSort],[NewsType],[secondaryType],[resourceUrl],[ContractId]) VALUES (@SourceType,@SourceId,@IsPublish,@PublishTime,@BannerType,@IsHot,@IsRecommend,@Sort,@RealReadNum,@DefaultReadNum,@RealCollectionNum,@DefaultCollectionNum,@Title,@Summary,@LinkUrl,@Tags,@CoverImg,@Html,@BannerSort,@NewsType,@SecondaryType,@ResourceUrl,@ContractId);";
+
+            if (trans == null)
+                return conn.Execute(sql, param: items, commandType: CommandType.Text);
+            else
+                return conn.Execute(sql, param: items, commandType: CommandType.Text, transaction: trans);
+        }
+        
+        public async Task<int> BatchInsertAsync(IEnumerable<ExternNews> items, IDbTransaction trans, IDbConnection conn)
+        {
+        	string sql = "INSERT INTO [ExternNews] ([SourceType],[SourceId],[IsPublish],[PublishTime],[BannerType],[IsHot],[IsRecommend],[Sort],[RealReadNum],[DefaultReadNum],[RealCollectionNum],[DefaultCollectionNum],[Title],[Summary],[LinkUrl],[Tags],[CoverImg],[Html],[BannerSort],[NewsType],[secondaryType],[resourceUrl],[ContractId]) VALUES (@SourceType,@SourceId,@IsPublish,@PublishTime,@BannerType,@IsHot,@IsRecommend,@Sort,@RealReadNum,@DefaultReadNum,@RealCollectionNum,@DefaultCollectionNum,@Title,@Summary,@LinkUrl,@Tags,@CoverImg,@Html,@BannerSort,@NewsType,@SecondaryType,@ResourceUrl,@ContractId);";
+
+             if (trans == null)
+                return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
+            else
+                return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text, transaction: trans);
+        }
+
         public int BatchInsert(IEnumerable<ExternNews> items)
         {
-            StringBuilder sb = new StringBuilder("INSERT INTO[0] ([SourceType],[SourceId],[IsPublish],[PublishTime],[BannerType],[IsHot],[IsRecommend],[Sort],[RealReadNum],[DefaultReadNum],[RealCollectionNum],[DefaultCollectionNum],[Title],[Summary],[LinkUrl],[Tags],[CoverImg],[Html],[BannerSort],[NewsType],[secondaryType],[resourceUrl],[ContractId]) VALUES ");
-            foreach (var item in items)
-                sb.Append("(@SourceType,@SourceId,@IsPublish,@PublishTime,@BannerType,@IsHot,@IsRecommend,@Sort,@RealReadNum,@DefaultReadNum,@RealCollectionNum,@DefaultCollectionNum,@Title,@Summary,@LinkUrl,@Tags,@CoverImg,@Html,@BannerSort,@NewsType,@secondaryType,@resourceUrl,@ContractId);");
-            string sql = sb.ToString();
+        	string sql = "INSERT INTO [ExternNews] ([SourceType],[SourceId],[IsPublish],[PublishTime],[BannerType],[IsHot],[IsRecommend],[Sort],[RealReadNum],[DefaultReadNum],[RealCollectionNum],[DefaultCollectionNum],[Title],[Summary],[LinkUrl],[Tags],[CoverImg],[Html],[BannerSort],[NewsType],[secondaryType],[resourceUrl],[ContractId]) VALUES (@SourceType,@SourceId,@IsPublish,@PublishTime,@BannerType,@IsHot,@IsRecommend,@Sort,@RealReadNum,@DefaultReadNum,@RealCollectionNum,@DefaultCollectionNum,@Title,@Summary,@LinkUrl,@Tags,@CoverImg,@Html,@BannerSort,@NewsType,@SecondaryType,@ResourceUrl,@ContractId);";
+
             IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.Execute(sql, commandType: CommandType.Text);
+            return conn.Execute(sql, param: items, commandType: CommandType.Text);
         }
         
         public async Task<int> BatchInsertAsync(IEnumerable<ExternNews> items)
         {
-            StringBuilder sb = new StringBuilder("INSERT INTO[0] ([SourceType],[SourceId],[IsPublish],[PublishTime],[BannerType],[IsHot],[IsRecommend],[Sort],[RealReadNum],[DefaultReadNum],[RealCollectionNum],[DefaultCollectionNum],[Title],[Summary],[LinkUrl],[Tags],[CoverImg],[Html],[BannerSort],[NewsType],[secondaryType],[resourceUrl],[ContractId]) VALUES ");
-            foreach (var item in items)
-                sb.Append("(@SourceType,@SourceId,@IsPublish,@PublishTime,@BannerType,@IsHot,@IsRecommend,@Sort,@RealReadNum,@DefaultReadNum,@RealCollectionNum,@DefaultCollectionNum,@Title,@Summary,@LinkUrl,@Tags,@CoverImg,@Html,@BannerSort,@NewsType,@secondaryType,@resourceUrl,@ContractId);");
-            string sql = sb.ToString();
+        	string sql = "INSERT INTO [ExternNews] ([SourceType],[SourceId],[IsPublish],[PublishTime],[BannerType],[IsHot],[IsRecommend],[Sort],[RealReadNum],[DefaultReadNum],[RealCollectionNum],[DefaultCollectionNum],[Title],[Summary],[LinkUrl],[Tags],[CoverImg],[Html],[BannerSort],[NewsType],[secondaryType],[resourceUrl],[ContractId]) VALUES (@SourceType,@SourceId,@IsPublish,@PublishTime,@BannerType,@IsHot,@IsRecommend,@Sort,@RealReadNum,@DefaultReadNum,@RealCollectionNum,@DefaultCollectionNum,@Title,@Summary,@LinkUrl,@Tags,@CoverImg,@Html,@BannerSort,@NewsType,@SecondaryType,@ResourceUrl,@ContractId);";
+
             IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteAsync(sql, commandType: CommandType.Text);
+            return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
         }
 
         public int InsertUpdate(ExternNews model, IDbTransaction trans, IDbConnection conn)
@@ -426,7 +442,7 @@ namespace Monica.DataAccess.Model
 
         public IEnumerable<ExternNews> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} offset {2} rows fetch next {3} rows only", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.Query<ExternNews>(sql, param: param, commandType: CommandType.Text);
@@ -434,7 +450,7 @@ namespace Monica.DataAccess.Model
 
         public async Task<IEnumerable<ExternNews>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} offset {2} rows fetch next {3} rows only", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
@@ -442,7 +458,7 @@ namespace Monica.DataAccess.Model
 
         public IEnumerable<ExternNews> GetPageByWriteDb(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} offset {2} rows fetch next {3} rows only", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Query<ExternNews>(sql, param: param, commandType: CommandType.Text);
@@ -450,7 +466,7 @@ namespace Monica.DataAccess.Model
 
         public async Task<IEnumerable<ExternNews>> GetPageByWriteDbAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} offset {2} rows fetch next {3} rows only", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
@@ -458,7 +474,7 @@ namespace Monica.DataAccess.Model
 
         public IEnumerable<ExternNews> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} offset {2} rows fetch next {3} rows only", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             if (trans == null)
                 return conn.Query<ExternNews>(sql, param: param, commandType: CommandType.Text);
@@ -470,7 +486,7 @@ namespace Monica.DataAccess.Model
 
         public async Task<IEnumerable<ExternNews>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} offset {2} rows fetch next {3} rows only", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             if (trans == null)
                 return await conn.QueryAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);

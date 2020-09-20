@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Monica.CodeGenerator
+﻿namespace Monica.CodeGenerator
 {
     public class CodeConfig
     {

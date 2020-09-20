@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 
-namespace Simples
+namespace Monica.Test.AOP
 {
     [Called]
     public interface ITest
@@ -14,7 +15,7 @@ namespace Simples
         [Exception]
         public void Output()
         {
-            Console.WriteLine("output ..");
+            Debug.WriteLine("output ..");
         }
     }
 }

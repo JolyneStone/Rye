@@ -49,13 +49,13 @@ namespace Monica.CodeGenerator
             Properties = properties;
         }
         /// <summary>
-        /// 命名空间
-        /// </summary>
-        public string NameSpace { get; set; }
-        /// <summary>
         /// Schema
         /// </summary>
         public string Schema { get; set; }
+        /// <summary>
+        /// 命名空间
+        /// </summary>
+        public string NameSpace { get; set; }
         /// <summary>
         /// 类名
         /// </summary>

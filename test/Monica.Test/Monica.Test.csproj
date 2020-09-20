@@ -30,6 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\AOP\Monica.AspectFlare.DependencyInjection\Monica.AspectFlare.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\AOP\Monica.AspectFlare\Monica.AspectFlare.csproj" />
     <ProjectReference Include="..\..\src\CodeGenerator\Monica.CodeGenerator\Monica.CodeGenerator.csproj" />
     <ProjectReference Include="..\..\src\Common\Monica\Monica.csproj" />
     <ProjectReference Include="..\..\src\Domain\Monica.DataAccess\Monica.DataAccess.csproj" />
@@ -45,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="CodeGenerator\MySql\GenerateFile\" />
     <Folder Include="CodeGenerator\SqlServer\GenerateFile\" />
   </ItemGroup>
 

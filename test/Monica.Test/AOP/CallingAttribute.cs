@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
+
 using Monica.AspectFlare;
 
-namespace Simples
+namespace Monica.Test.AOP
 {
     public class CallingAttribute : CallingInterceptAttribute
     {
         public override void Calling(CallingInterceptContext callingInterceptorContext)
         {
-            Console.WriteLine("Calling in " + callingInterceptorContext.Owner.ToString());
+            Debug.WriteLine("Calling in " + callingInterceptorContext.Owner.ToString());
         }
     }
 }

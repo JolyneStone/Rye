@@ -16,6 +16,8 @@ namespace Monica.DataAccess
         Task<int> InsertUpdateAsync(T model, IDbTransaction trans, IDbConnection conn);
         int BatchInsert(IEnumerable<T> items);
         Task<int> BatchInsertAsync(IEnumerable<T> items);
+        int BatchInsert(IEnumerable<T> items, IDbTransaction trans, IDbConnection conn);
+        Task<int> BatchInsertAsync(IEnumerable<T> items, IDbTransaction trans, IDbConnection conn);
         int Update(T model);
         int Update(T model, IDbTransaction trans, IDbConnection conn);
         Task<int> UpdateAsync(T model);

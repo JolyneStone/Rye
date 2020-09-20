@@ -301,7 +301,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public {Model.Name} GetModel(object param, string whereSql)")
         {
-            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             @RawInline($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -309,7 +309,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public async Task<{Model.Name}> GetModelAsync(object param, string whereSql)")
         {
-            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             @RawInline($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -317,7 +317,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public {Model.Name} GetModelByWriteDb(object param, string whereSql)")
         {
-            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             @RawInline($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -325,7 +325,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public async Task<{Model.Name}> GetModelByWriteDbAsync(object param, string whereSql)")
         {
-            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             @RawInline($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -333,7 +333,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public {Model.Name} GetModel(object param, string whereSql, IDbTransaction trans, IDbConnection conn)")
         {
-            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             
             if (trans == null)
                 @Raw($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -343,7 +343,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public async Task<{Model.Name}> GetModelAsync(object param, string whereSql, IDbTransaction trans, IDbConnection conn)")
         {
-            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             
             if (trans == null)
                 @Raw($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -353,7 +353,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public {Model.Name} FirstOrDefault(object param, string whereSql, string orderSql)")
         {
-            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql;")
+            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql + \" LIMIT 1\";")
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             @RawInline($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -361,7 +361,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public async Task<{Model.Name}> FirstOrDefaultAsync(object param, string whereSql, string orderSql)")
         {
-            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql;")
+            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql + \" LIMIT 1\";")
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             @RawInline($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -369,7 +369,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public {Model.Name} FirstOrDefaultByWriteDb(object param, string whereSql, string orderSql)")
         {
-            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql;")
+            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql + \" LIMIT 1\";")
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             @RawInline($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -377,7 +377,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public async Task<{Model.Name}> FirstOrDefaultByWriteDbAsync(object param, string whereSql, string orderSql)")
         {
-            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql;")
+            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql + \" LIMIT 1\";")
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             @RawInline($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -385,7 +385,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public {Model.Name} FirstOrDefault(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)")
         {
-            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql;")
+            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql + \" LIMIT 1\";")
             
             if (trans == null)
                 @Raw($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -395,7 +395,7 @@ namespace @Model.NameSpace
 
         @RawInline($"public async Task<{Model.Name}> FirstOrDefaultAsync(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)")
         {
-            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql;")
+            @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql + \" LIMIT 1\";")
             
             if (trans == null)
                 @Raw($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
@@ -623,35 +623,35 @@ namespace @Model.NameSpace
 
         public bool Exists(object param, string whereSql)
         {
-            @RawInline($"string sql = \"SELECT TOP 1 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"SELECT 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsAsync(object param, string whereSql)
         {
-            @RawInline($"string sql = \"SELECT TOP 1 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"SELECT 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public bool ExistsByWriteDb(object param, string whereSql)
         {
-            @RawInline($"string sql = \"SELECT TOP 1 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"SELECT 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsByWriteDbAsync(object param, string whereSql)
         {
-            @RawInline($"string sql = \"SELECT TOP 1 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"SELECT 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public bool Exists(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
         {
-            @RawInline($"string sql = \"SELECT TOP 1 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"SELECT 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             if (trans == null)
                 return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
             else
@@ -660,7 +660,7 @@ namespace @Model.NameSpace
 
         public async Task<bool> ExistsAsync(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
         {
-            @RawInline($"string sql = \"SELECT TOP 1 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql;")
+            @RawInline($"string sql = \"SELECT 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql + \" LIMIT 1\";")
             if (trans == null)
                 return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
             else

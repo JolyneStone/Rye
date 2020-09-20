@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Text;
 
-namespace Monica.CodeGenerator.SqlServer
+namespace Monica.CodeGenerator.MySql
 {
-    public abstract class SqlServerRazorPageView : RazorPageViewBase<ModelEntity>
+    public abstract class MySqlRazorPageView : RazorPageViewBase<ModelEntity>
     {
         /// <summary>
         /// 获取主键参数列表
@@ -91,12 +91,12 @@ namespace Monica.CodeGenerator.SqlServer
         protected string GetInsertSql()
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.AppendFormat("INSERT INTO [{0}] (", Model.SqlTable);
+            strSql.AppendFormat("INSERT INTO {0} (", Model.SqlTable);
             foreach (var c in Model.Properties)
             {
                 if (!c.IsIdentity)
                 {
-                    strSql.AppendFormat("[{0}],", c.SqlColumn);
+                    strSql.AppendFormat("{0},", c.SqlColumn);
                 }
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
@@ -117,12 +117,12 @@ namespace Monica.CodeGenerator.SqlServer
         protected string GetInsertModelSql()
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.AppendFormat("INSERT INTO [{0}] (", Model.SqlTable);
+            strSql.AppendFormat("INSERT INTO {0} (", Model.SqlTable);
             foreach (var c in Model.Properties)
             {
                 if (!c.IsIdentity)
                 {
-                    strSql.AppendFormat("[{0}],", c.SqlColumn);
+                    strSql.AppendFormat("{0},", c.SqlColumn);
                 }
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
@@ -143,14 +143,14 @@ namespace Monica.CodeGenerator.SqlServer
                 string IdentityWhere = "";
                 foreach (var c in Model.Properties)
                 {
-                    strSql.AppendFormat("[{0}],", c.SqlColumn);
+                    strSql.AppendFormat("{0},", c.SqlColumn);
                     if (c.IsKey && c.IsIdentity)
                     {
                         IdentityWhere = c.SqlColumn;
                     }
                 }
                 strSql = strSql.Remove(strSql.Length - 1, 1);
-                strSql.AppendFormat(" FROM [{0}] WHERE [{1}]=SCOPE_IDENTITY()", Model.SqlTable, IdentityWhere);
+                strSql.AppendFormat(" FROM {0} WHERE {1}=LAST_INSERT_ID()", Model.SqlTable, IdentityWhere);
             }
             else
             {
@@ -160,13 +160,13 @@ namespace Monica.CodeGenerator.SqlServer
                     strSql.Append(";SELECT ");
                     foreach (var c in Model.Properties)
                     {
-                        strSql.AppendFormat("[{0}],", c.SqlColumn);
+                        strSql.AppendFormat("{0},", c.SqlColumn);
                     }
                     strSql = strSql.Remove(strSql.Length - 1, 1);
-                    strSql.AppendFormat(" FROM [{0}] WHERE 1=1", Model.SqlTable);
+                    strSql.AppendFormat(" FROM {0} WHERE 1=1", Model.SqlTable);
                     foreach (var c in columns)
                     {
-                        strSql.AppendFormat(" AND [{0}]=@{0}", c.SqlColumn);
+                        strSql.AppendFormat(" AND {0}=@{0}", c.SqlColumn);
                     }
                 }
             }
@@ -176,12 +176,12 @@ namespace Monica.CodeGenerator.SqlServer
         protected string GetBatchInsertSql()
         {
             var strSql = new StringBuilder();
-            strSql.AppendFormat("INSERT INTO [{0}] (", Model.SqlTable);
+            strSql.AppendFormat("INSERT INTO {0} (", Model.SqlTable);
             foreach (var c in Model.Properties)
             {
                 if (!c.IsIdentity)
                 {
-                    strSql.AppendFormat("[{0}],", c.SqlColumn);
+                    strSql.AppendFormat("{0},", c.SqlColumn);
                 }
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
@@ -208,27 +208,29 @@ namespace Monica.CodeGenerator.SqlServer
         protected string GetExistsSql()
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.AppendFormat("SELECT TOP 1 1 FROM [{0}] WITH(NOLOCK)", Model.SqlTable);
+            strSql.AppendFormat("SELECT 1 FROM {0} ", Model.SqlTable);
             var columns = GetPKColumns();
             if (columns.Length > 0)
             {
                 strSql.Append(" WHERE 1=1 ");
                 foreach (var c in columns)
                 {
-                    strSql.AppendFormat(" AND [{0}]=@{1}", c.SqlColumn, c.Name);
+                    strSql.AppendFormat(" AND {0}=@{1}", c.SqlColumn, c.Name);
                 }
             }
             else
             {
                 strSql.Append(" WHERE AND 1<>1");
             }
+
+            strSql.Append(" LIMIT 1");
             return strSql.ToString();
         }
 
         protected string GetCountSql()
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.AppendFormat("SELECT COUNT(1) FROM [{0}] WITH(NOLOCK) ", Model.SqlTable);
+            strSql.AppendFormat("SELECT COUNT(1) FROM {0} ", Model.SqlTable);
             return strSql.ToString();
         }
 
@@ -236,14 +238,14 @@ namespace Monica.CodeGenerator.SqlServer
         protected string GetDeleteSql()
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.AppendFormat("DELETE FROM [{0}]", Model.SqlTable);
+            strSql.AppendFormat("DELETE FROM {0}", Model.SqlTable);
             var columns = GetPKColumns();
             if (columns.Length > 0)
             {
                 strSql.Append(" WHERE 1=1");
                 foreach (var c in columns)
                 {
-                    strSql.AppendFormat(" AND [{0}]=@{1}", c.SqlColumn, c.Name);
+                    strSql.AppendFormat(" AND {0}=@{1}", c.SqlColumn, c.Name);
                 }
             }
             else
@@ -260,10 +262,10 @@ namespace Monica.CodeGenerator.SqlServer
             var nonColumns = GetNoPKAndIdentityColumns();
             if (nonColumns.Length > 0)
             {
-                strSql.AppendFormat("UPDATE [{0}] SET ", Model.SqlTable);
+                strSql.AppendFormat("UPDATE {0} SET ", Model.SqlTable);
                 foreach (var c in nonColumns)
                 {
-                    strSql.AppendFormat(" [{0}]=@{1},", c.SqlColumn, c.Name);
+                    strSql.AppendFormat(" {0}=@{1},", c.SqlColumn, c.Name);
                 }
                 strSql = strSql.Remove(strSql.Length - 1, 1);
 
@@ -274,7 +276,7 @@ namespace Monica.CodeGenerator.SqlServer
                     strSql.Append(" WHERE 1=1 ");
                     foreach (var k in columns)
                     {
-                        strSql.AppendFormat(" AND [{0}]=@{1}", k.SqlColumn, k.Name);
+                        strSql.AppendFormat(" AND {0}=@{1}", k.SqlColumn, k.Name);
                     }
                 }
                 else
@@ -293,13 +295,13 @@ namespace Monica.CodeGenerator.SqlServer
             strSql.Append("SELECT ");
             foreach (var c in Model.Properties)
             {
-                strSql.AppendFormat("[{0}] {1},", c.SqlColumn, c.Name);
+                strSql.AppendFormat("{0} {1},", c.SqlColumn, c.Name);
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
-            strSql.AppendFormat(" FROM [{0}] WITH(NOLOCK) WHERE 1=1", Model.SqlTable);
+            strSql.AppendFormat(" FROM {0} WHERE 1=1", Model.SqlTable);
             foreach (var c in GetPKColumns())
             {
-                strSql.AppendFormat(" AND [{0}]=@{1}", c.SqlColumn, c.Name);
+                strSql.AppendFormat(" AND {0}=@{1}", c.SqlColumn, c.Name);
             }
 
             return strSql.ToString();
@@ -312,10 +314,10 @@ namespace Monica.CodeGenerator.SqlServer
             strSql.Append("SELECT ");
             foreach (var c in Model.Properties)
             {
-                strSql.AppendFormat("[{0}] {1},", c.SqlColumn, c.Name);
+                strSql.AppendFormat("{0} {1},", c.SqlColumn, c.Name);
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
-            strSql.AppendFormat(" FROM [{0}] WITH(NOLOCK)", Model.SqlTable);
+            strSql.AppendFormat(" FROM {0} LIMIT 1", Model.SqlTable);
             return strSql.ToString();
         }
 
@@ -323,13 +325,13 @@ namespace Monica.CodeGenerator.SqlServer
         {
             StringBuilder strSql = new StringBuilder();
 
-            strSql.Append("SELECT TOP 1 ");
+            strSql.Append("SELECT ");
             foreach (var c in Model.Properties)
             {
-                strSql.AppendFormat("[{0}] {1},", c.SqlColumn, c.Name);
+                strSql.AppendFormat("{0} {1},", c.SqlColumn, c.Name);
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
-            strSql.AppendFormat(" FROM [{0}] WITH(NOLOCK)", Model.SqlTable);
+            strSql.AppendFormat(" FROM {0} LIMIT 1", Model.SqlTable);
             return strSql.ToString();
         }
 
@@ -339,7 +341,7 @@ namespace Monica.CodeGenerator.SqlServer
 
             foreach (var c in Model.Properties)
             {
-                strSql.AppendFormat("[{0}] {1},", c.SqlColumn, c.Name);
+                strSql.AppendFormat("{0} {1},", c.SqlColumn, c.Name);
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
 
@@ -353,17 +355,17 @@ namespace Monica.CodeGenerator.SqlServer
             strSql.Append("SELECT ");
             foreach (var c in Model.Properties)
             {
-                strSql.AppendFormat("[{0}] {1},", c.SqlColumn, c.Name);
+                strSql.AppendFormat("{0} {1},", c.SqlColumn, c.Name);
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
-            strSql.AppendFormat(" FROM [{0}] WITH(NOLOCK)", Model.SqlTable);
+            strSql.AppendFormat(" FROM {0} ", Model.SqlTable);
             var columns = GetPKColumns();
             if (columns.Length > 0)
             {
                 strSql.Append(" ORDER BY ");
                 foreach (var c in columns)
                 {
-                    strSql.AppendFormat("[{0}] DESC,", c.SqlColumn);
+                    strSql.AppendFormat("{0} DESC,", c.SqlColumn);
                 }
                 strSql = strSql.Remove(strSql.Length - 1, 1);
             }
@@ -377,11 +379,11 @@ namespace Monica.CodeGenerator.SqlServer
             strSql.Append("SELECT ");
             foreach (var c in Model.Properties)
             {
-                strSql.AppendFormat("[{0}] {1},", c.SqlColumn, c.Name);
+                strSql.AppendFormat("{0} {1},", c.SqlColumn, c.Name);
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
-            strSql.AppendFormat(" FROM [{0}] WITH(NOLOCK)", Model.SqlTable);
-            strSql.Append(" WHERE {0} ORDER BY {1} OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;");
+            strSql.AppendFormat(" FROM {0} ", Model.SqlTable);
+            strSql.Append(" WHERE {0} ORDER BY {1} LIMIT {3},{2}");
             return strSql.ToString();
         }
 
@@ -389,11 +391,11 @@ namespace Monica.CodeGenerator.SqlServer
         {
             StringBuilder strSql = new StringBuilder();
 
-            strSql.AppendFormat("UPDATE [{0}] SET ", Model.SqlTable);
+            strSql.AppendFormat("UPDATE {0} SET ", Model.SqlTable);
             foreach (var c in Model.Properties)
             {
                 if (!c.IsKey)
-                    strSql.AppendFormat(" [{0}]=@{1},", c.SqlColumn, c.Name);
+                    strSql.AppendFormat(" {0}=@{1},", c.SqlColumn, c.Name);
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
 
@@ -402,19 +404,19 @@ namespace Monica.CodeGenerator.SqlServer
             foreach (var c in Model.Properties)
             {
                 if (c.IsKey)
-                    strSql.AppendFormat(" AND [{0}]=@{1}", c.SqlColumn, c.Name);
+                    strSql.AppendFormat(" AND {0}=@{1}", c.SqlColumn, c.Name);
             }
 
             strSql.Append(";");
 
-            strSql.AppendFormat("INSERT INTO [{0}] (", Model.SqlTable);
+            strSql.AppendFormat("INSERT INTO {0} (", Model.SqlTable);
             foreach (var c in Model.Properties)
             {
                 if (!c.IsIdentity)
-                    strSql.AppendFormat("[{0}],", c.SqlColumn);
+                    strSql.AppendFormat("{0},", c.SqlColumn);
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
-            strSql.Append(") SELECT ");
+            strSql.Append("); SELECT ");
             foreach (var c in Model.Properties)
             {
                 if (!c.IsIdentity)
@@ -423,12 +425,12 @@ namespace Monica.CodeGenerator.SqlServer
             strSql = strSql.Remove(strSql.Length - 1, 1);
             //strSql.Append(")");    
 
-            strSql.AppendFormat(" WHERE NOT EXISTS (SELECT 1 FROM [{0}] where 1=1 ", Model.SqlTable);
+            strSql.AppendFormat(" WHERE NOT EXISTS (SELECT 1 FROM {0} where 1=1 ", Model.SqlTable);
 
             foreach (var c in Model.Properties)
             {
                 if (c.IsKey || c.IsIdentity)
-                    strSql.AppendFormat(" AND [{0}]=@{1}", c.SqlColumn, c.Name);
+                    strSql.AppendFormat(" AND {0}=@{1}", c.SqlColumn, c.Name);
             }
             strSql.Append(")");
             return strSql.ToString();

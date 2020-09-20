@@ -30,7 +30,7 @@ namespace Monica.Test.Domain
         private void Write(out int newId)
         {
             var dbProvider = _serviceProvider.GetRequiredService<IDbProvider>();
-            var uow = dbProvider.GetUnitOfWork<TestDbContext>("AlasTestDb");
+            var uow = dbProvider.GetUnitOfWork<TestDbContext>("MonicaTestDb");
 
             var repoDbTest = uow.GetRepository<DbTest, int>();
             var obj = new DbTest { Name = "123", Date = DateTime.Now.Date };
@@ -43,7 +43,7 @@ namespace Monica.Test.Domain
         private void Read(int newId)
         {
             var dbProvider = _serviceProvider.GetRequiredService<IDbProvider>();
-            var uow = dbProvider.GetUnitOfWork<TestDbContext>("AlasTestDb_Read");
+            var uow = dbProvider.GetUnitOfWork<TestDbContext>("MonicaTestDb_Read");
 
             var repoDbTest = uow.GetReadOnlyRepository<DbTest, int>();
             var data2 = repoDbTest.GetFirstOrDefault(d => d.Id == newId);
