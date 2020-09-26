@@ -94,7 +94,7 @@ namespace Monica.Jwt
             string secret = options.Secret;
             if (secret == null)
             {
-                throw new MonicaException("创建JwtToken时Secret为空，请在Monica:Jwt:Secret节点中进行配置");
+                throw new MonicaException("创建JwtToken时Secret为空，Framework:Jwt:Secret节点中进行配置");
             }
 
             DateTime expires;

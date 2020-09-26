@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Monica.AspectFlare.DependencyInjection;
 using Monica.AspectFlare.DynamicProxy;
-using System;
 using System.Diagnostics;
-
 using Xunit;
 
 namespace Monica.Test.AOP

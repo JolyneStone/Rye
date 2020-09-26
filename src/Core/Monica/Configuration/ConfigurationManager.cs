@@ -28,11 +28,15 @@ namespace Monica.Configuration
             {
                 if (appsettings == null)
                 {
-                    appsettings = GetConfiguration("appsettings.json");
+              
                     string env = appsettings.GetSection("ASPNETCORE_ENVIRONMENT").Value;
-                    if (env == "Development")
+                    if (!string.IsNullOrEmpty(env))
                     {
-                        appsettings = GetConfiguration($"appsettings.Development.json");
+                        appsettings = GetConfiguration($"appsettings.{env}.json");
+                    }
+                    else
+                    {
+                        appsettings = GetConfiguration("appsettings.json");
                     }
                 }
                 return appsettings;

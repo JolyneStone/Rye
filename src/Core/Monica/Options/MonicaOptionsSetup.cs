@@ -12,7 +12,7 @@ namespace Monica.Options
     /// </summary>
     public class MonicaOptionsSetup : IConfigureOptions<MonicaOptions>
     {
-        private readonly IConfiguration _configuration;
+        private readonly IConfigurationSection _configurationSection;
 
         //public MonicaOptionsSetup()
         //{
@@ -21,7 +21,12 @@ namespace Monica.Options
 
         public MonicaOptionsSetup(IConfiguration configuration)
         {
-            _configuration = configuration;
+            _configurationSection = configuration.GetSection("Framework");
+        }
+
+        internal MonicaOptionsSetup(IConfigurationSection configurationSection)
+        {
+            _configurationSection = configurationSection;
         }
 
         /// <summary>
@@ -32,13 +37,14 @@ namespace Monica.Options
         {
             SetDbConnectionsOptions(options);
             //SetJwtOptions(options);
-            SetOAuth2Options(options);
+            //SetOAuth2Options(options);
             SetAssemblyPatterns(options);
+            SetLoggerOptions(options);
         }
 
         //private void SetJwtOptions(MonicaOptions options)
         //{
-        //    var section = _configuration.GetSection("Monica:Jwt");
+        //    var section = _configuration.GetSection("Framework:Jwt");
         //    JwtOptions jwt = section.Get<JwtOptions>();
         //    options.Jwt = jwt;
         //    if (jwt != null)
@@ -55,39 +61,39 @@ namespace Monica.Options
         //    }
         //}
 
-        private void SetOAuth2Options(MonicaOptions options)
-        {
-            var oauth2s = new Dictionary<string, OAuth2Options>();
-            options.OAuth2s = oauth2s;
-            var section = _configuration.GetSection("Framework:OAuth2");
-            IDictionary<string, OAuth2Options> dict = section.Get<Dictionary<string, OAuth2Options>>();
-            if (dict != null)
-            {
-                foreach (KeyValuePair<string, OAuth2Options> item in dict)
-                {
-                    oauth2s.Add(item.Key, item.Value);
-                }
-            }
-        }
+        //private void SetOAuth2Options(MonicaOptions options)
+        //{
+        //    var oauth2s = new Dictionary<string, OAuth2Options>();
+        //    options.OAuth2s = oauth2s;
+        //    var section = _configuration.GetSection("Framework:OAuth2");
+        //    IDictionary<string, OAuth2Options> dict = section.Get<Dictionary<string, OAuth2Options>>();
+        //    if (dict != null)
+        //    {
+        //        foreach (KeyValuePair<string, OAuth2Options> item in dict)
+        //        {
+        //            oauth2s.Add(item.Key, item.Value);
+        //        }
+        //    }
+        //}
 
         private void SetDbConnectionsOptions(MonicaOptions options)
         {
             var dbConnectionMap = new Dictionary<string, DbConnectionOptions>();
             options.DbConnections = dbConnectionMap;
-            IConfiguration section = _configuration.GetSection("Framework:DbConnections");
+            IConfiguration section = _configurationSection.GetSection("DbConnections");
             Dictionary<string, DbConnectionOptions> dict = section.Get<Dictionary<string, DbConnectionOptions>>();
             if (dict == null || dict.Count == 0)
             {
-                string connectionString = _configuration["ConnectionStrings:DefaultDbContext"];
-                if (connectionString == null)
-                {
-                    return;
-                }
-                dbConnectionMap.Add("DefaultDb", new DbConnectionOptions
-                {
-                    ConnectionString = connectionString,
-                    DatabaseType = options.DefaultDatabaseType
-                });
+                //string connectionString = _configurationSection["DefaultDbContext"];
+                //if (connectionString == null)
+                //{
+                //    return;
+                //}
+                //dbConnectionMap.Add("DefaultDb", new DbConnectionOptions
+                //{
+                //    ConnectionString = connectionString,
+                //    DatabaseType = options.DefaultDatabaseType
+                //});
 
                 return;
             }
@@ -105,9 +111,15 @@ namespace Monica.Options
 
         private void SetAssemblyPatterns(MonicaOptions options)
         {
-            var section = _configuration.GetSection("Framework:AssemblyPatterns");
+            var section = _configurationSection.GetSection("AssemblyPatterns");
             var patterns = section.Get<string[]>();
             options.AssemblyPatterns = patterns;
+        }
+
+        private void SetLoggerOptions(MonicaOptions options)
+        {
+            var section = _configurationSection.GetSection("Logger");
+            options.Logger = section.Get<LoggerOptions>();
         }
     }
 }

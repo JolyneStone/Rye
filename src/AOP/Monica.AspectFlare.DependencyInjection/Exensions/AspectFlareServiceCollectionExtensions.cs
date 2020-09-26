@@ -1,11 +1,12 @@
 ﻿using Monica.AspectFlare.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
+using Monica.AspectFlare;
+using Monica.AspectFlare.DependencyInjection;
 
-namespace Monica.AspectFlare.DependencyInjection
+namespace Monica
 {
-    public static class ServiceCollectionExtensions
+    public static class AspectFlareServiceCollectionExtensions
     {
-
         public static IServiceCollection UseDynamicProxyService(this IServiceCollection services, bool isValid)
         {
             return UseDynamicProxyService(services, new ProxyFlare().UseDefaultProviders(isValid));

@@ -1,5 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
 using Monica.Configuration;
+using Monica.Options;
+
 using System;
 using System.IO;
 using System.Text;
@@ -14,10 +18,48 @@ namespace Monica.Logger
     public sealed class LogRecord
     {
         private static readonly string _logName = nameof(LogRecord);
-        private static readonly string _logPath = ConfigurationManager.Appsettings.GetSection("Logging:LogPath").Value ?? @"/home/admin/logs/temp";
-        private static readonly bool _isConsoleEnabled = (ConfigurationManager.Appsettings.GetSection("Logging:IsConsole").Value ?? "false").TryParseByBool();
         private static readonly LogWriter _logWriter = new LogWriter();
-        private static LogLevel _logLevel = (LogLevel)Enum.Parse(typeof(LogLevel), ConfigurationManager.Appsettings.GetSection("Logging:LogLevel").Value ?? "Debug");
+        private static string _logPath;
+        private static bool _isConsoleEnabled;
+        private static LogLevel _logLevel;
+        private static LoggerOptions _options = null;
+        internal static LoggerOptions Options
+        {
+            get
+            {
+                if (_options == null)
+                {
+                    _options = ConfigurationManager.Appsettings.GetSection("Framework:Logger").Get<LoggerOptions>();
+                    if (_options == null)
+                    {
+                        _options = new LoggerOptions
+                        {
+                            LogPath = @"/home/admin/logs/temp",
+                            IsConsoleEnabled = false,
+                            LogLevel = LogLevel.Debug,
+                            UseMonicaLog = true
+                        };
+                    }
+                    Reset();
+                }
+
+                return _options;
+            }
+            set
+            {
+                _options = value;
+                Reset();
+            }
+        }
+
+        private static void Reset()
+        {
+            var options = Options;
+            _logPath = options.LogPath;
+            _isConsoleEnabled = options.IsConsoleEnabled;
+            _logLevel = options.LogLevel;
+        }
+
         public static bool IsNoneEnabled { get; set; }
         public static bool IsCriticalEnabled { get; private set; }
         public static bool IsErrorEnabled { get; private set; }
@@ -127,7 +169,7 @@ namespace Monica.Logger
 
                 _logWriter.Push(logName, logMessage);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logWriter.Push(_logName, "将日志信息推送到队列失败：" + ex.GetBaseException().ToString());
             }

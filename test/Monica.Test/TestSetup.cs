@@ -5,6 +5,7 @@ using Monica.DependencyInjection;
 using Monica.Logger;
 using System;
 using System.IO;
+using Monica;
 
 namespace Monica.Test
 {
@@ -24,9 +25,8 @@ namespace Monica.Test
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    services.AddMonica()
-                        .AddMonicaLog();
-                    SingleServiceLocator.SetServiceCollection(services);
+                    services.AddCoreModule();
+                    services.ConfigureModule();
                 }).Build();
         }
     }

@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Cache\Monica.Cache\Monica.Cache.csproj" />
-    <ProjectReference Include="..\..\Common\Monica\Monica.csproj" />
+    <ProjectReference Include="..\..\Core\Monica\Monica.csproj" />
     <ProjectReference Include="..\Monica.DataAccess\Monica.DataAccess.csproj" />
   </ItemGroup>
 

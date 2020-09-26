@@ -16,7 +16,7 @@ namespace Monica.Jwt.Options
 
         public void Configure(JwtOptions options)
         {
-            var section = _configuration.GetSection("Monica:Jwt");
+            var section = _configuration.GetSection("Framework:Jwt");
             options = section.Get<JwtOptions>();
             if (options != null)
             {

@@ -6,7 +6,7 @@ using System;
 
 namespace Monica
 {
-    public static class ServiceCollectionExtensions
+    public static class EventBusMemoryServiceCollectionExtensions
     {
         public static IServiceCollection AddMemoryEventBus(this IServiceCollection services)
         {
