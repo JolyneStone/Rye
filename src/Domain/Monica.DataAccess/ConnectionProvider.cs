@@ -1,4 +1,8 @@
-﻿using Monica.Configuration;
+﻿using Microsoft.Extensions.Options;
+
+using Monica.Configuration;
+using Monica.DataAccess.Options;
+
 using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
@@ -9,9 +13,16 @@ namespace Monica.DataAccess
     {
         private readonly object _sync = new object();
         private readonly Dictionary<string, IDbConnection> _connnectionPools = new Dictionary<string, IDbConnection>();
+        private readonly DbConnectionMapOptions _options;
+
+        public ConnectionProvider(IOptions<DbConnectionMapOptions> options)
+        {
+            _options = options.Value;
+        }
 
         public IDbConnection GetConnection()
         {
+      
             string connectString = GetWriteDbConnectionString();
             return GetDbConnectionCore(connectString);
         }
@@ -29,7 +40,8 @@ namespace Monica.DataAccess
 
         public virtual string GetConnectionString(string connectionName)
         {
-            return ConfigurationManager.GetSectionValue($"Framework:DbConnections:{connectionName}:ConnectionString");
+            //return ConfigurationManager.GetSectionValue($"Framework:DbConnections:{connectionName}:ConnectionString");
+            return _options[connectionName]?.ConnectionString;
         }
 
         public IDbConnection GetDbConnection(string connectionString)

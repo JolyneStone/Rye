@@ -17,10 +17,10 @@ namespace Monica
         /// <returns></returns>
         public static IServiceCollection AddMonicaCacheRedis(this IServiceCollection services, Action<RedisCacheOptions> action = null)
         {
-            var congiration = services.GetSingletonInstance<IConfiguration>();
             //将Redis分布式缓存服务添加到服务中
             if(action == null)
             {
+                var congiration = services.GetSingletonInstance<IConfiguration>();
                 action = options =>
                 {
                     congiration.GetSection("Framework:RedisCache").Bind(options);

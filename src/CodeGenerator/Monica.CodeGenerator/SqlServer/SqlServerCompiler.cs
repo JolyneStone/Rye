@@ -157,7 +157,7 @@ namespace Monica.CodeGenerator.SqlServer
                                                 then 1 else 0 end [IsKey],      
                                 case when a.is_nullable=1 then 1 else 0 end [IsNullable],
                                 isnull(d.text,'') [DefaultValue]   
-                            from Test.INFORMATION_SCHEMA.COLUMNS s
+                            from {config.Database}.INFORMATION_SCHEMA.COLUMNS s
                             inner join  
                                 sys.columns a on s.COLUMN_NAME COLLATE Chinese_PRC_CI_AS = a.name
                             left join 

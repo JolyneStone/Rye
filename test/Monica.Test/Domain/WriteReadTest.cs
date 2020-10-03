@@ -7,6 +7,10 @@ using System.Linq;
 using Xunit;
 using Monica.DataAccess;
 using Monica.EntityFrameworkCore.SqlServer;
+using Monica.EntityFrameworkCore.Options;
+using Microsoft.Extensions.Options;
+using Monica.Options;
+using Monica.DataAccess.Options;
 
 namespace Monica.Test.Domain
 {
@@ -17,19 +21,39 @@ namespace Monica.Test.Domain
         public WriteReadTest()
         {
             var config = new ConfigurationBuilder()
-               .AddJsonFile("appsettings.json")
-               .Build();
+                  .AddJsonFile("appsettings.json")
+                  .Build();
             var services = new ServiceCollection()
-                .AddSingleton<IConfigurationRoot>(config)
                 .AddSingleton<IConfiguration>(config)
-                .AddSingleton<IDbContextOptionsBuilderUser, SqlServerDbContextOptionsBuilderUser>();
+                .AddMonica()
+                .AddDbConnections()
+                .AddMonicaSqlServer()
+                .AddSingleton<DbContextOptionsBuilderOptions>(new DbContextOptionsBuilderOptions(new DbContextOptionsBuilder<TestDbContext>(), null, typeof(TestDbContext)));
 
             _serviceProvider = services.BuildServiceProvider();
+
+            //var dbProvider = serviceProvider.GetRequiredService<IDbProvider>();
+            //var uow = dbProvider.GetUnitOfWork<TestDbContext>("TestDb"); // 访问主库
+
+            //var repoDbTest = uow.GetRepository<DbTest, int>();
+            //var obj = new DbTest { Name = "123", Date = DateTime.Now.Date };
+            //repoDbTest.Insert(obj);
+            //uow.SaveChanges();
+
+            //Console.ReadKey();
+
+            //var uow2 = dbProvider.GetUnitOfWork<TestDbContext>("TestDb_Read"); // 访问从库
+
+            //var repoDbTest2 = uow2.GetReadOnlyRepository<DbTest, int>();
+            //var data2 = repoDbTest2.GetFirstOrDefault();
+            //Console.WriteLine($"id: {data2.Id} name: {data2.Name}");
+            //Console.ReadKey();
         }
 
         private void Write(out int newId)
         {
             var dbProvider = _serviceProvider.GetRequiredService<IDbProvider>();
+            var map = _serviceProvider.GetService<IOptions<DbConnectionMapOptions>>();
             var uow = dbProvider.GetUnitOfWork<TestDbContext>("MonicaTestDb");
 
             var repoDbTest = uow.GetRepository<DbTest, int>();

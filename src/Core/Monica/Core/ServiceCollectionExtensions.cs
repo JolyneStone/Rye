@@ -64,7 +64,7 @@ namespace Monica
             //{
             //    serviceCollection.AddOptions<MonicaOptions>();
             //}
-            serviceCollection.TryAddSingleton<IConfigureOptions<MonicaOptions>, MonicaOptionsSetup>();
+            //serviceCollection.TryAddSingleton<IConfigureOptions<MonicaOptions>, MonicaOptionsSetup>();
             serviceCollection.TryAddSingleton<ISearcher<Assembly>, AssemblySeracher>();
             var services = serviceCollection.BuildServiceProvider();
             using (var scope = services.CreateScope())

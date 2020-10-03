@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using Monica.DataAccess.Options;
 
 namespace Monica.EntityFrameworkCore
 {
@@ -48,7 +49,7 @@ namespace Monica.EntityFrameworkCore
 
                 IDbContext dbContext;
                 key += DateTime.Now.Ticks.ToString();
-                var dbConnectionOptionsMap = _serviceProvider.GetRequiredService<IOptions<Monica.Options.MonicaOptions>>().Value.DbConnections;
+                var dbConnectionOptionsMap = _serviceProvider.GetRequiredService<IOptions<DbConnectionMapOptions>>().Value;
                 if (dbConnectionOptionsMap == null || dbConnectionOptionsMap.Count <= 0)
                 {
                     throw new MonicaException("无法获取数据库配置");

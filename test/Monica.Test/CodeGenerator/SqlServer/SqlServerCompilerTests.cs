@@ -3,9 +3,11 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 using Monica.CodeGenerator.SqlServer;
 using Monica.DataAccess.Model;
+using Monica.DataAccess.Options;
 using Monica.SqlServer;
 
 using System;
@@ -173,7 +175,7 @@ namespace Monica.CodeGenerator.CodeGenerator.SqlServer.Tests
                 var list = await externNewsDataAccess.GetPageAsync(null, "1=1", "id desc", 1, 5);
                 Assert.True(list.Count() > 0);
             }
-            catch (Exception ex)
+            catch
             {
 
             }
@@ -182,6 +184,10 @@ namespace Monica.CodeGenerator.CodeGenerator.SqlServer.Tests
 
     public class TestSqlServerConnectionProvider : SqlServerConnectionProvider
     {
+        public TestSqlServerConnectionProvider(IOptions<DbConnectionMapOptions> options) : base(options)
+        {
+        }
+
         protected override string GetRealOnlyDbConnectionString()
         {
             return GetConnectionString("MonicaTestDb_Read");

@@ -27,21 +27,21 @@ namespace Monica.Logger
         {
             get
             {
-                if (_options == null)
-                {
-                    _options = ConfigurationManager.Appsettings.GetSection("Framework:Logger").Get<LoggerOptions>();
-                    if (_options == null)
-                    {
-                        _options = new LoggerOptions
-                        {
-                            LogPath = @"/home/admin/logs/temp",
-                            IsConsoleEnabled = false,
-                            LogLevel = LogLevel.Debug,
-                            UseMonicaLog = true
-                        };
-                    }
-                    Reset();
-                }
+                //if (_options == null)
+                //{
+                //    _options = ConfigurationManager.Appsettings.GetSection("Framework:Logger").Get<LoggerOptions>();
+                //    if (_options == null)
+                //    {
+                //        _options = new LoggerOptions
+                //        {
+                //            LogPath = @"/home/admin/logs/temp",
+                //            IsConsoleEnabled = false,
+                //            LogLevel = LogLevel.Debug,
+                //            UseMonicaLog = true
+                //        };
+                //    }
+                //    Reset();
+                //}
 
                 return _options;
             }
@@ -58,18 +58,6 @@ namespace Monica.Logger
             _logPath = options.LogPath;
             _isConsoleEnabled = options.IsConsoleEnabled;
             _logLevel = options.LogLevel;
-        }
-
-        public static bool IsNoneEnabled { get; set; }
-        public static bool IsCriticalEnabled { get; private set; }
-        public static bool IsErrorEnabled { get; private set; }
-        public static bool IsWarnEnabled { get; private set; }
-        public static bool IsInfoEnabled { get; private set; }
-        public static bool IsDebugEnabled { get; private set; }
-        public static bool IsTraceEnabled { get; private set; }
-
-        static LogRecord()
-        {
             try
             {
                 if (!Directory.Exists(_logPath))
@@ -81,8 +69,15 @@ namespace Monica.Logger
             {
                 throw ex;
             }
-            ResetLog(_logLevel);
         }
+
+        public static bool IsNoneEnabled { get; set; }
+        public static bool IsCriticalEnabled { get; private set; }
+        public static bool IsErrorEnabled { get; private set; }
+        public static bool IsWarnEnabled { get; private set; }
+        public static bool IsInfoEnabled { get; private set; }
+        public static bool IsDebugEnabled { get; private set; }
+        public static bool IsTraceEnabled { get; private set; }
 
         public static void ResetLog(LogLevel logLevel)
         {
