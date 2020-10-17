@@ -10,7 +10,6 @@ namespace Monica.Test.AOP
         public override void Exception(ExceptionInterceptContext exceptionInterceptorContext)
         {
             Debug.WriteLine("An exception was thrown: " + exceptionInterceptorContext.Exception.Message);
-            exceptionInterceptorContext.HasHandled = true;
         }
     }
 }

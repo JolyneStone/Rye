@@ -41,11 +41,11 @@ namespace Monica.AspectFlare.DependencyInjection
             Type implementType;
             if (item.ServiceType.IsInterface)
             {
-                implementType = _provider.GetProxyType(item.ServiceType, classType);
+                _provider.TryGetProxyType(item.ServiceType, classType, out implementType);
             }
             else
             {
-                implementType = _provider.GetProxyType(classType);
+                _provider.TryGetProxyType(classType, out implementType);
             }
 
             if (implementType == null)

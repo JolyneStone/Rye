@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using Monica.AspectFlare.Utilities;
 
 namespace Monica.AspectFlare.DynamicProxy
@@ -128,30 +129,30 @@ namespace Monica.AspectFlare.DynamicProxy
 
         private (IEnumerable<ICallingInterceptor>, IEnumerable<ICalledInterceptor>, IExceptionInterceptor) GetMemberInterceptors(MemberInfo type)
         {
+            var attributes = type.GetCustomAttributes<InterceptAttribute>(true);
             return
-                (type
-                  .GetCustomAttributes<CallingInterceptAttribute>(true)
+                (attributes
                   .OfType<ICallingInterceptor>()
-                  .OrderByDescending(x => x.Order),
-                type
-                    .GetCustomAttributes<CalledInterceptAttribute>(true)
+                  .ToList(),
+                attributes
                     .OfType<ICalledInterceptor>()
-                    .OrderByDescending(x => x.Order),
-                type.GetCustomAttribute<ExceptionInterceptAttribute>(true));
+                    .ToList(),
+                attributes
+                    .OfType<IExceptionInterceptor>()
+                    .FirstOrDefault());
         }
 
 
         private (IEnumerable<ICallingInterceptor>, IEnumerable<ICalledInterceptor>) GetMemberInterceptorsWithoutException(MemberInfo type)
         {
+            var attributes = type.GetCustomAttributes<InterceptAttribute>(true);
             return
-                (type
-                  .GetCustomAttributes<CallingInterceptAttribute>(true)
+                (attributes
                   .OfType<ICallingInterceptor>()
-                  .OrderByDescending(x => x.Order),
-                type
-                    .GetCustomAttributes<CalledInterceptAttribute>(true)
+                  .ToList(),
+                attributes
                     .OfType<ICalledInterceptor>()
-                    .OrderByDescending(x => x.Order));
+                    .ToList());
         }
 
         private void SetClassInterceptors(Dictionary<int, InterceptorWrapper> wrappers, Type classType)
@@ -160,8 +161,8 @@ namespace Monica.AspectFlare.DynamicProxy
             var globalInterceptors = GlobalInterceptorCollection.GlobalInterceptors;
             var globalWrapper = new InterceptorWrapper
             {
-                CallingInterceptors = globalInterceptors.GetCallingInterceptors().OrderByDescending(x => x.Order).ToList(),
-                CalledInterceptors = globalInterceptors.GetCalledInterceptors().OrderByDescending(x => x.Order).ToList(),
+                CallingInterceptors = globalInterceptors.GetCallingInterceptors().ToList(),
+                CalledInterceptors = globalInterceptors.GetCalledInterceptors().ToList(),
                 ExceptionInterceptor = globalInterceptors.GetExceptionInterceptor()
             };
 

@@ -27,6 +27,39 @@ namespace Monica
         }
 
         /// <summary>
+        /// 添加Monica框架对EF Core的支持
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddEFCoreModule(this IServiceCollection services, Action<DbContextOptionsBuilderOptions> action)
+        {
+            var module = new EFCoreModule(action);
+            services.AddModule<EFCoreModule>(module);
+            return services;
+        }
+
+        /// <summary>
+        /// 添加Monica框架对EF Core的支持
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="dbName"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddEFCoreModule(this IServiceCollection services, string dbName = null, Action<DbContextOptionsBuilder> action = null)
+        {
+            var builder = new DbContextOptionsBuilder();
+            action?.Invoke(builder);
+            var module = new EFCoreModule(options =>
+            {
+                options.Builder = builder;
+                options.DbName = dbName;
+            });
+            services.AddModule<EFCoreModule>(module);
+            return services;
+        }
+
+        /// <summary>
         /// 添加DbContextOptionsBuilderOptions配置选项
         /// </summary>
         /// <param name="services"></param>

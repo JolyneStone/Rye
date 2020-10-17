@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Monica.AspectFlare.DynamicProxy;
+using System;
 using System.Linq;
 using System.Reflection;
-using Monica.AspectFlare.DynamicProxy;
 
 namespace Monica.AspectFlare
 {
@@ -11,6 +11,7 @@ namespace Monica.AspectFlare
         private static readonly Type CallingIntercept = typeof(CallingInterceptAttribute);
         private static readonly Type CalledIntercept = typeof(CalledInterceptAttribute);
         private static readonly Type ExceptionIntercept = typeof(ExceptionInterceptAttribute);
+        private static readonly Type Intercept = typeof(InterceptAttribute);
 
         public bool Validate(Type classType)
         {

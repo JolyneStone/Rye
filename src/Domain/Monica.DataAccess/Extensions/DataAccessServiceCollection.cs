@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
+using Monica.DataAccess;
 using Monica.DataAccess.Options;
 
 using System;
@@ -35,7 +36,8 @@ namespace Monica
         /// <returns></returns>
         public static IServiceCollection AddDataAccessModule(this IServiceCollection services, Action<DbConnectionMapOptions> action = null)
         {
-            services.AddDbConnections(action);
+            var module = new DataAccessModule(action);
+            services.AddModule<DataAccessModule>(module);
             return services;
         }
 

@@ -3,7 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Monica.Cache
+namespace Monica
 {
     /// <summary>
     /// 分布缓存扩展方法

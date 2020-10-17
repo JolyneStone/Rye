@@ -38,9 +38,9 @@ namespace Monica.DependencyInjection
         private static readonly ServiceLocator Instance = new ServiceLocator();
 
         // Methods
-        public static void ConfigService(Action<IServiceCollection> configFun)
+        public static void ConfigService(Action<IServiceCollection> configFunc)
         {
-            if (configFun != null)
+            if (configFunc != null)
             {
                 if (Instance.Services == null)
                 {
@@ -52,7 +52,7 @@ namespace Monica.DependencyInjection
                         }
                     }
                 }
-                Instance.ConfigureServices(configFun);
+                Instance.ConfigureServices(configFunc);
                 ServiceProvider = Instance.Build();
             }
         }

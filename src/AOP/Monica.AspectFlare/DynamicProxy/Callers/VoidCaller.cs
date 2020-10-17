@@ -6,7 +6,7 @@ namespace Monica.AspectFlare.DynamicProxy
     {
         public VoidCaller(InterceptorWrapper wrapper) : base(wrapper) {}
 
-        public override void Call(object owner, Action call, object[] parameters)
+        public override void Call(object owner, Action call, object[] parameters, string methodName)
         {
             if (_wrapper == null)
             {
@@ -17,7 +17,7 @@ namespace Monica.AspectFlare.DynamicProxy
             InterceptResult result;
             try
             {
-                result = _wrapper.CallingIntercepts(owner, parameters);
+                result = _wrapper.CallingIntercepts(owner, parameters, null, methodName);
                 if (result.HasResult)
                 {
                     return;
@@ -25,7 +25,7 @@ namespace Monica.AspectFlare.DynamicProxy
 
                 call();
 
-                result = _wrapper.CalledIntercepts(owner, parameters, null);
+                result = _wrapper.CalledIntercepts(owner, parameters, null, null, methodName);
                 if (result.HasResult)
                 {
                     return;
@@ -33,7 +33,7 @@ namespace Monica.AspectFlare.DynamicProxy
             }
             catch (Exception ex)
             {
-                result = _wrapper.ExceptionIntercept(owner, parameters, null, ex);
+                result = _wrapper.ExceptionIntercept(owner, parameters, null, ex, null, methodName);
                 if (result.HasResult)
                 {
                     return;

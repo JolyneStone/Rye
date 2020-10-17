@@ -10,6 +10,8 @@ namespace Monica.Test.AOP
         public override void Calling(CallingInterceptContext callingInterceptorContext)
         {
             Debug.WriteLine("Calling in " + callingInterceptorContext.Owner.ToString());
+            //callingInterceptorContext.HasResult = true;
+            //callingInterceptorContext.Result = "test";
         }
     }
 }

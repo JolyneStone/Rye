@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Monica.Cache;
+
+using System;
 using System.Diagnostics;
 
 namespace Monica.Test.AOP
@@ -6,16 +8,20 @@ namespace Monica.Test.AOP
     [Called]
     public interface ITest
     {
-        [Calling]
-        void Output();
+        //[Calling]
+        string Output(int i);
     }
 
     public class TestClass : ITest
     {
+        private int i = 0;
         [Exception]
-        public void Output()
+        [Cache("OutputTest")]
+        public string Output(int i)
         {
             Debug.WriteLine("output ..");
+            //throw new Exception("exception test");
+            return "qwe" + i++;
         }
     }
 }

@@ -7,6 +7,16 @@ namespace Monica
 {
     public static class AspectFlareServiceCollectionExtensions
     {
+        /// <summary>
+        /// 添加AOP模块
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddAopModule(this IServiceCollection services)
+        {
+            return services.AddModule<AspectFlareModule>();
+        }
+
         public static IServiceCollection UseDynamicProxyService(this IServiceCollection services, bool isValid)
         {
             return UseDynamicProxyService(services, new ProxyFlare().UseDefaultProviders(isValid));

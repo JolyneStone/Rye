@@ -9,7 +9,7 @@ namespace Monica.AspectFlare.DynamicProxy
         public List<ICalledInterceptor> CalledInterceptors { get; set; }
         public IExceptionInterceptor ExceptionInterceptor { get; set; }
 
-        public InterceptResult CallingIntercepts(object owner, object[] parameters)
+        public InterceptResult CallingIntercepts(object owner, object[] parameters, Type returnType, string methodName)
         {
             if (owner == null)
             {
@@ -28,7 +28,9 @@ namespace Monica.AspectFlare.DynamicProxy
             {
                 Owner = owner,
                 Parameters = parameters,
-                HasResult = false
+                HasResult = false,
+                ReturnType = returnType,
+                MethodName = methodName
             };
 
             foreach (var callingInterceptor in CallingInterceptors)
@@ -50,7 +52,7 @@ namespace Monica.AspectFlare.DynamicProxy
             };
         }
 
-        public InterceptResult CalledIntercepts(object owner, object[] parameters, object returnValue)
+        public InterceptResult CalledIntercepts(object owner, object[] parameters, object returnValue, Type returnType, string methodName)
         {
             if (owner == null)
             {
@@ -70,7 +72,9 @@ namespace Monica.AspectFlare.DynamicProxy
                 Owner = owner,
                 Parameters = parameters,
                 ReturnValue = returnValue,
-                HasResult = false
+                HasResult = false,
+                ReturnType = returnType,
+                MethodName = methodName
             };
 
             foreach (var calledInterceptor in CalledInterceptors)
@@ -92,7 +96,7 @@ namespace Monica.AspectFlare.DynamicProxy
             };
         }
 
-        public InterceptResult ExceptionIntercept(object owner, object[] parameters, object returnValue, Exception exception)
+        public InterceptResult ExceptionIntercept(object owner, object[] parameters, object returnValue, Exception exception, Type returnType, string methodName)
         {
             if (owner == null)
             {
@@ -118,7 +122,9 @@ namespace Monica.AspectFlare.DynamicProxy
                 Parameters = parameters,
                 ReturnValue = returnValue,
                 Exception = exception,
-                HasHandled = false
+                HasHandled = false,
+                ReturnType = returnType,
+                MethodName = methodName
             };
 
             ExceptionInterceptor.Exception(context);

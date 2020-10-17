@@ -10,5 +10,7 @@ namespace Monica.AspectFlare
         public Exception Exception { get; set; }
         public bool HasHandled { get; set; }
         public object Result { get; set; }
+        public Type ReturnType { get; internal set; }
+        public string MethodName { get; internal set; }
     }
 }

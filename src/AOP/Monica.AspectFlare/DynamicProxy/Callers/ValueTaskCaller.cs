@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Monica.AspectFlare.DynamicProxy
@@ -9,7 +7,7 @@ namespace Monica.AspectFlare.DynamicProxy
     {
         public ValueTaskCaller(InterceptorWrapper wrapper) : base(wrapper) { }
 
-        public override async ValueTask<T> Call(object owner, Func<ValueTask<T>> call, object[] parameters)
+        public override async ValueTask<T> Call(object owner, Func<ValueTask<T>> call, object[] parameters, string methodName)
         {
             if (_wrapper == null)
             {
@@ -18,9 +16,10 @@ namespace Monica.AspectFlare.DynamicProxy
 
             InterceptResult result;
             T returnValue = default(T);
+            var returnType = typeof(T);
             try
             {
-                result = _wrapper.CallingIntercepts(owner, parameters);
+                result = _wrapper.CallingIntercepts(owner, parameters, returnType, methodName);
                 if (result.HasResult)
                 {
                     return (T)result.Result;
@@ -28,7 +27,7 @@ namespace Monica.AspectFlare.DynamicProxy
 
                 returnValue = await call();
 
-                result = _wrapper.CalledIntercepts(owner, parameters, returnValue);
+                result = _wrapper.CalledIntercepts(owner, parameters, returnValue, returnType, methodName);
                 if (result.HasResult)
                 {
                     return (T)result.Result;
@@ -38,7 +37,7 @@ namespace Monica.AspectFlare.DynamicProxy
             }
             catch (Exception ex)
             {
-                result = _wrapper.ExceptionIntercept(owner, parameters, returnValue, ex);
+                result = _wrapper.ExceptionIntercept(owner, parameters, returnValue, ex, returnType, methodName);
                 if (result.HasResult)
                 {
                     return (T)result.Result;

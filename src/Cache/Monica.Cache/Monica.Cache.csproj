@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\AOP\Monica.AspectFlare.DependencyInjection\Monica.AspectFlare.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\Core\Monica\Monica.csproj" />
   </ItemGroup>
 

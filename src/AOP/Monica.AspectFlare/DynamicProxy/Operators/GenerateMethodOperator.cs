@@ -353,6 +353,7 @@ namespace Monica.AspectFlare.DynamicProxy
                 generator.Emit(OpCodes.Ldarg_0);
                 generator.Emit(OpCodes.Ldloc_2);
                 generator.Emit(OpCodes.Ldloc_1);
+                generator.Emit(OpCodes.Ldstr, context.Method.Name);
                 generator.Emit(OpCodes.Callvirt, context.Caller.FieldType.GetMethod(
                     "Call",
                     BindingFlags.Public | BindingFlags.Instance
@@ -391,6 +392,7 @@ namespace Monica.AspectFlare.DynamicProxy
                 generator.Emit(OpCodes.Ldarg_0);
                 generator.Emit(OpCodes.Ldloc_0);
                 generator.Emit(OpCodes.Ldnull);
+                generator.Emit(OpCodes.Ldstr, context.Method.Name);
                 generator.Emit(OpCodes.Callvirt, context.Caller.FieldType.GetMethod(
                     "Call",
                     BindingFlags.Public | BindingFlags.Instance

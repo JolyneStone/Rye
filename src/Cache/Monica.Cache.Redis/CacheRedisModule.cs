@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.Caching.Redis;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 using Monica.Enums;
 using Monica.Module;
 using System;
@@ -25,6 +28,7 @@ namespace Monica.Cache.Redis
 
         public override void ConfigueServices(IServiceCollection services)
         {
+            services.RemoveAll<IDistributedCache>();
             services.AddMonicaCacheRedis(_action);
         }
     }

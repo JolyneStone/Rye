@@ -11,6 +11,7 @@ namespace Monica.AspectFlare.DynamicProxy
         private static readonly Type CallingIntercept = typeof(CallingInterceptAttribute);
         private static readonly Type CalledIntercept = typeof(CalledInterceptAttribute);
         private static readonly Type ExceptionIntercept = typeof(ExceptionInterceptAttribute);
+        private static readonly Type InterceptAttribute = typeof(InterceptAttribute);
 
         public static bool TryGetDefaultValue(this ParameterInfo parameter, out object defaultValue)
         {
@@ -50,7 +51,8 @@ namespace Monica.AspectFlare.DynamicProxy
             return (!type.IsDefined(NonIntercept, true)) && (
                           type.IsDefined(CallingIntercept, true) ||
                            type.IsDefined(CalledIntercept, true) ||
-                            type.IsDefined(ExceptionIntercept, true)
+                            type.IsDefined(ExceptionIntercept, true) ||
+                             type.IsDefined(InterceptAttribute, true)
                         );
         }
 
@@ -59,7 +61,8 @@ namespace Monica.AspectFlare.DynamicProxy
             return (!method.IsDefined(NonIntercept, true)) && (
                           method.IsDefined(CallingIntercept, true) ||
                            method.IsDefined(CalledIntercept, true) ||
-                            method.IsDefined(ExceptionIntercept, true)
+                            method.IsDefined(ExceptionIntercept, true) ||
+                             method.IsDefined(InterceptAttribute, true)
                         );
         }
 
@@ -67,7 +70,8 @@ namespace Monica.AspectFlare.DynamicProxy
         {
             return method.IsDefined(CallingIntercept, true) ||
                     method.IsDefined(CalledIntercept, true) ||
-                     method.IsDefined(ExceptionIntercept, true);
+                     method.IsDefined(ExceptionIntercept, true) ||
+                      method.IsDefined(InterceptAttribute, true);
         }
 
         public static bool CanAsClassInterceptMethod(this MethodBase method, bool hasClassIntercept)
@@ -115,15 +119,19 @@ namespace Monica.AspectFlare.DynamicProxy
 
             foreach (var method in methods)
             {
-                var methodCallingInterceptors = method.GetCustomAttributes<CallingInterceptAttribute>(true).OfType<ICallingInterceptor>().ToList();
-                var methodCalledInterceptors = method.GetCustomAttributes<CalledInterceptAttribute>(true).OfType<ICalledInterceptor>().ToList();
-                var methodExceptionInterceptor = method.GetCustomAttribute<ExceptionInterceptAttribute>(true) as IExceptionInterceptor;
+                var interceptors = method.GetCustomAttributes<InterceptAttribute>(true);
+                //var methodCallingInterceptors = method.GetCustomAttributes<CallingInterceptAttribute>(true).OfType<ICallingInterceptor>().ToList();
+                //var methodCalledInterceptors = method.GetCustomAttributes<CalledInterceptAttribute>(true).OfType<ICalledInterceptor>().ToList();
+                //var methodExceptionInterceptor = method.GetCustomAttributes<ExceptionInterceptAttribute>(true).OfType<IExceptionInterceptor>().FirstOrDefault();
 
+                var callingInterceptorInterfaceType = typeof(ICallingInterceptor);
+                var calledInterceptorInterfaceType = typeof(ICalledInterceptor);
+                var exceptionInterceptorInterfaceType = typeof(IExceptionInterceptor);
                 dictionary.Add(method.MetadataToken, new InterceptorWrapper
                 {
-                    CallingInterceptors = methodCallingInterceptors,
-                    CalledInterceptors = methodCalledInterceptors,
-                    ExceptionInterceptor = methodExceptionInterceptor
+                    CallingInterceptors = interceptors.Where(d=>d.GetType().IsAssignableFrom(callingInterceptorInterfaceType)).OfType<ICallingInterceptor>().ToList(),
+                    CalledInterceptors = interceptors.Where(d => d.GetType().IsAssignableFrom(calledInterceptorInterfaceType)).OfType<ICalledInterceptor>().ToList(),
+                    ExceptionInterceptor = interceptors.Where(d => d.GetType().IsAssignableFrom(exceptionInterceptorInterfaceType)).OfType<IExceptionInterceptor>().FirstOrDefault()
                 });
             }
         }

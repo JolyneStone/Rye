@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
+using Monica.DependencyInjection;
 using Monica.Module;
 using Monica.Options;
 using System;
@@ -37,6 +39,20 @@ namespace Monica
             return serviceCollection;
         }
 
+        /// <summary>
+        /// 注入模块
+        /// </summary>
+        /// <typeparam name="TModule"></typeparam>
+        /// <param name="serviceCollection"></param>
+        /// <param name="module"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddModule<TModule>(this IServiceCollection serviceCollection, TModule module)
+        {
+            Check.NotNull(module, nameof(module));
+            AddModule(serviceCollection, (object)module);
+            return serviceCollection;
+        }
+
         private static void AddModule(IServiceCollection serviceCollection, Type moduleType, params object[] args)
         {
             if (moduleType == null)
@@ -45,16 +61,16 @@ namespace Monica
             var set = new HashSet<Type>();
             AddModule(moduleType, set);
             var interfaceType = typeof(IStartupModule);
+            var moduleInstance = Activator.CreateInstance(moduleType,
+                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance,
+                        null,
+                        args,
+                        null);
             foreach (var type in set)
             {
                 if (type == moduleType)
                 {
-                    serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(interfaceType,
-                        Activator.CreateInstance(type,
-                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance,
-                        null,
-                        args,
-                        null)));
+                    serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(interfaceType, moduleInstance));
                 }
                 else
                 {
@@ -65,7 +81,7 @@ namespace Monica
 
         private static void AddModule(IServiceCollection serviceCollection, Type moduleType)
         {
-            if (moduleType == null)
+            if (moduleType is null)
                 return;
 
             var set = new HashSet<Type>();
@@ -74,6 +90,30 @@ namespace Monica
             foreach (var type in set)
             {
                 serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(interfaceType, type));
+            }
+        }
+
+        private static void AddModule(IServiceCollection serviceCollection, object moduleInstance)
+        {
+            if (moduleInstance is null)
+            {
+                return;
+            }
+
+            var set = new HashSet<Type>();
+            var moduleType = moduleInstance.GetType();
+            AddModule(moduleType, set);
+            var interfaceType = typeof(IStartupModule);
+            foreach (var type in set)
+            {
+                if(type == moduleType)
+                {
+                    serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(interfaceType, moduleInstance));
+                }
+                else
+                {
+                    serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(interfaceType, type));
+                }
             }
         }
 
@@ -101,6 +141,8 @@ namespace Monica
         {
             AddCoreModule(serviceCollection);
             InjectModules(serviceCollection);
+
+            SingleServiceLocator.SetServiceCollection(serviceCollection);
             return serviceCollection;
         }
 
@@ -120,27 +162,6 @@ namespace Monica
         }
 
         /// <summary>
-        /// 启用模块配置
-        /// </summary>
-        /// <param name="serviceProvider"></param>
-        /// <returns></returns>
-        public static IServiceProvider UseModule(this IServiceProvider serviceProvider)
-        {
-            if (serviceProvider == null)
-                return null;
-            var modules = serviceProvider.GetServices<IStartupModule>();
-            if (modules == null || !modules.Any())
-                return serviceProvider;
-
-            foreach (var module in modules.OrderBy(d => d, new ModuleComparer()))
-            {
-                module.Configure(serviceProvider);
-            }
-
-            return serviceProvider;
-        }
-
-        /// <summary>
         /// 注入Monica核心模块
         /// </summary>
         /// <param name="serviceCollection"></param>
@@ -148,7 +169,8 @@ namespace Monica
         /// <returns></returns>
         public static IServiceCollection AddCoreModule(this IServiceCollection serviceCollection, Action<MonicaOptions> action = null)
         {
-            serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupModule>(_ => new MonicaCoreModule(action)));
+            var module = new MonicaCoreModule(action);
+            serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupModule>(module));
             return serviceCollection;
         }
     }

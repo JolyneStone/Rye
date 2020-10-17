@@ -23,6 +23,34 @@ namespace Monica.AspectFlare.DynamicProxy
         private readonly IProxyTypeGenerator _generator;
         private readonly IProxyValidator _validator;
 
+        public bool TryGetProxyType(Type classType, out Type proxyType)
+        {
+            proxyType = null;
+            try
+            {
+                proxyType = GetProxyType(classType);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool TryGetProxyType(Type interfaceType, Type classType, out Type proxyType)
+        {
+            proxyType = null;
+            try
+            {
+                proxyType = GetProxyType(interfaceType, classType);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public Type GetProxyType(Type classType)
         {
             if (classType == null)

@@ -29,8 +29,11 @@ namespace Monica.Test
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    services.AddCoreModule();
-                    services.ConfigureModule();
+                    services
+                        .AddCoreModule()
+                        .AddAopModule()
+                        .AddCacheModule()
+                        .ConfigureModule();
                 }).Build();
         }
     }
