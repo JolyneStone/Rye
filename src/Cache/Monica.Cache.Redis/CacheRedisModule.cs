@@ -14,7 +14,7 @@ namespace Monica.Cache.Redis
     public class CacheRedisModule : StartupModule
     {
         public override ModuleLevel Level => ModuleLevel.FrameWork;
-        public override uint Order => 10;
+        public override uint Order => 1;
 
         private Action<RedisCacheOptions> _action;
 

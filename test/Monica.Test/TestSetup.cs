@@ -6,6 +6,10 @@ using Monica.Logger;
 using System;
 using System.IO;
 using Monica;
+using Xunit;
+using Microsoft.Extensions.DependencyInjection;
+using Monica.AspectFlare.DynamicProxy;
+using Monica.EntityFrameworkCore.Options;
 
 namespace Monica.Test
 {

@@ -13,7 +13,7 @@ namespace Monica
         /// 添加Monica框架对Redis缓存的支持
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="setupAction">配置Redis</param>
+        /// <param name="action">配置Redis</param>
         /// <returns></returns>
         public static IServiceCollection AddMonicaCacheRedis(this IServiceCollection services, Action<RedisCacheOptions> action = null)
         {

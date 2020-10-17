@@ -26,5 +26,29 @@ namespace Monica
             //serviceCollection.TryAddSingleton<IConfigureOptions<DbConnectionMapOptions>, DbConnectionsMapOptionsSetup>();
             return serviceCollection;
         }
+
+        /// <summary>
+        /// 添加Monica框架对数据库访问层的支持
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddDataAccessModule(this IServiceCollection services, Action<DbConnectionMapOptions> action = null)
+        {
+            services.AddDbConnections(action);
+            return services;
+        }
+
+        /// <summary>
+        /// 添加Monica框架对数据库访问层的支持
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configurationSection"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddDataAccessModule(this IServiceCollection services, IConfigurationSection configurationSection)
+        {
+            services.AddDbConnections(options => configurationSection.Bind(options));
+            return services;
+        }
     }
 }

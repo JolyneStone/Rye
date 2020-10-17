@@ -8,7 +8,7 @@ using Monica.EntityFrameworkCore;
 
 namespace Monica
 {
-    public static class ServiceCollectionExtensions
+    public static class EFCoreServiceCollectionExtensions
     {
         /// <summary>
         /// 添加Monica框架对数据库的支持
@@ -36,8 +36,8 @@ namespace Monica
         public static IServiceCollection AddDbBuilderOptions(this IServiceCollection services, string dbName = null, Action<DbContextOptionsBuilder> builderAction = null)
         {
             var builder = new DbContextOptionsBuilder();
-            builderAction(builder);
-            services.TryAddSingleton<DbContextOptionsBuilderOptions>(new DbContextOptionsBuilderOptions(builder, dbName));
+            builderAction?.Invoke(builder);
+            services.AddSingleton(ServiceDescriptor.Singleton(typeof(DbContextOptionsBuilderOptions), new DbContextOptionsBuilderOptions(builder, dbName)));
             return services;
         }
 
@@ -49,11 +49,30 @@ namespace Monica
         /// <param name="builderAction"></param>
         /// <returns></returns>
         public static IServiceCollection AddDbBuilderOptions<TContext>(this IServiceCollection services, string dbName = null, Action<DbContextOptionsBuilder<TContext>> builderAction = null)
-            where TContext: DbContext
+            where TContext : DbContext
         {
             var builder = new DbContextOptionsBuilder<TContext>();
-            builderAction(builder);
-            services.TryAddSingleton<DbContextOptionsBuilderOptions>(new DbContextOptionsBuilderOptions(builder, dbName, typeof(TContext)));
+            builderAction?.Invoke(builder);
+            services.AddSingleton(ServiceDescriptor.Singleton(typeof(DbContextOptionsBuilderOptions), new DbContextOptionsBuilderOptions(builder, dbName, typeof(TContext))));
+            return services;
+        }
+
+        /// <summary>
+        /// 添加DbContextOptionsBuilderOptions配置选项
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddDbBuillderOptions(this IServiceCollection services, Action<DbContextOptionsBuilderOptions> action)
+        {
+            if (action is null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            var options = new DbContextOptionsBuilderOptions();
+            action.Invoke(options);
+            services.AddSingleton<DbContextOptionsBuilderOptions>(options);
             return services;
         }
     }

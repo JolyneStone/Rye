@@ -11,6 +11,13 @@ namespace Monica.EntityFrameworkCore.Options
         /// <summary>
         /// 配置DbContextOptionsBuilder, dbName指定数据库名称, 为null时表示所有数据库,默认为null
         /// </summary>
+        public DbContextOptionsBuilderOptions()
+        {
+        }
+
+        /// <summary>
+        /// 配置DbContextOptionsBuilder, dbName指定数据库名称, 为null时表示所有数据库,默认为null
+        /// </summary>
         /// <param name="build"></param>
         /// <param name="dbName"></param>
         /// <param name="dbContextType"></param>
@@ -21,8 +28,8 @@ namespace Monica.EntityFrameworkCore.Options
             DbContextType = dbContextType;
         }
 
-        public DbContextOptionsBuilder Builder { get; }
-        public string DbName { get; }
-        public Type DbContextType { get; }
+        public DbContextOptionsBuilder Builder { get; set; }
+        public string DbName { get; set; }
+        public Type DbContextType { get; set; }
     }
 }
