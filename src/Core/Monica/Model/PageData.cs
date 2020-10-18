@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace Monica.DataAccess
+namespace Monica
 {
     /// <summary>
     /// 分页数据
@@ -20,7 +19,7 @@ namespace Monica.DataAccess
             Total = total;
         }
 
-        public List<T> Data { get; set; }
+        public IEnumerable<T> Data { get; set; }
 
         public int Total { get; set; }
 

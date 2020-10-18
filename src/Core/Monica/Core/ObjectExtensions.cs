@@ -13,7 +13,7 @@ namespace Monica
     /// </summary>
     public static class ObjectExtensions
     {
-        #region 序列号
+        #region 序列化
         public static string ToJsonString(this object obj, bool camelCase = false, bool indented = false)
         {
             JsonSerializerSettings settings = new JsonSerializerSettings();
