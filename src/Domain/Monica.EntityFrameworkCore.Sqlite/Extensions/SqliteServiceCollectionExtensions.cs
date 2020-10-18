@@ -19,5 +19,15 @@ namespace Monica
             services.TryAddSingleton<IDbContextOptionsBuilderUser, SqliteDbContextOptionsBuilderUser>();
             return services;
         }
+
+        /// <summary>
+        /// 添加Monica框架对Sqlite数据库的支持
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddSqliteEFCodeModule(this IServiceCollection services)
+        {
+            return services.AddModule<SqliteEFCoreModule>();
+        }
     }
 }

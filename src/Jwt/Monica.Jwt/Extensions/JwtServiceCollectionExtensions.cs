@@ -15,6 +15,28 @@ namespace Monica
     public static class JwtServiceCollectionExtensions
     {
         /// <summary>
+        /// 增加JWT模块
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddJwtModule(this IServiceCollection serviceCollection)
+        {
+            return serviceCollection.AddModule<JwtModule>();
+        }
+
+        /// <summary>
+        /// 增加JWT模块
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddJwtModule(this IServiceCollection serviceCollection, Action<JwtOptions> action)
+        {
+            var module = new JwtModule(action);
+            return serviceCollection.AddModule<JwtModule>(module);
+        }
+
+        /// <summary>
         /// 添加Monica JWT服务
         /// </summary>
         /// <param name="serviceCollection"></param>

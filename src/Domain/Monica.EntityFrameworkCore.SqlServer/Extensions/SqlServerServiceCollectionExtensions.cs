@@ -19,5 +19,15 @@ namespace Monica
             services.TryAddSingleton<IDbContextOptionsBuilderUser, SqlServerDbContextOptionsBuilderUser>();
             return services;
         }
+
+        /// <summary>
+        /// 添加Monica框架对Sql Server数据库的支持
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddSqlServerEFCodeModule(this IServiceCollection services)
+        {
+            return services.AddModule<SqlServerEFCoreModule>();
+        }
     }
 }

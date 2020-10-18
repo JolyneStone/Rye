@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+
 using Monica.AspectFlare;
 using Monica.DependencyInjection;
+
 using System;
+using System.Text;
 
 namespace Monica.Cache
 {
@@ -14,6 +17,10 @@ namespace Monica.Cache
         private static readonly Lazy<IDistributedCache> _cacheLazy = new Lazy<IDistributedCache>(() => SingleServiceLocator.GetService<IDistributedCache>());
 
         private static IDistributedCache Cache { get => _cacheLazy.Value; }
+
+        public CacheAttribute()
+        {
+        }
 
         public CacheAttribute(string cacheKey)
         {
@@ -37,6 +44,17 @@ namespace Monica.Cache
             IsSliding = isSliding;
         }
 
+        public CacheAttribute(int cacheSeconds)
+        {
+            CacheSeconds = cacheSeconds;
+        }
+
+        public CacheAttribute(int cacheSeconds, bool isSliding)
+        {
+            CacheSeconds = cacheSeconds;
+            IsSliding = isSliding;
+        }
+
         /// <summary>
         /// 缓存Key
         /// </summary>
@@ -46,7 +64,12 @@ namespace Monica.Cache
 
         public void Calling(CallingInterceptContext callingInterceptorContext)
         {
-            var result = Cache.Get<object>(CacheKey);
+            if (string.IsNullOrEmpty(CacheKey))
+            {
+                CacheKey = callingInterceptorContext.Owner.GetType().FullName + "." + callingInterceptorContext.MethodName;
+            }
+            var key = GetKey(CacheKey, callingInterceptorContext.Parameters);
+            var result = Cache.Get<object>(key);
             if (result != null)
             {
                 callingInterceptorContext.HasResult = true;
@@ -56,7 +79,8 @@ namespace Monica.Cache
 
         public void Called(CalledInterceptContext calledInterceptorContext)
         {
-            if (!Cache.Exist(CacheKey))
+            var key = GetKey(CacheKey, calledInterceptorContext.Parameters);
+            if (!Cache.Exist(key))
             {
                 var result = calledInterceptorContext.Result ?? calledInterceptorContext.ReturnValue;
                 if (result != null)
@@ -70,8 +94,26 @@ namespace Monica.Cache
                     {
                         options.SetAbsoluteExpiration(TimeSpan.FromSeconds(CacheSeconds));
                     }
-                    Cache.Set(CacheKey, result, options);
+                    Cache.Set(key, result, options);
                 }
+            }
+        }
+
+        private static string GetKey(string cacheKey, object[] parameters)
+        {
+            if (parameters != null && parameters.Length > 0)
+            {
+                var sb = new StringBuilder(cacheKey);
+                foreach (var param in parameters)
+                {
+                    sb.Append("_" + param.GetHashCode());
+                }
+
+                return sb.ToString();
+            }
+            else
+            {
+                return cacheKey;
             }
         }
     }
