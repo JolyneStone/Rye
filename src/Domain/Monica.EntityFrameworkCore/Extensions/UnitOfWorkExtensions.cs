@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Monica.DataAccess
+namespace Monica.EntityFrameworkCore
 {
     public static class UnitOfWorkExtensions
     {

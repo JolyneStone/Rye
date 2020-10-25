@@ -21,13 +21,14 @@ namespace Monica.EventBus.Memory.Tests
 
             var eventBus = services.GetRequiredService<IEventBus>();
             eventBus.AddHandlers<MemoryEventTest, MemoryEventHandlerTest>(
+                "MemoryEventTest",
                 new MemoryEventHandlerTest[] { new MemoryEventHandlerTest() { Id = 0 }, new MemoryEventHandlerTest() { Id = 1 } }
             );
 
             eventBus.Subscribe();
             for (var i = 0; i < 10; i++)
             {
-                eventBus.Pushblish(new MemoryEventTest { Id = i });
+                eventBus.Pushblish("MemoryEventTest", new MemoryEventTest { Id = i });
                 Thread.Sleep(200);
             }
             eventBus.Dispose();
@@ -44,7 +45,7 @@ namespace Monica.EventBus.Memory.Tests
             public int Id { get; set; }
             public override void Handle(MemoryEventTest @event)
             {
-                Debug.WriteLine($"{Id}");
+                Debug.WriteLine($"{Id}, event: {@event.Id}");
             }
         }
     }

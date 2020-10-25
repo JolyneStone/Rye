@@ -7,7 +7,7 @@ namespace Monica.EventBus.Abstractions
     {
         void Subscribe();
 
-        void AddHandlers<TEvent, THandler>(IEnumerable<THandler> handlers)
+        void AddHandlers<TEvent, THandler>(string eventName, IEnumerable<THandler> handlers)
            where TEvent : class, IEvent<TEvent>, new()
            where THandler : IEventHandler<TEvent>;
     }

@@ -7,7 +7,7 @@ namespace Monica.EventBus.Memory
 {
     public static class MemoryEventBusExtensions
     {
-        public static void AddHandler<TEvent, THandler>(this IEventSubscriber subscriber, THandler handler)
+        public static void AddHandler<TEvent, THandler>(this IEventSubscriber subscriber, string eventName, THandler handler)
             where TEvent : class, IEvent<TEvent>, new()
             where THandler : MemoryEventHandler<TEvent>
         {
@@ -16,15 +16,20 @@ namespace Monica.EventBus.Memory
                 throw new ArgumentNullException(nameof(subscriber));
             }
 
+            if (eventName is null)
+            {
+                throw new ArgumentNullException(nameof(eventName));
+            }
+
             if (handler is null)
             {
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            subscriber.AddHandlers<TEvent, THandler>(new THandler[] { handler });
+            subscriber.AddHandlers<TEvent, THandler>(eventName, new THandler[] { handler });
         }
 
-        public static void AddHandlers<TEvent, THandler>(this IEventSubscriber subscriber, IEnumerable<THandler> handlers)
+        public static void AddHandlers<TEvent, THandler>(this IEventSubscriber subscriber, string eventName, IEnumerable<THandler> handlers)
            where TEvent : class, IEvent<TEvent>, new()
            where THandler : MemoryEventHandler<TEvent>
         {
@@ -33,12 +38,17 @@ namespace Monica.EventBus.Memory
                 throw new ArgumentNullException(nameof(subscriber));
             }
 
+            if (eventName is null)
+            {
+                throw new ArgumentNullException(nameof(eventName));
+            }
+
             if (handlers is null && handlers.Count() <= 0)
             {
                 throw new ArgumentNullException(nameof(handlers));
             }
 
-            subscriber.AddHandlers<TEvent, THandler>(handlers);
+            subscriber.AddHandlers<TEvent, THandler>(eventName, handlers);
         }
     }
 }

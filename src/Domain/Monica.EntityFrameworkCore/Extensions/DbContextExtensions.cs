@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace Monica
+namespace Monica.EntityFrameworkCore
 {
     /// <summary>
     /// 数据库上下文扩展方法

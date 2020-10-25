@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.ComponentModel;
 
-namespace Monica
+namespace Monica.EntityFrameworkCore
 {
     /// <summary>
     /// Queryable扩展方法

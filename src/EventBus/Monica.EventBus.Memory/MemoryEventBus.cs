@@ -1,4 +1,5 @@
 ﻿using Monica.EventBus.Abstractions;
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,27 +12,33 @@ namespace Monica.EventBus.Memory
     public class MemoryEventBus : IEventBus
     {
         private static readonly int RingBufferSize = 1024;
-        private static ConcurrentDictionary<Type, Disruptor.RingBuffer> _ringBuffers = new ConcurrentDictionary<Type, Disruptor.RingBuffer>();
-        private static Dictionary<Type, object> _pools = new Dictionary<Type, object>();
-        private static Dictionary<Type, List<object>> _handlers = new Dictionary<Type, List<object>>();
+        private static ConcurrentDictionary<string, Disruptor.RingBuffer> _ringBuffers = new ConcurrentDictionary<string, Disruptor.RingBuffer>();
+        private static Dictionary<string, object> _pools = new Dictionary<string, object>();
+        private static Dictionary<string, List<object>> _handlers = new Dictionary<string, List<object>>();
 
-        public Task PublishAsync<TEvent>(TEvent @event) where TEvent : class, IEvent<TEvent>, new()
+        public Task PublishAsync<TEvent>(string eventName, TEvent @event)
+            where TEvent : class, IEvent<TEvent>, new()
         {
-            Pushblish(@event);
+            Pushblish(eventName, @event);
             return Task.CompletedTask;
         }
 
-        public void Pushblish<TEvent>(TEvent @event) where TEvent : class, IEvent<TEvent>, new()
+        public void Pushblish<TEvent>(string eventName, TEvent @event)
+            where TEvent : class, IEvent<TEvent>, new()
         {
+            if (eventName is null)
+            {
+                throw new ArgumentNullException(nameof(eventName));
+            }
+
             if (@event is null)
             {
                 throw new ArgumentNullException(nameof(@event));
             }
 
-            var type = typeof(TEvent);
-            if (!_ringBuffers.TryGetValue(type, out var value))
+            if (!_ringBuffers.TryGetValue(eventName, out var value))
             {
-                throw new MonicaEventBusException($"类型{type.FullName}未注册到EventBus中");
+                throw new MonicaEventBusException($"事件{eventName}未注册到EventBus中");
             }
 
             var ringBuffer = value as Disruptor.RingBuffer<TEvent>;
@@ -52,24 +59,27 @@ namespace Monica.EventBus.Memory
             var method = this.GetType().GetMethod(nameof(SubscribeCore), BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var item in _handlers)
             {
-                var eventType = item.Key;
+                var eventName = item.Key;
                 var handlers = item.Value;
                 if (handlers.Count <= 0)
                 {
-                    throw new ArgumentException($"事件类型：{eventType.FullName}未注册正确的事件处理器");
+                    throw new ArgumentException($"事件{eventName}未注册正确的事件处理器");
                 }
 
-                method.MakeGenericMethod(eventType).Invoke(this, new object[] { handlers });
+                method.MakeGenericMethod(handlers[0].GetType()
+                                                      .GetInterfaces()
+                                                      .First(d => d.GetGenericTypeDefinition() == typeof(IEventHandler<>))
+                                                      .GetGenericArguments()[0]
+                                        ).Invoke(this, new object[] { eventName, handlers });
             }
 
             _handlers.Clear();
         }
 
-        private void SubscribeCore<TEvent>(List<object> handlers) where TEvent : class, IEvent<TEvent>, new()
+        private void SubscribeCore<TEvent>(string eventName, List<object> handlers) where TEvent : class, IEvent<TEvent>, new()
         {
             var disruptorHandlers = handlers.Select(d => d as Disruptor.IEventHandler<TEvent>).ToArray();
-            var eventType = typeof(TEvent);
-            if (!_ringBuffers.TryGetValue(eventType, out var value))
+            if (!_ringBuffers.TryGetValue(eventName, out var value))
             {
                 var ringBuffer = value as Disruptor.RingBuffer<TEvent>;
                 var disruptor = new Disruptor.Dsl.Disruptor<TEvent>(() => new TEvent(), RingBufferSize, TaskScheduler.Default);
@@ -94,15 +104,20 @@ namespace Monica.EventBus.Memory
 
                 disruptor.HandleEventsWith(disruptorHandlers);
                 ringBuffer = disruptor.Start();
-                _ringBuffers.TryAdd(eventType, ringBuffer);
-                _pools.TryAdd(eventType, disruptor);
+                _ringBuffers.TryAdd(eventName, ringBuffer);
+                _pools.TryAdd(eventName, disruptor);
             }
         }
 
-        public void AddHandlers<TEvent, THandler>(IEnumerable<THandler> handlers)
+        public void AddHandlers<TEvent, THandler>(string eventName, IEnumerable<THandler> handlers)
             where TEvent : class, IEvent<TEvent>, new()
             where THandler : IEventHandler<TEvent>
         {
+            if (eventName is null)
+            {
+                throw new ArgumentNullException(nameof(eventName));
+            }
+
             if (handlers is null && handlers.Count() <= 0)
             {
                 throw new ArgumentNullException(nameof(handlers));
@@ -110,12 +125,11 @@ namespace Monica.EventBus.Memory
 
             var disruptorHandlers = handlers.Where(d => d is Disruptor.IEventHandler<TEvent>).ToArray();
 
-            var eventType = typeof(TEvent);
-            if (!_handlers.TryGetValue(eventType, out var list) || list == null)
+            if (!_handlers.TryGetValue(eventName, out var list) || list == null)
             {
                 if (disruptorHandlers != null && disruptorHandlers.Length > 0)
                 {
-                    _handlers.TryAdd(eventType, disruptorHandlers.Select(d => (object)d).ToList());
+                    _handlers.TryAdd(eventName, disruptorHandlers.Select(d => (object)d).ToList());
                 }
             }
             else
@@ -128,7 +142,7 @@ namespace Monica.EventBus.Memory
                     }
                 }
 
-                _handlers[eventType] = list;
+                _handlers[eventName] = list;
             }
         }
 
@@ -151,10 +165,10 @@ namespace Monica.EventBus.Memory
                 {
                     if (_pools != null)
                     {
-                        var method = this.GetType().GetMethod(nameof(HaltCore), BindingFlags.NonPublic| BindingFlags.Instance);
+                        var method = this.GetType().GetMethod(nameof(HaltCore), BindingFlags.NonPublic | BindingFlags.Instance);
                         foreach (var item in _pools)
                         {
-                            method.MakeGenericMethod(item.Key).Invoke(this, new object[] { item.Value });
+                            method.MakeGenericMethod(item.Value.GetType().GetGenericArguments()[0]).Invoke(this, new object[] { item.Value });
                         }
                         _pools.Clear();
                         _pools = null;
