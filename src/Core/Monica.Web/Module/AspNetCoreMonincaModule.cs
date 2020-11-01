@@ -1,19 +1,28 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using Monica.Cache;
 using Monica.Enums;
-using Monica.Web.Util;
+using Monica.Module;
+using Monica.Web.Options;
+using System;
 
 namespace Monica.Web.Module
 {
+    [DependsOnModules(typeof(CacheModule))]
     public class AspNetCoreMonincaModule: AspNetCoreModule
     {
         public override ModuleLevel Level => ModuleLevel.Core;
         public override uint Order => 1;
 
+        private Action<MonicaWebOptions> _action;
+
+        public AspNetCoreMonincaModule(Action<MonicaWebOptions> action = null)
+        {
+            _action = action;
+        }
+
         public override void ConfigueServices(IServiceCollection services)
         {
-            services.AddHttpContextAccessor();
-            services.TryAddScoped<IpAddress, IpAddress>();
+            services.AddWebMonica(_action);
         }
     }
 }

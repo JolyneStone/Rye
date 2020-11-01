@@ -1,9 +1,9 @@
-﻿namespace Monica.Web
+﻿namespace Monica.Web.Enums
 {
     /// <summary>
     /// 通信标识类型
     /// </summary>
-    public enum ReturnCodeType
+    public enum DefaultHttpCodeType
     {
         /// <summary>
         /// 成功结果类型

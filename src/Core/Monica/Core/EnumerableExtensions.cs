@@ -22,6 +22,17 @@ namespace Monica
         /// <summary>
         /// 将集合展开并分别转换成字符串，再以指定的分隔符衔接，拼成一个字符串返回。默认分隔符为逗号
         /// </summary>
+        /// <param name="collection"> 要处理的字符串集合 </param>
+        /// <param name="separator"> 分隔符，默认为逗号 </param>
+        /// <returns> 拼接后的字符串 </returns>
+        public static string ExpandAndToString(this IEnumerable<string> collection, string separator = ",")
+        {
+            return string.Join(separator, collection);
+        }
+
+        /// <summary>
+        /// 将集合展开并分别转换成字符串，再以指定的分隔符衔接，拼成一个字符串返回。默认分隔符为逗号
+        /// </summary>
         /// <param name="collection"> 要处理的集合 </param>
         /// <param name="separator"> 分隔符，默认为逗号 </param>
         /// <returns> 拼接后的字符串 </returns>

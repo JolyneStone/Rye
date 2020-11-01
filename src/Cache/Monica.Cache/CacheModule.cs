@@ -11,8 +11,8 @@ namespace Monica.Cache
     [DependsOnModules(typeof(AspectFlareModule))]
     public class CacheModule: StartupModule
     {
-        public override ModuleLevel Level => ModuleLevel.FrameWork;
-        public override uint Order => 1;
+        public override ModuleLevel Level => ModuleLevel.Core;
+        public override uint Order => 2;
 
         public override void ConfigueServices(IServiceCollection services)
         {

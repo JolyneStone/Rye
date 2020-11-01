@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Monica.Module;
+using Monica.Web.Module;
 using System.Linq;
 
-namespace Monica.Web.Module
+namespace Monica.Web
 {
     public static class ApplicationBuilderExtensions
     {

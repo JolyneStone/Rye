@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel;
 
-namespace Monica.Web
+namespace Monica.Web.Enums
 {
     /// <summary>
     /// Api 返回值标识类型
     /// </summary>
-    public enum ResultCodeType
+    public enum DefaultCodeType
     {
         [Description("Success")]
         Success = 1,

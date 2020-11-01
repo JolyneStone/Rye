@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Cache\Monica.Cache\Monica.Cache.csproj" />
     <ProjectReference Include="..\Monica\Monica.csproj" />
   </ItemGroup>
 

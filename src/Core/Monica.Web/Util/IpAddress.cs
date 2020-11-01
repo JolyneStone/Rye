@@ -4,22 +4,18 @@ using System.Text.RegularExpressions;
 
 namespace Monica.Web.Util
 {
-    public class IpAddress
+    public static class IpAddress
     {
         private static readonly Regex Regex = new Regex(@"^(((\d{1,2})|(1\d{2})|(2[0-4]\d)|(25[0-5]))\.){3}((\d{1,2})|(1\d{2})|(2[0-4]\d)|(25[0-5]))$");
-        private readonly HttpContext _httpContext;
-        public IpAddress(IHttpContextAccessor accessor)
-        {
-            _httpContext = accessor.HttpContext;
-        }
+
         /// <summary>
         /// 获取远程客户端请求的IP地址
         /// </summary>
         /// <returns></returns>
-        public HashSet<string> GetRemoteIpV4Address()
+        public static HashSet<string> GetRemoteIpV4Address(HttpContext httpContext)
         {
             HashSet<string> clentIpSets = new HashSet<string>();
-            string[] remoteIpAddress = _httpContext.Connection.RemoteIpAddress.MapToIPv4().ToString().Split(',');    //替换成IPV4的格式
+            string[] remoteIpAddress = httpContext.Connection.RemoteIpAddress.MapToIPv4().ToString().Split(',');    //替换成IPV4的格式
             if (remoteIpAddress != null)
             {
                 foreach (string remoteIpAddres in remoteIpAddress)
@@ -42,7 +38,7 @@ namespace Monica.Web.Util
                 }
             }
 
-            string[] clentIps = _httpContext.Request.Headers["X-Forwarded-For"].ToArray();
+            string[] clentIps = httpContext.Request.Headers["X-Forwarded-For"].ToArray();
             if (clentIps != null)
             {
                 foreach (string clentIp in clentIps)
@@ -80,9 +76,9 @@ namespace Monica.Web.Util
         /// 获取远程客户端请求的IP地址,返回多个IP以逗号隔开
         /// </summary>
         /// <returns></returns>
-        public string GetRemoteIpV4AddressStr()
+        public static string GetRemoteIpV4AddressStr(HttpContext httpContext)
         {
-            HashSet<string> ips = GetRemoteIpV4Address();
+            HashSet<string> ips = GetRemoteIpV4Address(httpContext);
             if (ips != null && ips.Count > 0)
             {
                 return string.Join(",", ips);
