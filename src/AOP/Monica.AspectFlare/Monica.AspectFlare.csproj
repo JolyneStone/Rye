@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Authors>Kira Yoshikage</Authors>
     <Description>lightweight class libraries for AOP mode</Description>
     <Version>1.0.0</Version>

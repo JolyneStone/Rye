@@ -58,16 +58,9 @@ namespace Monica.Logger
             _logPath = options.LogPath;
             _isConsoleEnabled = options.IsConsoleEnabled;
             _logLevel = options.LogLevel;
-            try
+            if (!Directory.Exists(_logPath))
             {
-                if (!Directory.Exists(_logPath))
-                {
-                    Directory.CreateDirectory(_logPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                Directory.CreateDirectory(_logPath);
             }
         }
 

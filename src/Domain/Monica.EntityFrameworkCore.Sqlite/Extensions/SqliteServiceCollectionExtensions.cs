@@ -14,7 +14,7 @@ namespace Monica
         /// <returns></returns>
         public static IServiceCollection AddMonicaSqlite(this IServiceCollection services)
         {
-            services.AddMonicaDatabase();
+            services.AddEFCoreDatabase();
             services.RemoveAll<IDbContextOptionsBuilderUser>();
             services.TryAddSingleton<IDbContextOptionsBuilderUser, SqliteDbContextOptionsBuilderUser>();
             return services;

@@ -9,6 +9,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Monica.Jwt;
+using Monica.Configuration;
 
 namespace Monica
 {
@@ -43,7 +44,8 @@ namespace Monica
         /// <returns></returns>
         public static IServiceCollection AddMonicaJwt(this IServiceCollection serviceCollection)
         {
-            serviceCollection.TryAddSingleton<IConfigureOptions<JwtOptions>, JwtOptionsSetup>();
+            //serviceCollection.TryAddSingleton<IConfigureOptions<JwtOptions>, JwtOptionsSetup>();
+            serviceCollection.Configure<JwtOptions>(ConfigurationManager.Appsettings.GetSection("Framework:Jwt"));
             return AddMonicaJwtCore(serviceCollection);
         }
 
@@ -55,7 +57,14 @@ namespace Monica
         /// <returns></returns>
         public static IServiceCollection AddMonicaJwt(this IServiceCollection serviceCollection, Action<JwtOptions> action)
         {
-            serviceCollection.Configure<JwtOptions>(action);
+            if (action != null)
+            {
+                serviceCollection.Configure<JwtOptions>(action);
+            }
+            else
+            {
+                serviceCollection.Configure<JwtOptions>(ConfigurationManager.Appsettings.GetSection("Framework:Jwt"));
+            }
             return AddMonicaJwtCore(serviceCollection);
         }
 
@@ -64,7 +73,7 @@ namespace Monica
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // 移除微软传统的声明映射方式，使用JWT映射方式
             using (var scope = serviceCollection.BuildServiceProvider().CreateScope())
             {
-                var jwtOptions = scope.ServiceProvider.GetRequiredService<JwtOptions>();
+                var jwtOptions = scope.ServiceProvider.GetRequiredService<IOptions<JwtOptions>>().Value;
                 AuthenticationBuilder builder = serviceCollection.AddAuthentication(opts =>
                 {
                     opts.DefaultAuthenticateScheme = jwtOptions.Scheme;

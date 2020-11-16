@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+using Monica.Configuration;
 using Monica.DependencyInjection;
 using Monica.Logger;
 using Monica.Options;
@@ -54,6 +56,7 @@ namespace Monica
                 var serviceProvider = serviceCollection.BuildServiceProvider();
                 action = options => serviceProvider.GetService<IConfiguration>().GetSection("Framework").Bind(options);
             }
+
 
             serviceCollection.Configure<MonicaOptions>(action);
             //if (action != null)

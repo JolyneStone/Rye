@@ -27,7 +27,7 @@ namespace Monica.EntityFrameworkCore
 
         public override void ConfigueServices(IServiceCollection services)
         {
-            services.AddMonicaDatabase();
+            services.AddEFCoreDatabase();
             services.AddDbBuillderOptions(_action);
         }
     }

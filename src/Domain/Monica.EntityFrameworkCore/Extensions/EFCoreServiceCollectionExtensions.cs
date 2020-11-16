@@ -15,7 +15,7 @@ namespace Monica
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddMonicaDatabase(this IServiceCollection services)
+        public static IServiceCollection AddEFCoreDatabase(this IServiceCollection services)
         {
             services.RemoveAll<IDbProvider>();
             services.RemoveAll<IUnitOfWorkFactory>();

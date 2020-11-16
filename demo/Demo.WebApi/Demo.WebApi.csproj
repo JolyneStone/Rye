@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AOP\Monica.AspectFlare.DependencyInjection\Monica.AspectFlare.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\AOP\Monica.AspectFlare\Monica.AspectFlare.csproj" />
+    <ProjectReference Include="..\..\src\Cache\Monica.Cache.Redis\Monica.Cache.Redis.csproj" />
+    <ProjectReference Include="..\..\src\Cache\Monica.Cache\Monica.Cache.csproj" />
+    <ProjectReference Include="..\..\src\Core\Monica.Web\Monica.Web.csproj" />
+    <ProjectReference Include="..\..\src\Core\Monica\Monica.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Monica.DataAccess\Monica.DataAccess.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Monica.Entities\Monica.Entities.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Monica.EntityFrameworkCore.SqlServer\Monica.EntityFrameworkCore.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Monica.EntityFrameworkCore\Monica.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Monica.SqlServer\Monica.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\EventBus\Monica.EventBus.Memory\Monica.EventBus.Memory.csproj" />
+    <ProjectReference Include="..\..\src\Jwt\Monica.Jwt\Monica.Jwt.csproj" />
+  </ItemGroup>
+
+
+</Project>

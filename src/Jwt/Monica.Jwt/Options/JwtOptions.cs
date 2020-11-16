@@ -26,12 +26,12 @@ namespace Monica.Jwt.Options
         /// <summary>
         /// AccessToken有效期分钟数，默认为5分钟
         /// </summary>
-        public double AccessExpireMins { get; set; }
+        public double AccessExpireMins { get; set; } = 5;
 
         /// <summary>
         /// RefreshToken有效期分钟数，默认为10080分钟，即7天
         /// </summary>
-        public double RefreshExpireMins { get; set; }
+        public double RefreshExpireMins { get; set; } = 10080;
 
         /// <summary>
         /// Token是否过期，默认为不过期

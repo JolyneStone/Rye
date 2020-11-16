@@ -30,28 +30,28 @@ namespace Monica
 
         #endregion
 
-        #region TryParse
-        public static short TryParseByInt16(this object obj, short defaultValue = 0)
+        #region Parse
+        public static short ParseByInt16(this object obj)
         {
-            short temp = defaultValue;
+            short temp = default;
             if (obj == null)
             {
                 return temp;
             }
 
-            return short.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+            return short.TryParse(obj.ToString(), out temp) ? temp : default;
         }
-        public static int TryParseByInt(this object obj, int defaultValue = 0)
+        public static int ParseByInt(this object obj)
         {
-            int temp = defaultValue;
+            int temp = default;
             if (obj == null)
             {
                 return temp;
             }
 
-            return int.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+            return int.TryParse(obj.ToString(), out temp) ? temp : default;
         }
-        public static string TryParseByString(this object obj, string defaultValue = "")
+        public static string ParseByString(this object obj)
         {
             if (obj == null)
             {
@@ -63,7 +63,7 @@ namespace Monica
             }
         }
 
-        public static int TryParseByIntMax(this object obj)
+        public static int ParseByIntMax(this object obj)
         {
             int temp = int.MaxValue;
             if (obj == null)
@@ -73,63 +73,62 @@ namespace Monica
 
             return int.TryParse(obj.ToString(), out temp) ? temp : int.MaxValue;
         }
-        public static short TryParseByShort(this object obj, short defaultValue = 0)
+        public static short ParseByShort(this object obj)
         {
-            short temp = defaultValue;
+            short temp = default;
             if (obj == null)
             {
                 return temp;
             }
 
-            return short.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+            return short.TryParse(obj.ToString(), out temp) ? temp : default;
         }
-        public static long TryParseByLong(this object obj, long defaultValue = 0)
+        public static long ParseByLong(this object obj)
         {
-            long temp = defaultValue;
+            long temp = default;
             if (obj == null)
             {
                 return temp;
             }
 
-            return long.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+            return long.TryParse(obj.ToString(), out temp) ? temp : default;
         }
 
 
-        public static uint TryParseByUInt32(this object obj, uint defaultValue = 0)
+        public static uint ParseByUInt32(this object obj)
         {
-            uint temp = defaultValue;
+            uint temp = default;
             if (obj == null)
             {
                 return temp;
             }
 
-            uint.TryParse(obj.ToString(), out temp);
-            return uint.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+            return uint.TryParse(obj.ToString(), out temp) ? temp : default;
         }
-        public static ushort TryParseByUInt16(this object obj, ushort defaultValue = 0)
+        public static ushort ParseByUInt16(this object obj)
         {
-            ushort temp = defaultValue;
+            ushort temp = default;
             if (obj == null)
             {
                 return temp;
             }
 
-            return ushort.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+            return ushort.TryParse(obj.ToString(), out temp) ? temp : default;
         }
-        public static ulong TryParseByUlong(this object obj, ulong defaultValue = 0)
+        public static ulong ParseByUlong(this object obj)
         {
-            ulong temp = defaultValue;
+            ulong temp = default;
             if (obj == null)
             {
                 return temp;
             }
 
-            return ulong.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+            return ulong.TryParse(obj.ToString(), out temp) ? temp : default;
         }
 
-        public static decimal TryParseByDecimal(this object obj, decimal defaultValue = 0)
+        public static decimal ParseByDecimal(this object obj)
         {
-            decimal temp = defaultValue;
+            decimal temp = default;
             if (obj == null)
             {
                 return temp;
@@ -146,32 +145,32 @@ namespace Monica
                 {
 
                 }
-                return defaultValue;
+                return default;
             }
             else
             {
-                return decimal.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+                return decimal.TryParse(obj.ToString(), out temp) ? temp : default;
             }
         }
 
-        public static decimal TryParseByDecimal(this object obj, int precision)
+        public static decimal ParseByDecimal(this object obj, int precision)
         {
-            return Math.Round(TryParseByDecimal(obj, 0m), precision);
+            return Math.Round(ParseByDecimal(obj), precision);
         }
 
-        public static float TryParseByFloat(this object obj, float defaultValue = 0)
+        public static float ParseByFloat(this object obj)
         {
-            float temp = defaultValue;
+            float temp = default;
             if (obj == null)
             {
                 return temp;
             }
 
-            return float.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+            return float.TryParse(obj.ToString(), out temp) ? temp : default;
         }
-        public static double TryParseByDouble(this object obj, double defaultValue = 0)
+        public static double ParseByDouble(this object obj)
         {
-            double temp = defaultValue;
+            double temp = default;
             if (obj == null)
             {
                 return temp;
@@ -188,15 +187,15 @@ namespace Monica
                 {
 
                 }
-                return defaultValue;
+                return default;
             }
             else
             {
-                return double.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+                return double.TryParse(obj.ToString(), out temp) ? temp : default;
             }
         }
 
-        public static TEnum TryParseByEnum<TEnum>(this object obj, TEnum defaultValue = default)
+        public static TEnum ParseByEnum<TEnum>(this object obj, TEnum defaultValue = default)
             where TEnum : Enum
         {
             if (obj == null && default(TEnum) == null)
@@ -212,15 +211,15 @@ namespace Monica
             return (TEnum)Enum.Parse(type, obj.ToString());
         }
 
-        public static bool TryParseByBool(this object obj, bool defaultValue = false)
+        public static bool ParseByBool(this object obj)
         {
-            bool temp = defaultValue;
+            bool temp = default;
             if (obj == null)
             {
                 return temp;
             }
 
-            return bool.TryParse(obj.ToString(), out temp) ? temp : defaultValue;
+            return bool.TryParse(obj.ToString(), out temp) ? temp : default;
         }
 
         public static object TryPase(this object value, Type conversionType)
@@ -251,33 +250,33 @@ namespace Monica
             }
         }
 
-        public static T TryParse<T>(this object obj, T defaultValue = default)
+        public static T Parse<T>(this object obj, T defaultValue = default)
         {
             try
             {
                 if (obj == null && default(T) == null)
                 {
-                    return default;
+                    return defaultValue;
                 }
                 if (obj.GetType() == typeof(T))
                 {
                     return (T)obj;
                 }
-                object result = TryParse(obj, typeof(T));
+                object result = Parse(obj, typeof(T));
                 return (T)result;
             }
             catch (Exception)
             {
-                return defaultValue;
+                return default;
             }
         }
 
         /// <summary>
-        /// obj.ToString之后DateTime.TryParse
+        /// obj.ToString之后DateTime.Parse
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static DateTime TryParseByDateTime(this object obj)
+        public static DateTime ParseByDateTime(this object obj)
         {
             DateTime temp = DateTime.MinValue;
             if (obj == null)
@@ -293,12 +292,12 @@ namespace Monica
         }
 
         /// <summary>
-        /// obj.ToString之后DateTime.TryParse带格式
+        /// obj.ToString之后DateTime.Parse带格式
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="format"></param>
         /// <returns></returns>
-        public static DateTime TryParseExactByDateTime(this object obj, string format)
+        public static DateTime ParseExactByDateTime(this object obj, string format)
         {
             DateTime temp = DateTime.MinValue;
             if (obj == null)
@@ -314,6 +313,181 @@ namespace Monica
             return temp;
         }
 
+        #endregion
+
+        #region 四舍五入
+        /// <summary>
+        /// 转为小数，默认为8位，最多20位小数，截断
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string ToDigitString(this decimal value, int position = 8)
+        {
+            var tempStr = value.ToString("0.####################");
+
+            //有多少位小数
+            int digitlength = tempStr.Length - tempStr.IndexOf('.') - 1;
+
+            //小数位大于digits(默认8)
+            if (tempStr.IndexOf('.') > 0 && digitlength > position)
+            {
+                tempStr = tempStr.Substring(0, tempStr.Length - (digitlength - position));
+
+                return Convert.ToDecimal(tempStr) == 0 ? "0" : tempStr;
+            }
+            else
+            {
+                return tempStr;
+            }
+        }
+
+        /// <summary>
+        /// 转为小数，默认为8位，最多20位小数，截断
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string ToDigitString(this double value, int position = 8)
+        {
+            var tempStr = value.ToString("0.####################");
+
+            //有多少位小数
+            int digitlength = tempStr.Length - tempStr.IndexOf('.') - 1;
+
+            //小数位大于digits(默认8)
+            if (tempStr.IndexOf('.') > 0 && digitlength > position)
+            {
+                tempStr = tempStr.Substring(0, tempStr.Length - (digitlength - position));
+
+                return Convert.ToDecimal(tempStr) == 0 ? "0" : tempStr;
+            }
+            else
+            {
+                return tempStr;
+            }
+        }
+
+        /// <summary>
+        /// 转为小数，默认为8位，最多20位小数，截断
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string ToDigitString(this float value, int position = 8)
+        {
+            var tempStr = value.ToString("0.####################");
+
+            //有多少位小数
+            int digitlength = tempStr.Length - tempStr.IndexOf('.') - 1;
+
+            //小数位大于digits(默认8)
+            if (tempStr.IndexOf('.') > 0 && digitlength > position)
+            {
+                tempStr = tempStr.Substring(0, tempStr.Length - (digitlength - position));
+
+                return Convert.ToDecimal(tempStr) == 0 ? "0" : tempStr;
+            }
+            else
+            {
+                return tempStr;
+            }
+        }
+
+        /// <summary>
+        /// 转为小数，默认为8位，四舍五入
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public static string ToDigitStringRound(this decimal value, int position = 8)
+        {
+            if (value == 0)
+            {
+                return "0";
+            }
+
+            string str = ".";
+            for (int i = 0; i < position; i++)
+            {
+                str += "#";
+            }
+            if (value > 0 && value < 1)
+            {
+                return "0" + value.ToString(str);
+            }
+            else if (value < 0 && value > -1)
+            {
+                return "-0" + (-value).ToString(str);
+            }
+            else
+            {
+                return value.ToString(str);
+            }
+        }
+
+
+        /// <summary>
+        /// 保留position位有效小数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public static string ToDigitStringRound(this double value, int position = 8)
+        {
+            if (value == 0)
+            {
+                return "0";
+            }
+
+            string str = ".";
+            for (int i = 0; i < position; i++)
+            {
+                str += "#";
+            }
+            if (value > 0 && value < 1)
+            {
+                return "0" + value.ToString(str);
+            }
+            else if (value < 0 && value > -1)
+            {
+                return "-0" + (-value).ToString(str);
+            }
+            else
+            {
+                return value.ToString(str);
+            }
+        }
+
+
+        /// <summary>
+        /// 保留position位有效小数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public static string ToDigitStringRound(this float value, int position = 8)
+        {
+            if (value == 0)
+            {
+                return "0";
+            }
+
+            string str = ".";
+            for (int i = 0; i < position; i++)
+            {
+                str += "#";
+            }
+            if (value > 0 && value < 1)
+            {
+                return "0" + value.ToString(str);
+            }
+            else if (value < 0 && value > -1)
+            {
+                return "-0" + (-value).ToString(str);
+            }
+            else
+            {
+                return value.ToString(str);
+            }
+        }
         #endregion
 
         #region Clone

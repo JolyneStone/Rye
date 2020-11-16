@@ -39,10 +39,11 @@ namespace Monica.Security
         /// </summary>
         /// <param name="value">加密内容</param>
         /// <param name="key">秘钥，需要128位、256位...</param>
+        /// <param name="iv">初始向量，最小为16位</param>
         /// <param name="encoding">编码</param>
         /// <param name="autoHandle">是否自动处理key值</param>
         /// <returns>Base64字符串结果</returns>
-        public static string Encrypt(string value, string key, Encoding encoding = null, bool autoHandle = true)
+        public static string Encrypt(string value, string key, string iv, Encoding encoding = null, bool autoHandle = true)
         {
             Check.NotNullOrEmpty(value, nameof(value));
             Check.NotNullOrEmpty(key, nameof(key));
@@ -51,6 +52,7 @@ namespace Monica.Security
                 encoding = Encoding.UTF8;
             }
             byte[] keyArray = encoding.GetBytes(key);
+            byte[] ivArray = encoding.GetBytes(iv);
             if (autoHandle)
             {
                 keyArray = GetAesKey(keyArray, key);
@@ -60,6 +62,7 @@ namespace Monica.Security
             using (SymmetricAlgorithm des = Aes.Create())
             {
                 des.Key = keyArray;
+                des.IV = ivArray;
                 des.Mode = CipherMode.ECB;
                 des.Padding = PaddingMode.PKCS7;
                 ICryptoTransform cTransform = des.CreateEncryptor();
@@ -72,10 +75,11 @@ namespace Monica.Security
         /// </summary>
         /// <param name="value">解密内容</param>
         /// <param name="key">秘钥，需要128位、256位...</param>
+        /// <param name="iv">初始向量，最小为16位</param>
         /// <param name="encoding">编码</param>
         /// <param name="autoHandle">是否自动处理key值</param>
         /// <returns>解密结果</returns>
-        public static string Decrypt(string value, string key, Encoding encoding = null, bool autoHandle = true)
+        public static string Decrypt(string value, string key, string iv, Encoding encoding = null, bool autoHandle = true)
         {
             Check.NotNullOrEmpty(value, nameof(value));
             Check.NotNullOrEmpty(key, nameof(key));
@@ -84,6 +88,7 @@ namespace Monica.Security
                 encoding = Encoding.UTF8;
             }
             byte[] keyArray = encoding.GetBytes(key);
+            byte[] ivArray = encoding.GetBytes(iv);
             if (autoHandle)
             {
                 keyArray = GetAesKey(keyArray, key);
@@ -93,13 +98,14 @@ namespace Monica.Security
             using (SymmetricAlgorithm des = Aes.Create())
             {
                 des.Key = keyArray;
+                des.IV = ivArray;
                 des.Mode = CipherMode.ECB;
                 des.Padding = PaddingMode.PKCS7;
 
                 ICryptoTransform cTransform = des.CreateDecryptor();
                 byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
 
-                return Encoding.UTF8.GetString(resultArray);
+                return encoding.GetString(resultArray);
             }
         }
     }

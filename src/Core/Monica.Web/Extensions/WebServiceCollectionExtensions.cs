@@ -17,7 +17,7 @@ namespace Monica.Web
         /// <param name="serviceCollection"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static IServiceCollection AddWebMonica(this IServiceCollection serviceCollection, Action<MonicaWebOptions> action)
+        public static IServiceCollection AddWebMonica(this IServiceCollection serviceCollection, Action<MonicaWebOptions> action = null)
         {
             serviceCollection.AddHttpContextAccessor();
             if (action == null)
@@ -35,7 +35,7 @@ namespace Monica.Web
         /// <param name="serviceCollection"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static IServiceCollection AddWebModule(this IServiceCollection serviceCollection, Action<MonicaWebOptions> action)
+        public static IServiceCollection AddWebModule(this IServiceCollection serviceCollection, Action<MonicaWebOptions> action = null)
         {
             if (serviceCollection is null)
             {

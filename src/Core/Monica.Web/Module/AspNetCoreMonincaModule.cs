@@ -7,7 +7,7 @@ using System;
 
 namespace Monica.Web.Module
 {
-    [DependsOnModules(typeof(CacheModule))]
+    [DependsOnModules(typeof(MonicaCoreModule), typeof(CacheModule))]
     public class AspNetCoreMonincaModule: AspNetCoreModule
     {
         public override ModuleLevel Level => ModuleLevel.Core;
