@@ -47,7 +47,7 @@ namespace Monica.Web.Filter
             result += $"{elapsedMilliseconds} ms";
 
             var action = context.RouteData.Values["action"];
-            LogRecord.Info(action + "_res", "Response:" + result);
+            LogRecord.Info(action + "_rsp", "Response:" + result);
 
             if (elapsedMilliseconds >= 100d)
             {

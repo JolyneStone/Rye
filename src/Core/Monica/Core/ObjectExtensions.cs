@@ -1,10 +1,10 @@
 ﻿using Monica.Reflection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Monica.Core;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Monica
 {
@@ -13,23 +13,6 @@ namespace Monica
     /// </summary>
     public static class ObjectExtensions
     {
-        #region 序列化
-        public static string ToJsonString(this object obj, bool camelCase = false, bool indented = false)
-        {
-            JsonSerializerSettings settings = new JsonSerializerSettings();
-            if (camelCase)
-            {
-                settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            }
-            if (indented)
-            {
-                settings.Formatting = Formatting.Indented;
-            }
-            return JsonConvert.SerializeObject(obj, settings);
-        }
-
-        #endregion
-
         #region Parse
         public static short ParseByInt16(this object obj)
         {
@@ -492,7 +475,7 @@ namespace Monica
 
         #region Clone
 
-        public static TSource Clone<TSource>(this TSource source) where TSource: new()
+        public static TSource Clone<TSource>(this TSource source) where TSource : new()
         {
             return CloneObject<TSource, TSource>.Clone(source);
         }

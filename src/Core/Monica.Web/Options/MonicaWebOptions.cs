@@ -2,6 +2,7 @@
 {
     public class MonicaWebOptions
     {
-        public MonicaResponse Response { get; set; }
+        public GlobalExceptionFilterOptions GlobalExceptionFilter { get; set; }
+        public GlobalActionFilterOptions GlobalActionFilter { get; set; }
     }
 }

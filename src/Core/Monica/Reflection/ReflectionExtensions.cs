@@ -139,7 +139,7 @@ namespace Monica.Reflection
         /// <returns>返回所有指定Attribute特性的数组</returns>
         public static T[] GetAttributes<T>(this MemberInfo memberInfo, bool inherit = true) where T : Attribute
         {
-            return memberInfo.GetCustomAttributes(typeof(T), inherit).Select(d=>d.TryParse<T>()).ToArray();
+            return memberInfo.GetCustomAttributes(typeof(T), inherit).Select(d=>d.Parse<T>()).ToArray();
         }
 
         /// <summary>
