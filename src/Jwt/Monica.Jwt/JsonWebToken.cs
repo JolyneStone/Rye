@@ -30,7 +30,7 @@ namespace Monica.Jwt
         public bool IsRefreshExpired()
         {
             DateTime now = DateTime.Now;
-            long nowTick = now.ToJsGetTime().TryParseByLong();
+            long nowTick = now.ToJsGetTime().ParseByLong();
             return RefreshUctExpires > nowTick;
         }
     }

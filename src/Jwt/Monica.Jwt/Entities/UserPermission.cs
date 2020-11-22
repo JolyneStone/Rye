@@ -56,8 +56,8 @@ namespace Monica.Jwt.Entities
                 throw new MonicaException("声明集合中无法找到Role声明");
             }
 
-            UserId = sid.TryParse<TUserKey>();
-            RoleIds = roles.Split(",").Select(d => d.TryParse<TRoleKey>()).ToList();
+            UserId = sid.Parse<TUserKey>();
+            RoleIds = roles.Split(",").Select(d => d.Parse<TRoleKey>()).ToList();
         }
     }
 }

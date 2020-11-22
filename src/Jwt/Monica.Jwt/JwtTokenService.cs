@@ -56,7 +56,7 @@ namespace Monica.Jwt
             }
 
             ClaimsPrincipal principal = _tokenHandler.ValidateToken(refreshToken, parameters, out _);
-            ClientType? clientType = jwtSecurityToken.Claims.FirstOrDefault(m => m.Type == "clientType")?.Value.TryParseByEnum<ClientType>()
+            ClientType? clientType = jwtSecurityToken.Claims.FirstOrDefault(m => m.Type == "clientType")?.Value.ParseByEnum<ClientType>()
                  ?? ClientType.Browser;
 
             var entity = new TEntity();
@@ -85,7 +85,7 @@ namespace Monica.Jwt
             {
                 AccessToken = token,
                 RefreshToken = refreshTokenStr,
-                RefreshUctExpires = expires.ToJsGetTime().TryParseByLong(0)
+                RefreshUctExpires = expires.ToJsGetTime().ParseByLong()
             };
         }
 

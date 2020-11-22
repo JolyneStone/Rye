@@ -1,30 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Monica.DependencyInjection;
-using Monica.Web.Internal;
 using Monica.Web.Options;
+using Monica.Web.ResponseProvider.AvoidRepeatableRequestAttr;
 using Monica.Web.Util;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace Monica.Web.Filter
 {
     /// <summary>
-    /// 防止重复提交过滤器
+    /// 防止重复提交
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-    public class AvoidRepeatableCommitAttribute: ActionFilterAttribute
+    public class AvoidRepeatableRequestAttribute : ActionFilterAttribute
     {
-        public AvoidRepeatableCommitAttribute()
+        private static IAvoidRepeatableRequestResponseProvider _provider;
+        public AvoidRepeatableRequestAttribute()
         {
             Seconds = 5;
         }
 
-        public AvoidRepeatableCommitAttribute(int seconds)
+        public AvoidRepeatableRequestAttribute(int seconds)
         {
             Seconds = seconds;
         }
@@ -42,17 +42,13 @@ namespace Monica.Web.Filter
             IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
             if (cache.Exist(key))
             {
-                var options = actionContext.HttpContext.RequestServices.GetService<IOptions<MonicaWebOptions>>().Value;
-                Dictionary<string, object> result;
-                if (options == null || options.Response == null)
+                if (_provider == null)
                 {
-                    result = null;
+                    _provider = actionContext.HttpContext.RequestServices.GetRequiredService<IOptions<MonicaWebOptions>>().Value.AvoidRepeatableRequest.Provider;
                 }
-                else
-                {
-                    result = options.Response.ParametersInvalid("You can't repeat the submission, please try again later!", null);
-                }
-                actionContext.Result = new BadRequestObjectResult(null) { Value = result };
+
+                actionContext.Result = _provider.CreateResponse(new AvoidRepeatableRequestContext(actionContext.HttpContext, key));
+                actionContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
             }
             else
             {

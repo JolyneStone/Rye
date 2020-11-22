@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Monica.Logger;
 using Monica.Web.Options;
+using Monica.Web.ResponseProvider.ModeValidationAttr;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using Monica.Web.Internal;
+using System.Net;
 
 namespace Monica.Web.Filter
 {
@@ -17,6 +16,7 @@ namespace Monica.Web.Filter
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public class ModelValidationAttribute : ActionFilterAttribute
     {
+        private static IModeValidationResponseProvider _provider;
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
             var modelState = actionContext.ModelState;
@@ -33,17 +33,12 @@ namespace Monica.Web.Filter
                     {
                         string error = state.Errors.First().ErrorMessage;
                         LogRecord.Error(logName, $"errorMsg:{error}，ActionArguments:{actionContext.ActionArguments.ToJsonString()}");
-                        var options = actionContext.HttpContext.RequestServices.GetService<IOptions<MonicaWebOptions>>().Value;
-                        Dictionary<string, object> result;
-                        if(options == null || options.Response== null)
+                        if (_provider == null)
                         {
-                            result = null;
+                            _provider = actionContext.HttpContext.RequestServices.GetRequiredService<IOptions<MonicaWebOptions>>().Value.ModeValidation.Provider;
                         }
-                        else
-                        {
-                            result = options.Response.ParametersInvalid(error, null);
-                        }
-                        actionContext.Result = new BadRequestObjectResult(modelState) { Value = result };
+                        actionContext.Result = _provider.CreateResponse(new ModeValidationContext(actionContext.HttpContext, modelState, state.Errors));
+                        actionContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                         return;
                     }
                 }

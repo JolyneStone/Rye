@@ -6,10 +6,10 @@ namespace Monica.Web.ResponseProvider
 {
     public class DefaultGlobalExceptionFilterResponseProvider : IGlobalExceptionFilterResponseProvider
     {
-        public IActionResult CreateResponse(GlobalExceptionFilterConetxt httpContext)
+        public IActionResult CreateResponse(GlobalExceptionFilterConetxt context)
         {
             return new JsonResult(Result
-                .Create(HttpStatusCode.InternalServerError, httpContext.Exception?.Message));
+                .Create(HttpStatusCode.InternalServerError, context.Exception?.Message));
         }
     }
 }

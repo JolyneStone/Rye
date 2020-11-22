@@ -14,7 +14,7 @@ namespace Monica.Test.AOP
 
     public class TestClass : ITest
     {
-        private int i = 0;
+        //private int i = 0;
         [Exception]
         [Cache("OutputTest")]
         public string Output(int i)
