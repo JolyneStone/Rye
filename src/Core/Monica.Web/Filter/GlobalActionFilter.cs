@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 using Monica.Logger;
+
 using System;
 
 namespace Monica.Web.Filter
@@ -23,19 +26,25 @@ namespace Monica.Web.Filter
         {
             //结束
             context.HttpContext.Response.Headers["Access-Control-Allow-Origin"] = "*";
+            string logMessage = string.Empty;
             #region 记录返回结果和响应时间
-            dynamic actionResult = context.Result?.GetType().Name == "EmptyResult" ? new { Value = "无返回结果" } : context.Result as dynamic;
-            string result = "在返回结果前发生了异常" + context.Exception?.Message;
-            try
+            if (context.Exception != null)
             {
-                if (actionResult != null)
-                {
-                    result = actionResult.Value.ToJsonString();
-                }
+                logMessage = "Global Action Error: " + context.Exception.ToString();
             }
-            catch (Exception ex)
+            else if(context.Result is JsonResult jsonResult)
             {
-                result = "日志未获取到结果，返回的数据无法序列化" + ex.Message;
+                try
+                {
+                    if (jsonResult != null)
+                    {
+                        logMessage = jsonResult.Value?.ToJsonString();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logMessage = "Serialization Failed: " + ex.Message;
+                }
             }
 
             double elapsedMilliseconds = 0d;
@@ -44,10 +53,10 @@ namespace Monica.Web.Filter
                 double begin = (double)context.HttpContext.Items[actionPerf];
                 elapsedMilliseconds = DateTime.Now.Ticks / 10000d - begin;
             }
-            result += $"{elapsedMilliseconds} ms";
+            logMessage += $"{elapsedMilliseconds} ms";
 
             var action = context.RouteData.Values["action"];
-            LogRecord.Info(action + "_rsp", "Response:" + result);
+            LogRecord.Info(action + "_rsp", "Response:" + logMessage);
 
             if (elapsedMilliseconds >= 100d)
             {
