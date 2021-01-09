@@ -1,0 +1,1 @@
+﻿Scaffold-DbContext "server=127.0.0.1;database=MonicaDemo;uid=root;pwd=Mysql_zzq123;pooling=false;SslMode=None;CharSet=utf8mb4;port=3306" -Provider "Pomelo.EntityFrameworkCore.MySql" -ContextDir DbContexts -Context MyDbContext  -o Models -Force -NoPluralize

@@ -98,13 +98,13 @@ namespace Monica
         /// <returns></returns>
         public static IServiceCollection AddDbBuillderOptions(this IServiceCollection services, Action<DbContextOptionsBuilderOptions> action)
         {
-            if (action is null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+            //if (action is null)
+            //{
+            //    throw new ArgumentNullException(nameof(action));
+            //}
 
             var options = new DbContextOptionsBuilderOptions();
-            action.Invoke(options);
+            action?.Invoke(options);
             services.AddSingleton<DbContextOptionsBuilderOptions>(options);
             return services;
         }

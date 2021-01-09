@@ -1,5 +1,4 @@
-﻿using Monica.DataAccess;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Monica.Enums;
 
 namespace Monica.EntityFrameworkCore.MySql
@@ -10,7 +9,7 @@ namespace Monica.EntityFrameworkCore.MySql
 
         public DbContextOptionsBuilder Use(DbContextOptionsBuilder builder, string connectionString)
         {
-            return builder.UseMySQL(connectionString);
+            return builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         }
     }
 }

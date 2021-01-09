@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\Demo.WebApi\appsettings.Development.json" Link="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Demo.WebApi\appsettings.json" Link="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CodeGenerator\Monica.CodeGenerator\Monica.CodeGenerator.csproj" />
+    <ProjectReference Include="..\..\src\Core\Monica\Monica.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Monica.MySql\Monica.MySql.csproj" />
+    <ProjectReference Include="..\Demo.Core\Demo.Core.csproj" />
+    <ProjectReference Include="..\Demo.DataAccess\Demo.DataAccess.csproj" />
+  </ItemGroup>
+
+</Project>

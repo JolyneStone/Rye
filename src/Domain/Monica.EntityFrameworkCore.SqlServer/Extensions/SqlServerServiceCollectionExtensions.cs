@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Monica.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Monica
 {
@@ -25,9 +27,11 @@ namespace Monica
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSqlServerEFCodeModule(this IServiceCollection services)
+        public static IServiceCollection AddSqlServerEFCodeModule<TContext>(this IServiceCollection services, string dbName = null, Action<DbContextOptionsBuilder<TContext>> action = null)
+            where TContext: DbContext
         {
-            return services.AddModule<SqlServerEFCoreModule>();
+            var module = new SqlServerEFCoreModule<TContext>(dbName, action);
+            return services.AddModule<SqlServerEFCoreModule<TContext>>(module);
         }
     }
 }

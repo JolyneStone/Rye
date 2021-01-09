@@ -28,7 +28,7 @@ namespace Demo.DataAccess
 
         public int Insert(AppInfo model, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO appInfo (name,remark,appkey,createTime) VALUES (@Name,@Remark,@Appkey,@CreateTime);";
+        	string sql = "INSERT INTO appInfo (name,remark,appKey,appSecret,createTime) VALUES (@Name,@Remark,@AppKey,@AppSecret,@CreateTime);";
 
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
@@ -38,7 +38,7 @@ namespace Demo.DataAccess
 
         public async Task<int> InsertAsync(AppInfo model, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO appInfo (name,remark,appkey,createTime) VALUES (@Name,@Remark,@Appkey,@CreateTime);";
+        	string sql = "INSERT INTO appInfo (name,remark,appKey,appSecret,createTime) VALUES (@Name,@Remark,@AppKey,@AppSecret,@CreateTime);";
 
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
@@ -60,7 +60,7 @@ namespace Demo.DataAccess
 
         public int BatchInsert(IEnumerable<AppInfo> items, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO appInfo (name,remark,appkey,createTime) VALUES (@Name,@Remark,@Appkey,@CreateTime);";
+        	string sql = "INSERT INTO appInfo (name,remark,appKey,appSecret,createTime) VALUES (@Name,@Remark,@AppKey,@AppSecret,@CreateTime);";
 
             if (trans == null)
                 return conn.Execute(sql, param: items, commandType: CommandType.Text);
@@ -70,7 +70,7 @@ namespace Demo.DataAccess
         
         public async Task<int> BatchInsertAsync(IEnumerable<AppInfo> items, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO appInfo (name,remark,appkey,createTime) VALUES (@Name,@Remark,@Appkey,@CreateTime);";
+        	string sql = "INSERT INTO appInfo (name,remark,appKey,appSecret,createTime) VALUES (@Name,@Remark,@AppKey,@AppSecret,@CreateTime);";
 
              if (trans == null)
                 return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
@@ -80,7 +80,7 @@ namespace Demo.DataAccess
 
         public int BatchInsert(IEnumerable<AppInfo> items)
         {
-        	string sql = "INSERT INTO appInfo (name,remark,appkey,createTime) VALUES (@Name,@Remark,@Appkey,@CreateTime);";
+        	string sql = "INSERT INTO appInfo (name,remark,appKey,appSecret,createTime) VALUES (@Name,@Remark,@AppKey,@AppSecret,@CreateTime);";
 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Execute(sql, param: items, commandType: CommandType.Text);
@@ -88,7 +88,7 @@ namespace Demo.DataAccess
         
         public async Task<int> BatchInsertAsync(IEnumerable<AppInfo> items)
         {
-        	string sql = "INSERT INTO appInfo (name,remark,appkey,createTime) VALUES (@Name,@Remark,@Appkey,@CreateTime);";
+        	string sql = "INSERT INTO appInfo (name,remark,appKey,appSecret,createTime) VALUES (@Name,@Remark,@AppKey,@AppSecret,@CreateTime);";
 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
@@ -96,7 +96,7 @@ namespace Demo.DataAccess
 
         public int InsertUpdate(AppInfo model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE appInfo SET  name=@Name, remark=@Remark, appkey=@Appkey, createTime=@CreateTime WHERE 1=1  AND appId=@AppId;INSERT INTO appInfo (name,remark,appkey,createTime); SELECT @Name,@Remark,@Appkey,@CreateTime WHERE NOT EXISTS (SELECT 1 FROM appInfo where 1=1  AND appId=@AppId)";
+            string sql = "UPDATE appInfo SET  name=@Name, remark=@Remark, appKey=@AppKey, appSecret=@AppSecret, createTime=@CreateTime WHERE 1=1  AND appId=@AppId;INSERT INTO appInfo (name,remark,appKey,appSecret,createTime); SELECT @Name,@Remark,@AppKey,@AppSecret,@CreateTime WHERE NOT EXISTS (SELECT 1 FROM appInfo where 1=1  AND appId=@AppId)";
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
             else
@@ -105,7 +105,7 @@ namespace Demo.DataAccess
         
         public async Task<int> InsertUpdateAsync(AppInfo model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE appInfo SET  name=@Name, remark=@Remark, appkey=@Appkey, createTime=@CreateTime WHERE 1=1  AND appId=@AppId;INSERT INTO appInfo (name,remark,appkey,createTime); SELECT @Name,@Remark,@Appkey,@CreateTime WHERE NOT EXISTS (SELECT 1 FROM appInfo where 1=1  AND appId=@AppId)";
+            string sql = "UPDATE appInfo SET  name=@Name, remark=@Remark, appKey=@AppKey, appSecret=@AppSecret, createTime=@CreateTime WHERE 1=1  AND appId=@AppId;INSERT INTO appInfo (name,remark,appKey,appSecret,createTime); SELECT @Name,@Remark,@AppKey,@AppSecret,@CreateTime WHERE NOT EXISTS (SELECT 1 FROM appInfo where 1=1  AND appId=@AppId)";
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
             else
@@ -128,7 +128,7 @@ namespace Demo.DataAccess
         
         public int Update(AppInfo model, IDbTransaction trans, IDbConnection conn)
 		{
-            string sql = "UPDATE appInfo SET  name=@Name, remark=@Remark, appkey=@Appkey, createTime=@CreateTime WHERE 1=1  AND appId=@AppId";
+            string sql = "UPDATE appInfo SET  name=@Name, remark=@Remark, appKey=@AppKey, appSecret=@AppSecret, createTime=@CreateTime WHERE 1=1  AND appId=@AppId";
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
             else
@@ -192,7 +192,7 @@ namespace Demo.DataAccess
 
         public AppInfo GetModel(int appId)
 		{
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
             var _params = new DynamicParameters();
 			_params.Add("@AppId", value: appId, direction: ParameterDirection.Input);
                 
@@ -202,7 +202,7 @@ namespace Demo.DataAccess
         
         public AppInfo GetModelByWriteDb(int appId)
 		{
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
             var _params = new DynamicParameters();
 			_params.Add("@AppId", value: appId, direction: ParameterDirection.Input);
                 
@@ -212,7 +212,7 @@ namespace Demo.DataAccess
         
         public async Task<AppInfo> GetModelAsync(int appId)
 		{  
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
             var _params = new DynamicParameters();
 			_params.Add("@AppId", value: appId, direction: ParameterDirection.Input);
                 
@@ -222,7 +222,7 @@ namespace Demo.DataAccess
         
         public async Task<AppInfo> GetModelByWriteDbAsync(int appId)
 		{  
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
             var _params = new DynamicParameters();
 			_params.Add("@AppId", value: appId, direction: ParameterDirection.Input);
                 
@@ -232,7 +232,7 @@ namespace Demo.DataAccess
 
         public AppInfo GetModel(int appId, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
             var _params = new DynamicParameters();
 			_params.Add("@AppId", value: appId, direction: ParameterDirection.Input);
             
@@ -246,7 +246,7 @@ namespace Demo.DataAccess
 
         public async Task<AppInfo> GetModelAsync(int appId, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo WHERE 1=1 AND appId=@AppId";
             var _params = new DynamicParameters();
 			_params.Add("@AppId", value: appId, direction: ParameterDirection.Input);
             
@@ -260,7 +260,7 @@ namespace Demo.DataAccess
 
         public AppInfo GetModel(object param, string whereSql)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.QueryFirstOrDefault<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -268,7 +268,7 @@ namespace Demo.DataAccess
 
         public async Task<AppInfo> GetModelAsync(object param, string whereSql)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryFirstOrDefaultAsync<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -276,7 +276,7 @@ namespace Demo.DataAccess
 
         public AppInfo GetModelByWriteDb(object param, string whereSql)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.QueryFirstOrDefault<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -284,7 +284,7 @@ namespace Demo.DataAccess
 
         public async Task<AppInfo> GetModelByWriteDbAsync(object param, string whereSql)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryFirstOrDefaultAsync<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -292,7 +292,7 @@ namespace Demo.DataAccess
 
         public AppInfo GetModel(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             if (trans == null)
                 return conn.QueryFirstOrDefault<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -304,7 +304,7 @@ namespace Demo.DataAccess
 
         public async Task<AppInfo> GetModelAsync(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             if (trans == null)
                 return await conn.QueryFirstOrDefaultAsync<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -316,7 +316,7 @@ namespace Demo.DataAccess
 
         public AppInfo FirstOrDefault(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.QueryFirstOrDefault<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -324,7 +324,7 @@ namespace Demo.DataAccess
 
         public async Task<AppInfo> FirstOrDefaultAsync(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryFirstOrDefaultAsync<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -332,7 +332,7 @@ namespace Demo.DataAccess
 
         public AppInfo FirstOrDefaultByWriteDb(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.QueryFirstOrDefault<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -340,7 +340,7 @@ namespace Demo.DataAccess
 
         public async Task<AppInfo> FirstOrDefaultByWriteDbAsync(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryFirstOrDefaultAsync<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -348,7 +348,7 @@ namespace Demo.DataAccess
 
         public AppInfo FirstOrDefault(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             if (trans == null)
                 return conn.QueryFirstOrDefault<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -360,7 +360,7 @@ namespace Demo.DataAccess
 
         public async Task<AppInfo> FirstOrDefaultAsync(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             if (trans == null)
                 return await conn.QueryFirstOrDefaultAsync<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -380,7 +380,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<AppInfo>> GetListAsync()
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryAsync<AppInfo>(sql, commandType: CommandType.Text);
@@ -400,14 +400,14 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<AppInfo>> GetListAsync(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
                 
             return await conn.QueryAsync<AppInfo>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<AppInfo> GetListByWriteDb()
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Query<AppInfo>(sql, commandType: CommandType.Text);
@@ -415,7 +415,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<AppInfo>> GetListByWriteDbAsync()
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryAsync<AppInfo>(sql, commandType: CommandType.Text);
@@ -423,7 +423,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<AppInfo> GetListByWriteDb(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
                 
             if (trans == null)
                 return conn.Query<AppInfo>(sql, commandType: CommandType.Text);
@@ -435,14 +435,14 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<AppInfo>> GetListByWriteDbAsync(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  ORDER BY appId DESC";
                 
             return await conn.QueryAsync<AppInfo>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<AppInfo> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.Query<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -450,7 +450,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<AppInfo>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryAsync<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -458,7 +458,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<AppInfo> GetPageByWriteDb(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Query<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -466,7 +466,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<AppInfo>> GetPageByWriteDbAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryAsync<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -474,7 +474,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<AppInfo> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             if (trans == null)
                 return conn.Query<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -486,7 +486,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<AppInfo>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime FROM appInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             if (trans == null)
                 return await conn.QueryAsync<AppInfo>(sql, param: param, commandType: CommandType.Text);
@@ -701,37 +701,7 @@ namespace Demo.DataAccess
         
         private string GetColumns()
         {
-            return "appId AppId,name Name,remark Remark,appkey Appkey,createTime CreateTime";
+            return "appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime";
         }
-
-        AppInfo IAppInfo.GetModel(int appId)
-        {
-            throw new NotImplementedException();
-        }
-
-        AppInfo IAppInfo.GetModelByWriteDb(int appId)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<AppInfo> IAppInfo.GetModelAsync(int appId)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<AppInfo> IAppInfo.GetModelByWriteDbAsync(int appId)
-        {
-            throw new NotImplementedException();
-        }
-
-        AppInfo IAppInfo.GetModel(int appId, IDbTransaction trans, IDbConnection conn)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<AppInfo> IAppInfo.GetModelAsync(int appId, IDbTransaction trans, IDbConnection conn)
-        {
-            throw new NotImplementedException();
-        }
-    }
+	}
 }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
 using Monica.DataAccess;
 using Monica.Enums;
 using System.Data;
+using MySqlConnector;
 
 namespace Monica.EntityFrameworkCore.MySql
 {

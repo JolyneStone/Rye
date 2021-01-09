@@ -32,18 +32,35 @@ namespace Monica.Web.Filter
             {
                 logMessage = "Global Action Error: " + context.Exception.ToString();
             }
-            else if(context.Result is JsonResult jsonResult)
+            else
             {
-                try
+                if (context.Result is JsonResult jsonResult)
                 {
-                    if (jsonResult != null)
+                    try
                     {
-                        logMessage = jsonResult.Value?.ToJsonString();
+                        if (jsonResult != null)
+                        {
+                            logMessage = jsonResult.Value?.ToJsonString();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logMessage = "Serialization Failed: " + ex.Message;
                     }
                 }
-                catch (Exception ex)
+                else if (context.Result is ObjectResult objectResult)
                 {
-                    logMessage = "Serialization Failed: " + ex.Message;
+                    try
+                    {
+                        if (objectResult != null)
+                        {
+                            logMessage = objectResult.Value?.ToJsonString();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logMessage = "Serialization Failed: " + ex.Message;
+                    }
                 }
             }
 

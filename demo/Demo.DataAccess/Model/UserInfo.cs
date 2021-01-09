@@ -12,7 +12,7 @@ namespace Demo.DataAccess
 		/// <summary>
 		/// 昵称
 		/// </summary>
-		public string  nickame { get; set; }
+		public string Nickame { get; set; }
 		/// <summary>
 		/// 手机号
 		/// </summary>

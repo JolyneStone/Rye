@@ -73,6 +73,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.DataAccess.EFCore", "d
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Tests", "demo\Demo.DataAccessTests\Demo.Tests.csproj", "{D00A8EF1-062B-4DFF-AED2-2BC9E07926AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.DataAccess.CodeGenerator", "demo\Demo.DataAccess.CodeGenerator\Demo.DataAccess.CodeGenerator.csproj", "{1ECA8449-E409-4AA6-AC86-F3040E181795}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -179,6 +181,10 @@ Global
 		{D00A8EF1-062B-4DFF-AED2-2BC9E07926AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D00A8EF1-062B-4DFF-AED2-2BC9E07926AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D00A8EF1-062B-4DFF-AED2-2BC9E07926AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ECA8449-E409-4AA6-AC86-F3040E181795}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ECA8449-E409-4AA6-AC86-F3040E181795}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ECA8449-E409-4AA6-AC86-F3040E181795}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ECA8449-E409-4AA6-AC86-F3040E181795}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -216,6 +222,7 @@ Global
 		{A7F3C9C4-34CF-4570-9E37-4CD8D5769283} = {7C3CB9E9-B866-494F-9C74-B33997E36B9C}
 		{84CFE9D6-D091-4896-9541-7C09C219A235} = {7C3CB9E9-B866-494F-9C74-B33997E36B9C}
 		{D00A8EF1-062B-4DFF-AED2-2BC9E07926AA} = {7C3CB9E9-B866-494F-9C74-B33997E36B9C}
+		{1ECA8449-E409-4AA6-AC86-F3040E181795} = {7C3CB9E9-B866-494F-9C74-B33997E36B9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C43E25F-90B8-4370-9470-A77C131B5EB6}

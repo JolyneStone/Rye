@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Monica.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Monica
 {
@@ -25,9 +27,11 @@ namespace Monica
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSqliteEFCodeModule(this IServiceCollection services)
+        public static IServiceCollection AddSqliteEFCodeModule<TContext>(this IServiceCollection services, string dbName = null, Action<DbContextOptionsBuilder<TContext>> action = null)
+            where TContext : DbContext
         {
-            return services.AddModule<SqliteEFCoreModule>();
+            var module = new SqliteEFCoreModule<TContext>(dbName, action);
+            return services.AddModule<SqliteEFCoreModule<TContext>>(module);
         }
     }
 }
