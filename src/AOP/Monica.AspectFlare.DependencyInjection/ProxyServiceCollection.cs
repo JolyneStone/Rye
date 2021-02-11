@@ -11,10 +11,10 @@ namespace Monica.AspectFlare.DependencyInjection
         private readonly IServiceCollection _services;
         private readonly IProxyProvider _provider;
 
-        public ProxyServiceCollection(IServiceCollection services, IProxyFlare proxyFlare)
+        public ProxyServiceCollection(IServiceCollection services, IProxyProvider proxyProvider)
         {
             _services = services ?? throw new ArgumentNullException(nameof(services));
-            _provider = proxyFlare.GetProvider();
+            _provider = proxyProvider ?? throw new ArgumentNullException(nameof(proxyProvider));
         }
 
         public ServiceDescriptor this[int index] { get => _services[index]; set => _services[index] = value; }

@@ -9,8 +9,12 @@ namespace Demo.DataAccess.EFCore.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Code { get; set; }
+        public int Sort { get; set; }
+        public string Icon { get; set; }
         public sbyte Status { get; set; }
-        public int MenuId { get; set; }
+        public int ParentId { get; set; }
+        public int AppId { get; set; }
         public DateTime UpdateTime { get; set; }
     }
 }

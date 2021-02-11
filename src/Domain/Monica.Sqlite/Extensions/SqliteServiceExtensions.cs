@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
+using Monica.DataAccess;
+
 using System;
 
 namespace Monica.Sqlite
@@ -81,6 +84,7 @@ namespace Monica.Sqlite
             }
 
             services.TryAddScoped<SqliteConnectionProvider, T>();
+            AddSqliteSecutiryPermissionService(services);
             return services;
         }
 
@@ -97,6 +101,7 @@ namespace Monica.Sqlite
                 throw new ArgumentNullException(nameof(providerFunc));
             }
             services.TryAddScoped<SqliteConnectionProvider>(providerFunc);
+            AddSqliteSecutiryPermissionService(services);
             return services;
         }
 
@@ -113,6 +118,7 @@ namespace Monica.Sqlite
             }
 
             services.TryAddScoped(typeof(SqliteConnectionProvider), providerType);
+            AddSqliteSecutiryPermissionService(services);
             return services;
         }
 
@@ -129,6 +135,19 @@ namespace Monica.Sqlite
             }
 
             services.TryAddScoped(typeof(SqliteConnectionProvider), providerFunc);
+            AddSqliteSecutiryPermissionService(services);
+            return services;
+        }
+
+        public static IServiceCollection AddSqliteSecutiryPermissionService(this IServiceCollection services)
+        {
+            if (services is null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.RemoveAll<ISecutiryPermissionService>();
+            services.TryAddScoped<ISecutiryPermissionService, SqliteSecutiryPermissionService>();
             return services;
         }
 

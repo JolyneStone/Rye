@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Monica.Enums;
 using Monica.Jwt.Options;
 using Monica.Module;
+using Monica.Web.Module;
+
 using System;
 
 namespace Monica.Jwt
@@ -9,11 +12,11 @@ namespace Monica.Jwt
     /// <summary>
     /// JWT 模块
     /// </summary>
-    public class JwtModule : IStartupModule
+    public class JwtModule : AspNetCoreModule
     {
-        public ModuleLevel Level => ModuleLevel.FrameWork;
+        public override ModuleLevel Level => ModuleLevel.FrameWork;
 
-        public uint Order => 1;
+        public override uint Order => 1;
 
         private readonly Action<JwtOptions> _action;
 
@@ -26,7 +29,7 @@ namespace Monica.Jwt
             _action = action ?? throw new ArgumentNullException(nameof(action));
         }
 
-        public void ConfigueServices(IServiceCollection services)
+        public override void ConfigueServices(IServiceCollection services)
         {
             if (_action != null)
             {
@@ -38,7 +41,7 @@ namespace Monica.Jwt
             }
         }
 
-        public void Configure(IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app)
         {
         }
     }

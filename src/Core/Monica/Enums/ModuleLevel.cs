@@ -7,7 +7,7 @@
     {
         /// <summary>
         /// 核心级别，表示系统的核心模块
-        /// 现版本只有MonicaCoreModule和AspNetCoreModule两个模块
+        /// 现版本只有MonicaCoreModule、AspNetCoreModule等两个模块
         /// </summary>
         Core = 1,
         /// <summary>

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\Monica.Entities\Monica.Entities.csproj" />
+    <ProjectReference Include="..\Monica.Authorization.Abstraction\Monica.Authorization.Abstraction.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -29,9 +29,9 @@ namespace Monica.Test
                 })
                 .ConfigureServices((context, services) =>
                 {
+                    services = services.UseDynamicProxyService();
                     services
                         .AddCoreModule()
-                        .AddAopModule()
                         .AddCacheModule()
                         .ConfigureModule();
                 }).Build();

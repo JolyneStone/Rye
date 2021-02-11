@@ -13,8 +13,13 @@
         Desktop = 2,
 
         /// <summary>
-        /// 手机客户端
+        /// iOS客户端
         /// </summary>
-        Mobile = 3
+        iOS = 3,
+
+        /// <summary>
+        /// 安卓客户端
+        /// </summary>
+        Android = 4,
     }
 }

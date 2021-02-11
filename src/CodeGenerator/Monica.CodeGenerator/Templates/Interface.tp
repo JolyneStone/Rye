@@ -6,7 +6,7 @@ using Monica.DataAccess;
 
 namespace @Model.NameSpace
 {
-    @RawInline($"[Injection(ServiceLifetime.Singleton, InjectionPolicy.Replace)]")
+    @RawInline($"[Injection(ServiceLifetime.Scoped, InjectionPolicy.Replace)]")
 	@RawInline($"public interface I{Model.Name} : IDataBaseOperate<{Model.Name}>")
 	{
 		@RawInline($"bool Delete({GetPrimaryKeyParams()});")        

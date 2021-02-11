@@ -31,6 +31,36 @@ namespace Monica.Cache
             return _cache.ExistAsync(key, token);
         }
 
+        public void Set<T>(string key, T data, int cacheSeconds = 60)
+        {
+            Check.NotNullOrEmpty(key, nameof(key));
+            _cache.Set(key, data, cacheSeconds);
+        }
+
+        public void Set<T>(string key, T data, DistributedCacheEntryOptions options)
+        {
+            Check.NotNullOrEmpty(key, nameof(key));
+            _cache.Set(key, data, options);
+        }
+
+        public async Task SetAsync<T>(string key, T data, int cacheSeconds = 60)
+        {
+            Check.NotNullOrEmpty(key, nameof(key));
+            await _cache.SetAsync(key, data, cacheSeconds);
+        }
+
+        public async Task SetAsync<T>(string key, T data, DistributedCacheEntryOptions options)
+        {
+            Check.NotNullOrEmpty(key, nameof(key));
+            await _cache.SetAsync(key, data, options);
+        }
+
+        public async Task SetAsync<T>(string key, T data, DistributedCacheEntryOptions options, CancellationToken token = default)
+        {
+            Check.NotNullOrEmpty(key, nameof(key));
+            await _cache.SetAsync(key, data, options, token);
+        }
+
         public T Get<T>(string key)
         {
             Check.NotNullOrEmpty(key, nameof(key));

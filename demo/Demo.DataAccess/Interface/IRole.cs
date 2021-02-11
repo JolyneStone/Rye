@@ -6,7 +6,7 @@ using Monica.DataAccess;
 
 namespace Demo.DataAccess
 {
-    [Injection(ServiceLifetime.Singleton, InjectionPolicy.Replace)]
+    [Injection(ServiceLifetime.Scoped, InjectionPolicy.Replace)]
 	public interface IRole : IDataBaseOperate<Role>
 	{
 		bool Delete(int id);        

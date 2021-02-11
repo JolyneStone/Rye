@@ -2,8 +2,10 @@
 
 using Monica.AspectFlare;
 using Monica.DependencyInjection;
+using Monica.Reflection;
 
 using System;
+using System.ComponentModel;
 using System.Text;
 
 namespace Monica.Cache
@@ -69,11 +71,15 @@ namespace Monica.Cache
                 CacheKey = callingInterceptorContext.Owner.GetType().FullName + "." + callingInterceptorContext.MethodName;
             }
             var key = GetKey(CacheKey, callingInterceptorContext.Parameters);
-            var result = Cache.Get<object>(key);
+            var result = Cache.GetString(key);
             if (result != null)
             {
                 callingInterceptorContext.HasResult = true;
-                callingInterceptorContext.Result = result;
+                callingInterceptorContext.Result = callingInterceptorContext.ReturnType.GetUnNullableType().IsPrimitive ?
+                    TypeDescriptor.GetConverter(callingInterceptorContext.ReturnType).ConvertFromInvariantString(result) :
+                    (callingInterceptorContext.ReturnType == typeof(string) ?
+                    result :
+                    result.ToObject());
             }
         }
 
@@ -94,7 +100,7 @@ namespace Monica.Cache
                     {
                         options.SetAbsoluteExpiration(TimeSpan.FromSeconds(CacheSeconds));
                     }
-                    Cache.Set(key, result, options);
+                    Cache.SetString(key, result.ToJsonString(), options);
                 }
             }
         }

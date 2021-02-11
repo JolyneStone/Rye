@@ -2,7 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+
 using Monica.Cache;
+using Monica.Cache.Redis;
+
 using System;
 
 namespace Monica
@@ -23,7 +27,7 @@ namespace Monica
                 var congiration = services.GetSingletonInstance<IConfiguration>();
                 action = options =>
                 {
-                    congiration.GetSection("Framework:RedisCache").Bind(options);
+                    congiration.GetSection("Framework:Redis").Bind(options);
                 };
             }
             services.AddDistributedRedisCache(action);
@@ -45,5 +49,15 @@ namespace Monica
             return services;
         }
 
+        /// <summary>
+        /// 添加缓存模块
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddRedisCacheModule(this IServiceCollection services, Action<RedisCacheOptions> action = null)
+        {
+            var module = new CacheRedisModule(action);
+            return services.AddModule<CacheRedisModule>(module);
+        }
     }
 }

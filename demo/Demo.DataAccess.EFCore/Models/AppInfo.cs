@@ -13,5 +13,6 @@ namespace Demo.DataAccess.EFCore.Models
         public string AppKey { get; set; }
         public string AppSecret { get; set; }
         public DateTime CreateTime { get; set; }
+        public sbyte Status { get; set; }
     }
 }

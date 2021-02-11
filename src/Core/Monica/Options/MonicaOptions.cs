@@ -21,6 +21,7 @@ namespace Monica.Options
                 UseMonicaLog = true
             };
             AssemblyPatterns = new string[0];
+            AutoInjection = false;
         }
 
         //public DatabaseType DefaultDatabaseType { get; set; }
@@ -34,5 +35,6 @@ namespace Monica.Options
         public LoggerOptions Logger { get; set; }
 
         public string[] AssemblyPatterns { get; set; }
+        public bool AutoInjection { get; set; }
     }
 }

@@ -22,11 +22,11 @@ namespace Demo.DataAccess.Tests
         public async Task GenerateModelAsync()
         {
             var generator = new MySqlModelCompiler();
-            await generator.GenerateAsync(new ModelConfig
+            await generator.GenerateAllAsync(new ModelConfig
             {
                 ConnectionString = ConnectionString,
                 Database = "MonicaDemo",
-                Table = "userInfo",
+                //Table = "userInfo",
                 NameSpace = "Demo.DataAccess",
                 FilePath = @"C:\monster\Code\KiraNet\Monica\demo\Demo.DataAccess\Model"
             });
@@ -36,11 +36,11 @@ namespace Demo.DataAccess.Tests
         public async Task GenerateInterfaceAsync()
         {
             var generator = new MySqlInterfaceCompiler();
-            await generator.GenerateAsync(new ModelConfig
+            await generator.GenerateAllAsync(new ModelConfig
             {
                 ConnectionString = ConnectionString,
                 Database = "MonicaDemo",
-                Table = "userInfo",
+                //Table = "userInfo",
                 NameSpace = "Demo.DataAccess",
                 FilePath = @"C:\monster\Code\KiraNet\Monica\demo\Demo.DataAccess\Interface"
             });
@@ -50,11 +50,11 @@ namespace Demo.DataAccess.Tests
         public async Task GenerateDaoAsync()
         {
             var generator = new MySqlDaoCompiler();
-            await generator.GenerateAsync(new ModelConfig
+            await generator.GenerateAllAsync(new ModelConfig
             {
                 ConnectionString = ConnectionString,
                 Database = "MonicaDemo",
-                Table = "userInfo",
+                //Table = "userInfo",
                 NameSpace = "Demo.DataAccess",
                 FilePath = @"C:\monster\Code\KiraNet\Monica\demo\Demo.DataAccess\Dao"
             });

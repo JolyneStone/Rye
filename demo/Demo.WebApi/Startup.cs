@@ -2,6 +2,7 @@ using Demo.Core.Common;
 using Demo.Core.Common.Enums;
 using Demo.DataAccess;
 using Demo.DataAccess.EFCore.DbContexts;
+using Demo.Library;
 using Demo.WebApi.Swagger;
 
 using Microsoft.AspNetCore.Builder;
@@ -9,6 +10,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,6 +36,19 @@ namespace Demo.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers();
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
             services.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 1);
@@ -50,21 +66,24 @@ namespace Demo.WebApi
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen(options => options.OperationFilter<SwaggerDefaultValues>());
 
-
+            services = services.UseDynamicProxyService(); // 使用动态代理
             services
+                .AddCoreModule(options =>
+                {
+                    options.AutoInjection = true;
+                })
                 .AddWebModule(options =>
                 {
                     options.GlobalActionFilter.Enabled = true;
                     options.GlobalExceptionFilter.Enabled = true;
                 })
-                .AddAopModule()
-                .AddCacheModule()
+                .AddRedisCacheModule()
                 .AddMySqlModule<MyDbConnectionProvider>()
-                .AddMySqlEFCodeModule<MyDbContext>("MonicaDemo")
+                .AddMySqlEFCodeModule<DefaultDbContext>("MonicaDemo")
                 .AddJwtModule()
+                .AddAuthorizationModule()
+                .AddModule<DemoModule>()
                 .ConfigureModule();
-
-            services.AddControllers();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
@@ -105,7 +124,7 @@ namespace Demo.WebApi
         {
             public IActionResult CreateResponse(ErrorResponseContext context)
             {
-                return new JsonResult(new Result
+                return new JsonResult(new ApiResult
                 {
                     Code = (int)StatusCode.Fail,
                     Message = "Unsupported Api Version",

@@ -22,7 +22,6 @@ namespace Monica.DataAccess
 
         public IDbConnection GetConnection()
         {
-      
             string connectString = GetWriteDbConnectionString();
             return GetDbConnectionCore(connectString);
         }
@@ -46,34 +45,38 @@ namespace Monica.DataAccess
 
         public IDbConnection GetDbConnection(string connectionString)
         {
-            if (!_connnectionPools.TryGetValue(connectionString, out var conn))
+            if (!_connnectionPools.TryGetValue(connectionString, out var conn) || conn.State == ConnectionState.Closed)
             {
                 lock (_sync)
                 {
                     if (!_connnectionPools.TryGetValue(connectionString, out conn))
                     {
                         conn = GetDbConnectionCore(connectionString);
-                        _connnectionPools.Add(connectionString, conn);
+                        _connnectionPools[connectionString] = conn;
                     }
                 }
             }
+            if (conn.State != ConnectionState.Open)
+                conn.Open();
             return conn;
         }
 
         public IDbConnection GetDbConnectionByName(string connectionName)
         {
             var connectionString = GetConnectionString(connectionName);
-            if (!_connnectionPools.TryGetValue(connectionString, out var conn))
+            if (!_connnectionPools.TryGetValue(connectionString, out var conn) || conn.State == ConnectionState.Closed)
             {
                 lock (_sync)
                 {
                     if (!_connnectionPools.TryGetValue(connectionString, out conn))
                     {
                         conn = GetDbConnectionCore(connectionString);
-                        _connnectionPools.Add(connectionString, conn);
+                        _connnectionPools[connectionString] = conn;
                     }
                 }
             }
+            if (conn.State != ConnectionState.Open)
+                conn.Open();
             return conn;
         }
 
@@ -91,7 +94,10 @@ namespace Monica.DataAccess
             {
                 foreach (var conn in _connnectionPools)
                 {
-                    conn.Value?.Dispose();
+                    if (conn.Value != null && conn.Value.State != ConnectionState.Closed)
+                    {
+                        conn.Value.Dispose();
+                    }
                 }
             }
         }

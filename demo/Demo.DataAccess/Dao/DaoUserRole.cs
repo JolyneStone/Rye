@@ -91,7 +91,7 @@ namespace Demo.DataAccess
 
         public int InsertUpdate(UserRole model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE userRole SET WHERE 1=1  AND userId=@UserId AND roleId=@RoleId;INSERT INTO userRole (userId,roleId); SELECT @UserId,@RoleId WHERE NOT EXISTS (SELECT 1 FROM userRole where 1=1  AND userId=@UserId AND roleId=@RoleId)";
+            string sql = "UPDATE userRole SET WHERE 1=1  AND userId=@UserId AND roleId=@RoleId;INSERT INTO userRole (userId,roleId) SELECT @UserId,@RoleId WHERE NOT EXISTS (SELECT 1 FROM userRole where 1=1  AND userId=@UserId AND roleId=@RoleId)";
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
             else
@@ -100,7 +100,7 @@ namespace Demo.DataAccess
         
         public async Task<int> InsertUpdateAsync(UserRole model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE userRole SET WHERE 1=1  AND userId=@UserId AND roleId=@RoleId;INSERT INTO userRole (userId,roleId); SELECT @UserId,@RoleId WHERE NOT EXISTS (SELECT 1 FROM userRole where 1=1  AND userId=@UserId AND roleId=@RoleId)";
+            string sql = "UPDATE userRole SET WHERE 1=1  AND userId=@UserId AND roleId=@RoleId;INSERT INTO userRole (userId,roleId) SELECT @UserId,@RoleId WHERE NOT EXISTS (SELECT 1 FROM userRole where 1=1  AND userId=@UserId AND roleId=@RoleId)";
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
             else

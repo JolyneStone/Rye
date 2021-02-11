@@ -20,10 +20,10 @@ namespace Demo.DataAccess
             ConnectionProvider = provider;
         }
 
-		public long GetLastIdentity()
+		public int GetLastIdentity()
 		{
 			IDbConnection conn = ConnectionProvider.GetConnection();
-			return conn.ExecuteScalar<long>("SELECT SCOPE_IDENTITY()");
+			return conn.ExecuteScalar<int>("SELECT SCOPE_IDENTITY()");
 		}
 
         public int Insert(UserInfo model, IDbTransaction trans, IDbConnection conn)
@@ -96,7 +96,7 @@ namespace Demo.DataAccess
 
         public int InsertUpdate(UserInfo model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE userInfo SET  nickame=@Nickame, phome=@Phome, email=@Email, status=@Status, registerTime=@RegisterTime, updateTime=@UpdateTime, lock=@Lock, lockTime=@LockTime, password=@Password, appId=@AppId, profilePicture=@ProfilePicture WHERE 1=1  AND id=@Id;INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture); SELECT @Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture WHERE NOT EXISTS (SELECT 1 FROM userInfo where 1=1  AND id=@Id)";
+            string sql = "UPDATE userInfo SET  nickame=@Nickame, phome=@Phome, email=@Email, status=@Status, registerTime=@RegisterTime, updateTime=@UpdateTime, lock=@Lock, lockTime=@LockTime, password=@Password, appId=@AppId, profilePicture=@ProfilePicture WHERE 1=1  AND id=@Id;INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) SELECT @Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture WHERE NOT EXISTS (SELECT 1 FROM userInfo where 1=1  AND id=@Id)";
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
             else
@@ -105,7 +105,7 @@ namespace Demo.DataAccess
         
         public async Task<int> InsertUpdateAsync(UserInfo model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE userInfo SET  nickame=@Nickame, phome=@Phome, email=@Email, status=@Status, registerTime=@RegisterTime, updateTime=@UpdateTime, lock=@Lock, lockTime=@LockTime, password=@Password, appId=@AppId, profilePicture=@ProfilePicture WHERE 1=1  AND id=@Id;INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture); SELECT @Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture WHERE NOT EXISTS (SELECT 1 FROM userInfo where 1=1  AND id=@Id)";
+            string sql = "UPDATE userInfo SET  nickame=@Nickame, phome=@Phome, email=@Email, status=@Status, registerTime=@RegisterTime, updateTime=@UpdateTime, lock=@Lock, lockTime=@LockTime, password=@Password, appId=@AppId, profilePicture=@ProfilePicture WHERE 1=1  AND id=@Id;INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) SELECT @Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture WHERE NOT EXISTS (SELECT 1 FROM userInfo where 1=1  AND id=@Id)";
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
             else
@@ -156,7 +156,7 @@ namespace Demo.DataAccess
             return await UpdateAsync(model, null, conn);
         }
 
-        public bool Delete(long id, IDbTransaction trans, IDbConnection conn)
+        public bool Delete(int id, IDbTransaction trans, IDbConnection conn)
         {
             string sql = "DELETE FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
@@ -167,13 +167,13 @@ namespace Demo.DataAccess
                 return conn.Execute(sql, param: _params, commandType: CommandType.Text,transaction: trans) > 0;
         }
 
-        public bool Delete(long id)
+        public bool Delete(int id)
         {
             IDbConnection conn = ConnectionProvider.GetConnection();
             return Delete(id, null,conn);
         }
 
-        public async Task<bool> DeleteAsync(long id, IDbTransaction trans, IDbConnection conn)
+        public async Task<bool> DeleteAsync(int id, IDbTransaction trans, IDbConnection conn)
         {
             string sql = "DELETE FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
@@ -184,13 +184,13 @@ namespace Demo.DataAccess
                 return await conn.ExecuteAsync(sql, param: _params, commandType: CommandType.Text,transaction: trans) > 0;
         }
 
-        public async Task<bool> DeleteAsync(long id)
+        public async Task<bool> DeleteAsync(int id)
         {   
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await DeleteAsync(id, null,conn);
         }
 
-        public UserInfo GetModel(long id)
+        public UserInfo GetModel(int id)
 		{
             string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
@@ -200,7 +200,7 @@ namespace Demo.DataAccess
             return conn.QueryFirstOrDefault<UserInfo>(sql, param: _params, commandType: CommandType.Text);
 		}				
         
-        public UserInfo GetModelByWriteDb(long id)
+        public UserInfo GetModelByWriteDb(int id)
 		{
             string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
@@ -210,7 +210,7 @@ namespace Demo.DataAccess
             return conn.QueryFirstOrDefault<UserInfo>(sql, param: _params, commandType: CommandType.Text);
 		}
         
-        public async Task<UserInfo> GetModelAsync(long id)
+        public async Task<UserInfo> GetModelAsync(int id)
 		{  
             string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
@@ -220,7 +220,7 @@ namespace Demo.DataAccess
             return await conn.QueryFirstOrDefaultAsync<UserInfo>(sql, param: _params, commandType: CommandType.Text);
 		}	
         
-        public async Task<UserInfo> GetModelByWriteDbAsync(long id)
+        public async Task<UserInfo> GetModelByWriteDbAsync(int id)
 		{  
             string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
@@ -230,7 +230,7 @@ namespace Demo.DataAccess
             return await conn.QueryFirstOrDefaultAsync<UserInfo>(sql, param: _params, commandType: CommandType.Text);
 		}	
 
-        public UserInfo GetModel(long id, IDbTransaction trans, IDbConnection conn)
+        public UserInfo GetModel(int id, IDbTransaction trans, IDbConnection conn)
         {
             string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
@@ -244,7 +244,7 @@ namespace Demo.DataAccess
 
         }
 
-        public async Task<UserInfo> GetModelAsync(long id, IDbTransaction trans, IDbConnection conn)
+        public async Task<UserInfo> GetModelAsync(int id, IDbTransaction trans, IDbConnection conn)
         {
             string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
@@ -496,7 +496,7 @@ namespace Demo.DataAccess
 
         }
 
-        public bool Exists(long id)
+        public bool Exists(int id)
         {
             string sql = "SELECT 1 FROM userInfo  WHERE 1=1  AND id=@Id LIMIT 1";
             var _params = new DynamicParameters();
@@ -506,7 +506,7 @@ namespace Demo.DataAccess
             return conn.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
-        public bool ExistsByWriteDb(long id)
+        public bool ExistsByWriteDb(int id)
         {
             string sql = "SELECT 1 FROM userInfo  WHERE 1=1  AND id=@Id LIMIT 1";
             var _params = new DynamicParameters();
@@ -516,7 +516,7 @@ namespace Demo.DataAccess
             return conn.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
-        public async Task<bool> ExistsAsync(long id)
+        public async Task<bool> ExistsAsync(int id)
         {
             string sql = "SELECT 1 FROM userInfo  WHERE 1=1  AND id=@Id LIMIT 1";
             var _params = new DynamicParameters();
@@ -526,7 +526,7 @@ namespace Demo.DataAccess
             return await conn.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
-        public async Task<bool> ExistsByWriteDbAsync(long id)
+        public async Task<bool> ExistsByWriteDbAsync(int id)
         {
             string sql = "SELECT 1 FROM userInfo  WHERE 1=1  AND id=@Id LIMIT 1";
             var _params = new DynamicParameters();
@@ -536,7 +536,7 @@ namespace Demo.DataAccess
             return await conn.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
-        public bool Exists(long id, IDbTransaction trans, IDbConnection conn)
+        public bool Exists(int id, IDbTransaction trans, IDbConnection conn)
         {
             string sql = "SELECT 1 FROM userInfo  WHERE 1=1  AND id=@Id LIMIT 1";
             var _params = new DynamicParameters();
@@ -548,7 +548,7 @@ namespace Demo.DataAccess
                 return conn.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text, transaction: trans) > 0;
         }
 
-        public async Task<bool> ExistsAsync(long id, IDbTransaction trans, IDbConnection conn)
+        public async Task<bool> ExistsAsync(int id, IDbTransaction trans, IDbConnection conn)
         {
             string sql = "SELECT 1 FROM userInfo  WHERE 1=1  AND id=@Id LIMIT 1";
             var _params = new DynamicParameters();

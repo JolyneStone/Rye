@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Monica.Jwt
 {
@@ -15,6 +13,11 @@ namespace Monica.Jwt
         public string AccessToken { get; set; }
 
         /// <summary>
+        /// AccessToken有效期，UTC标准
+        /// </summary>
+        public long AccessExpires { get; set; }
+
+        /// <summary>
         /// 用于刷新AccessToken的RefreshToken
         /// </summary>
         public string RefreshToken { get; set; }
@@ -22,16 +25,26 @@ namespace Monica.Jwt
         /// <summary>
         /// RefreshToken有效期，UTC标准
         /// </summary>
-        public long RefreshUctExpires { get; set; }
+        public long RefreshExpires { get; set; }
 
         /// <summary>
-        /// 刷新Token是否过期
+        /// AssccToken是否过期
+        /// </summary>
+        public bool IsAccessExpired()
+        {
+            DateTime now = DateTime.Now;
+            long nowTick = now.ToUniversalTime().Ticks; //now.ToJsGetTime().ParseByLong();
+            return AccessExpires > nowTick;
+        }
+
+        /// <summary>
+        /// RefreshToken是否过期
         /// </summary>
         public bool IsRefreshExpired()
         {
             DateTime now = DateTime.Now;
-            long nowTick = now.ToJsGetTime().ParseByLong();
-            return RefreshUctExpires > nowTick;
+            long nowTick = now.ToUniversalTime().Ticks; //now.ToJsGetTime().ParseByLong();
+            return RefreshExpires > nowTick;
         }
     }
 }

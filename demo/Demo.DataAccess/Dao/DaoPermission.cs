@@ -28,7 +28,7 @@ namespace Demo.DataAccess
 
         public int Insert(Permission model, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO permission (name,status,menuId,updateTime) VALUES (@Name,@Status,@MenuId,@UpdateTime);";
+        	string sql = "INSERT INTO permission (name,code,sort,icon,status,parentId,appId,updateTime) VALUES (@Name,@Code,@Sort,@Icon,@Status,@ParentId,@AppId,@UpdateTime);";
 
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
@@ -38,7 +38,7 @@ namespace Demo.DataAccess
 
         public async Task<int> InsertAsync(Permission model, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO permission (name,status,menuId,updateTime) VALUES (@Name,@Status,@MenuId,@UpdateTime);";
+        	string sql = "INSERT INTO permission (name,code,sort,icon,status,parentId,appId,updateTime) VALUES (@Name,@Code,@Sort,@Icon,@Status,@ParentId,@AppId,@UpdateTime);";
 
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
@@ -60,7 +60,7 @@ namespace Demo.DataAccess
 
         public int BatchInsert(IEnumerable<Permission> items, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO permission (name,status,menuId,updateTime) VALUES (@Name,@Status,@MenuId,@UpdateTime);";
+        	string sql = "INSERT INTO permission (name,code,sort,icon,status,parentId,appId,updateTime) VALUES (@Name,@Code,@Sort,@Icon,@Status,@ParentId,@AppId,@UpdateTime);";
 
             if (trans == null)
                 return conn.Execute(sql, param: items, commandType: CommandType.Text);
@@ -70,7 +70,7 @@ namespace Demo.DataAccess
         
         public async Task<int> BatchInsertAsync(IEnumerable<Permission> items, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO permission (name,status,menuId,updateTime) VALUES (@Name,@Status,@MenuId,@UpdateTime);";
+        	string sql = "INSERT INTO permission (name,code,sort,icon,status,parentId,appId,updateTime) VALUES (@Name,@Code,@Sort,@Icon,@Status,@ParentId,@AppId,@UpdateTime);";
 
              if (trans == null)
                 return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
@@ -80,7 +80,7 @@ namespace Demo.DataAccess
 
         public int BatchInsert(IEnumerable<Permission> items)
         {
-        	string sql = "INSERT INTO permission (name,status,menuId,updateTime) VALUES (@Name,@Status,@MenuId,@UpdateTime);";
+        	string sql = "INSERT INTO permission (name,code,sort,icon,status,parentId,appId,updateTime) VALUES (@Name,@Code,@Sort,@Icon,@Status,@ParentId,@AppId,@UpdateTime);";
 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Execute(sql, param: items, commandType: CommandType.Text);
@@ -88,7 +88,7 @@ namespace Demo.DataAccess
         
         public async Task<int> BatchInsertAsync(IEnumerable<Permission> items)
         {
-        	string sql = "INSERT INTO permission (name,status,menuId,updateTime) VALUES (@Name,@Status,@MenuId,@UpdateTime);";
+        	string sql = "INSERT INTO permission (name,code,sort,icon,status,parentId,appId,updateTime) VALUES (@Name,@Code,@Sort,@Icon,@Status,@ParentId,@AppId,@UpdateTime);";
 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
@@ -96,7 +96,7 @@ namespace Demo.DataAccess
 
         public int InsertUpdate(Permission model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE permission SET  name=@Name, status=@Status, menuId=@MenuId, updateTime=@UpdateTime WHERE 1=1  AND id=@Id;INSERT INTO permission (name,status,menuId,updateTime); SELECT @Name,@Status,@MenuId,@UpdateTime WHERE NOT EXISTS (SELECT 1 FROM permission where 1=1  AND id=@Id)";
+            string sql = "UPDATE permission SET  name=@Name, code=@Code, sort=@Sort, icon=@Icon, status=@Status, parentId=@ParentId, appId=@AppId, updateTime=@UpdateTime WHERE 1=1  AND id=@Id;INSERT INTO permission (name,code,sort,icon,status,parentId,appId,updateTime) SELECT @Name,@Code,@Sort,@Icon,@Status,@ParentId,@AppId,@UpdateTime WHERE NOT EXISTS (SELECT 1 FROM permission where 1=1  AND id=@Id)";
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
             else
@@ -105,7 +105,7 @@ namespace Demo.DataAccess
         
         public async Task<int> InsertUpdateAsync(Permission model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE permission SET  name=@Name, status=@Status, menuId=@MenuId, updateTime=@UpdateTime WHERE 1=1  AND id=@Id;INSERT INTO permission (name,status,menuId,updateTime); SELECT @Name,@Status,@MenuId,@UpdateTime WHERE NOT EXISTS (SELECT 1 FROM permission where 1=1  AND id=@Id)";
+            string sql = "UPDATE permission SET  name=@Name, code=@Code, sort=@Sort, icon=@Icon, status=@Status, parentId=@ParentId, appId=@AppId, updateTime=@UpdateTime WHERE 1=1  AND id=@Id;INSERT INTO permission (name,code,sort,icon,status,parentId,appId,updateTime) SELECT @Name,@Code,@Sort,@Icon,@Status,@ParentId,@AppId,@UpdateTime WHERE NOT EXISTS (SELECT 1 FROM permission where 1=1  AND id=@Id)";
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
             else
@@ -128,7 +128,7 @@ namespace Demo.DataAccess
         
         public int Update(Permission model, IDbTransaction trans, IDbConnection conn)
 		{
-            string sql = "UPDATE permission SET  name=@Name, status=@Status, menuId=@MenuId, updateTime=@UpdateTime WHERE 1=1  AND id=@Id";
+            string sql = "UPDATE permission SET  name=@Name, code=@Code, sort=@Sort, icon=@Icon, status=@Status, parentId=@ParentId, appId=@AppId, updateTime=@UpdateTime WHERE 1=1  AND id=@Id";
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
             else
@@ -192,7 +192,7 @@ namespace Demo.DataAccess
 
         public Permission GetModel(int id)
 		{
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -202,7 +202,7 @@ namespace Demo.DataAccess
         
         public Permission GetModelByWriteDb(int id)
 		{
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -212,7 +212,7 @@ namespace Demo.DataAccess
         
         public async Task<Permission> GetModelAsync(int id)
 		{  
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -222,7 +222,7 @@ namespace Demo.DataAccess
         
         public async Task<Permission> GetModelByWriteDbAsync(int id)
 		{  
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -232,7 +232,7 @@ namespace Demo.DataAccess
 
         public Permission GetModel(int id, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
             
@@ -246,7 +246,7 @@ namespace Demo.DataAccess
 
         public async Task<Permission> GetModelAsync(int id, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
             
@@ -260,7 +260,7 @@ namespace Demo.DataAccess
 
         public Permission GetModel(object param, string whereSql)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.QueryFirstOrDefault<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -268,7 +268,7 @@ namespace Demo.DataAccess
 
         public async Task<Permission> GetModelAsync(object param, string whereSql)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryFirstOrDefaultAsync<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -276,7 +276,7 @@ namespace Demo.DataAccess
 
         public Permission GetModelByWriteDb(object param, string whereSql)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.QueryFirstOrDefault<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -284,7 +284,7 @@ namespace Demo.DataAccess
 
         public async Task<Permission> GetModelByWriteDbAsync(object param, string whereSql)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryFirstOrDefaultAsync<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -292,7 +292,7 @@ namespace Demo.DataAccess
 
         public Permission GetModel(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             if (trans == null)
                 return conn.QueryFirstOrDefault<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -304,7 +304,7 @@ namespace Demo.DataAccess
 
         public async Task<Permission> GetModelAsync(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             if (trans == null)
                 return await conn.QueryFirstOrDefaultAsync<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -316,7 +316,7 @@ namespace Demo.DataAccess
 
         public Permission FirstOrDefault(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.QueryFirstOrDefault<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -324,7 +324,7 @@ namespace Demo.DataAccess
 
         public async Task<Permission> FirstOrDefaultAsync(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryFirstOrDefaultAsync<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -332,7 +332,7 @@ namespace Demo.DataAccess
 
         public Permission FirstOrDefaultByWriteDb(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.QueryFirstOrDefault<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -340,7 +340,7 @@ namespace Demo.DataAccess
 
         public async Task<Permission> FirstOrDefaultByWriteDbAsync(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryFirstOrDefaultAsync<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -348,7 +348,7 @@ namespace Demo.DataAccess
 
         public Permission FirstOrDefault(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             if (trans == null)
                 return conn.QueryFirstOrDefault<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -360,7 +360,7 @@ namespace Demo.DataAccess
 
         public async Task<Permission> FirstOrDefaultAsync(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             if (trans == null)
                 return await conn.QueryFirstOrDefaultAsync<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -380,7 +380,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Permission>> GetListAsync()
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryAsync<Permission>(sql, commandType: CommandType.Text);
@@ -400,14 +400,14 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Permission>> GetListAsync(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
                 
             return await conn.QueryAsync<Permission>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<Permission> GetListByWriteDb()
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Query<Permission>(sql, commandType: CommandType.Text);
@@ -415,7 +415,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Permission>> GetListByWriteDbAsync()
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryAsync<Permission>(sql, commandType: CommandType.Text);
@@ -423,7 +423,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<Permission> GetListByWriteDb(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
                 
             if (trans == null)
                 return conn.Query<Permission>(sql, commandType: CommandType.Text);
@@ -435,14 +435,14 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Permission>> GetListByWriteDbAsync(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  ORDER BY id DESC";
                 
             return await conn.QueryAsync<Permission>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<Permission> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.Query<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -450,7 +450,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Permission>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryAsync<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -458,7 +458,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<Permission> GetPageByWriteDb(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Query<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -466,7 +466,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Permission>> GetPageByWriteDbAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryAsync<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -474,7 +474,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<Permission> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = string.Format("SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             if (trans == null)
                 return conn.Query<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -486,7 +486,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Permission>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = string.Format("SELECT id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime FROM permission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             if (trans == null)
                 return await conn.QueryAsync<Permission>(sql, param: param, commandType: CommandType.Text);
@@ -701,7 +701,7 @@ namespace Demo.DataAccess
         
         private string GetColumns()
         {
-            return "id Id,name Name,status Status,menuId MenuId,updateTime UpdateTime";
+            return "id Id,name Name,code Code,sort Sort,icon Icon,status Status,parentId ParentId,appId AppId,updateTime UpdateTime";
         }
 	}
 }

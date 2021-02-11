@@ -8,7 +8,7 @@ namespace Monica.Cache
     /// <summary>
     /// 添加缓存模块
     /// </summary>
-    [DependsOnModules(typeof(AspectFlareModule))]
+    //[DependsOnModules(typeof(AspectFlareModule))]
     public class CacheModule: StartupModule
     {
         public override ModuleLevel Level => ModuleLevel.Core;

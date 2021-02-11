@@ -8,6 +8,54 @@ namespace Monica.Cache
     public interface ICacheService
     {
         /// <summary>
+        /// 设置缓存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        /// <param name="cacheSeconds"></param>
+        void Set<T>(string key, T data, int cacheSeconds = 60);
+
+        /// <summary>
+        /// 设置缓存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        /// <param name="options"></param>
+        void Set<T>(string key, T data, DistributedCacheEntryOptions options);
+
+        /// <summary>
+        /// 异步设置缓存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        /// <param name="cacheSeconds"></param>
+        /// <returns></returns>
+        Task SetAsync<T>(string key, T data, int cacheSeconds = 60);
+
+        /// <summary>
+        /// 异步设置缓存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        Task SetAsync<T>(string key, T data, DistributedCacheEntryOptions options);
+
+        /// <summary>
+        /// 异步设置缓存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        /// <param name="options"></param>
+        /// <param name="token"></param>
+        Task SetAsync<T>(string key, T data, DistributedCacheEntryOptions options, CancellationToken token = default);
+
+        /// <summary>
         /// 从缓存中获取值
         /// </summary>
         /// <typeparam name="T"></typeparam>

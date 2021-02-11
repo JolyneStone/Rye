@@ -12,7 +12,6 @@ namespace Monica.AspectFlare
         private static readonly Type CalledIntercept = typeof(CalledInterceptAttribute);
         private static readonly Type ExceptionIntercept = typeof(ExceptionInterceptAttribute);
         private static readonly Type Intercept = typeof(InterceptAttribute);
-
         public bool Validate(Type classType)
         {
             if (classType == null)

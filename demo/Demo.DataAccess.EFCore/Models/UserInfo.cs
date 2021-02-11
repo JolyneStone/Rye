@@ -7,7 +7,7 @@ namespace Demo.DataAccess.EFCore.Models
 {
     public partial class UserInfo
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
         public string Nickame { get; set; }
         public string Phome { get; set; }
         public string Email { get; set; }

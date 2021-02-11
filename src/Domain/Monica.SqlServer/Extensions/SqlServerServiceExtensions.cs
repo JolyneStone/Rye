@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
+using Monica.DataAccess;
+
 using System;
 
 namespace Monica.SqlServer
@@ -81,6 +84,7 @@ namespace Monica.SqlServer
             }
 
             services.TryAddScoped<SqlServerConnectionProvider, T>();
+            AddSqlServerSecutiryPermissionService(services);
             return services;
         }
 
@@ -97,6 +101,7 @@ namespace Monica.SqlServer
                 throw new ArgumentNullException(nameof(providerFunc));
             }
             services.TryAddScoped<SqlServerConnectionProvider>(providerFunc);
+            AddSqlServerSecutiryPermissionService(services);
             return services;
         }
 
@@ -113,6 +118,7 @@ namespace Monica.SqlServer
             }
 
             services.TryAddScoped(typeof(SqlServerConnectionProvider), providerType);
+            AddSqlServerSecutiryPermissionService(services);
             return services;
         }
 
@@ -129,6 +135,19 @@ namespace Monica.SqlServer
             }
 
             services.TryAddScoped(typeof(SqlServerConnectionProvider), providerFunc);
+            AddSqlServerSecutiryPermissionService(services);
+            return services;
+        }
+
+        public static IServiceCollection AddSqlServerSecutiryPermissionService(this IServiceCollection services)
+        {
+            if (services is null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.RemoveAll<ISecutiryPermissionService>();
+            services.TryAddScoped<ISecutiryPermissionService, SqlServerSecutiryPermissionService>();
             return services;
         }
 

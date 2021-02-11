@@ -14,6 +14,10 @@ namespace Demo.DataAccess
 		/// </summary>
 		public string Name { get; set; }
 		/// <summary>
+		/// 状态
+		/// </summary>
+		public byte Status { get; set; }
+		/// <summary>
 		/// 备注
 		/// </summary>
 		public string Remarks { get; set; }

@@ -28,7 +28,7 @@ namespace Demo.DataAccess
 
         public int Insert(Role model, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO role (name,remarks,createTime) VALUES (@Name,@Remarks,@CreateTime);";
+        	string sql = "INSERT INTO role (name,status,remarks,createTime) VALUES (@Name,@Status,@Remarks,@CreateTime);";
 
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
@@ -38,7 +38,7 @@ namespace Demo.DataAccess
 
         public async Task<int> InsertAsync(Role model, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO role (name,remarks,createTime) VALUES (@Name,@Remarks,@CreateTime);";
+        	string sql = "INSERT INTO role (name,status,remarks,createTime) VALUES (@Name,@Status,@Remarks,@CreateTime);";
 
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
@@ -60,7 +60,7 @@ namespace Demo.DataAccess
 
         public int BatchInsert(IEnumerable<Role> items, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO role (name,remarks,createTime) VALUES (@Name,@Remarks,@CreateTime);";
+        	string sql = "INSERT INTO role (name,status,remarks,createTime) VALUES (@Name,@Status,@Remarks,@CreateTime);";
 
             if (trans == null)
                 return conn.Execute(sql, param: items, commandType: CommandType.Text);
@@ -70,7 +70,7 @@ namespace Demo.DataAccess
         
         public async Task<int> BatchInsertAsync(IEnumerable<Role> items, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO role (name,remarks,createTime) VALUES (@Name,@Remarks,@CreateTime);";
+        	string sql = "INSERT INTO role (name,status,remarks,createTime) VALUES (@Name,@Status,@Remarks,@CreateTime);";
 
              if (trans == null)
                 return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
@@ -80,7 +80,7 @@ namespace Demo.DataAccess
 
         public int BatchInsert(IEnumerable<Role> items)
         {
-        	string sql = "INSERT INTO role (name,remarks,createTime) VALUES (@Name,@Remarks,@CreateTime);";
+        	string sql = "INSERT INTO role (name,status,remarks,createTime) VALUES (@Name,@Status,@Remarks,@CreateTime);";
 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Execute(sql, param: items, commandType: CommandType.Text);
@@ -88,7 +88,7 @@ namespace Demo.DataAccess
         
         public async Task<int> BatchInsertAsync(IEnumerable<Role> items)
         {
-        	string sql = "INSERT INTO role (name,remarks,createTime) VALUES (@Name,@Remarks,@CreateTime);";
+        	string sql = "INSERT INTO role (name,status,remarks,createTime) VALUES (@Name,@Status,@Remarks,@CreateTime);";
 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
@@ -96,7 +96,7 @@ namespace Demo.DataAccess
 
         public int InsertUpdate(Role model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE role SET  name=@Name, remarks=@Remarks, createTime=@CreateTime WHERE 1=1  AND id=@Id;INSERT INTO role (name,remarks,createTime); SELECT @Name,@Remarks,@CreateTime WHERE NOT EXISTS (SELECT 1 FROM role where 1=1  AND id=@Id)";
+            string sql = "UPDATE role SET  name=@Name, status=@Status, remarks=@Remarks, createTime=@CreateTime WHERE 1=1  AND id=@Id;INSERT INTO role (name,status,remarks,createTime) SELECT @Name,@Status,@Remarks,@CreateTime WHERE NOT EXISTS (SELECT 1 FROM role where 1=1  AND id=@Id)";
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
             else
@@ -105,7 +105,7 @@ namespace Demo.DataAccess
         
         public async Task<int> InsertUpdateAsync(Role model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE role SET  name=@Name, remarks=@Remarks, createTime=@CreateTime WHERE 1=1  AND id=@Id;INSERT INTO role (name,remarks,createTime); SELECT @Name,@Remarks,@CreateTime WHERE NOT EXISTS (SELECT 1 FROM role where 1=1  AND id=@Id)";
+            string sql = "UPDATE role SET  name=@Name, status=@Status, remarks=@Remarks, createTime=@CreateTime WHERE 1=1  AND id=@Id;INSERT INTO role (name,status,remarks,createTime) SELECT @Name,@Status,@Remarks,@CreateTime WHERE NOT EXISTS (SELECT 1 FROM role where 1=1  AND id=@Id)";
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
             else
@@ -128,7 +128,7 @@ namespace Demo.DataAccess
         
         public int Update(Role model, IDbTransaction trans, IDbConnection conn)
 		{
-            string sql = "UPDATE role SET  name=@Name, remarks=@Remarks, createTime=@CreateTime WHERE 1=1  AND id=@Id";
+            string sql = "UPDATE role SET  name=@Name, status=@Status, remarks=@Remarks, createTime=@CreateTime WHERE 1=1  AND id=@Id";
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
             else
@@ -192,7 +192,7 @@ namespace Demo.DataAccess
 
         public Role GetModel(int id)
 		{
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -202,7 +202,7 @@ namespace Demo.DataAccess
         
         public Role GetModelByWriteDb(int id)
 		{
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -212,7 +212,7 @@ namespace Demo.DataAccess
         
         public async Task<Role> GetModelAsync(int id)
 		{  
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -222,7 +222,7 @@ namespace Demo.DataAccess
         
         public async Task<Role> GetModelByWriteDbAsync(int id)
 		{  
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -232,7 +232,7 @@ namespace Demo.DataAccess
 
         public Role GetModel(int id, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
             
@@ -246,7 +246,7 @@ namespace Demo.DataAccess
 
         public async Task<Role> GetModelAsync(int id, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
             
@@ -260,7 +260,7 @@ namespace Demo.DataAccess
 
         public Role GetModel(object param, string whereSql)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.QueryFirstOrDefault<Role>(sql, param: param, commandType: CommandType.Text);
@@ -268,7 +268,7 @@ namespace Demo.DataAccess
 
         public async Task<Role> GetModelAsync(object param, string whereSql)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryFirstOrDefaultAsync<Role>(sql, param: param, commandType: CommandType.Text);
@@ -276,7 +276,7 @@ namespace Demo.DataAccess
 
         public Role GetModelByWriteDb(object param, string whereSql)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.QueryFirstOrDefault<Role>(sql, param: param, commandType: CommandType.Text);
@@ -284,7 +284,7 @@ namespace Demo.DataAccess
 
         public async Task<Role> GetModelByWriteDbAsync(object param, string whereSql)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryFirstOrDefaultAsync<Role>(sql, param: param, commandType: CommandType.Text);
@@ -292,7 +292,7 @@ namespace Demo.DataAccess
 
         public Role GetModel(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             if (trans == null)
                 return conn.QueryFirstOrDefault<Role>(sql, param: param, commandType: CommandType.Text);
@@ -304,7 +304,7 @@ namespace Demo.DataAccess
 
         public async Task<Role> GetModelAsync(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             if (trans == null)
                 return await conn.QueryFirstOrDefaultAsync<Role>(sql, param: param, commandType: CommandType.Text);
@@ -316,7 +316,7 @@ namespace Demo.DataAccess
 
         public Role FirstOrDefault(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.QueryFirstOrDefault<Role>(sql, param: param, commandType: CommandType.Text);
@@ -324,7 +324,7 @@ namespace Demo.DataAccess
 
         public async Task<Role> FirstOrDefaultAsync(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryFirstOrDefaultAsync<Role>(sql, param: param, commandType: CommandType.Text);
@@ -332,7 +332,7 @@ namespace Demo.DataAccess
 
         public Role FirstOrDefaultByWriteDb(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.QueryFirstOrDefault<Role>(sql, param: param, commandType: CommandType.Text);
@@ -340,7 +340,7 @@ namespace Demo.DataAccess
 
         public async Task<Role> FirstOrDefaultByWriteDbAsync(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryFirstOrDefaultAsync<Role>(sql, param: param, commandType: CommandType.Text);
@@ -348,7 +348,7 @@ namespace Demo.DataAccess
 
         public Role FirstOrDefault(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             if (trans == null)
                 return conn.QueryFirstOrDefault<Role>(sql, param: param, commandType: CommandType.Text);
@@ -360,7 +360,7 @@ namespace Demo.DataAccess
 
         public async Task<Role> FirstOrDefaultAsync(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             if (trans == null)
                 return await conn.QueryFirstOrDefaultAsync<Role>(sql, param: param, commandType: CommandType.Text);
@@ -380,7 +380,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Role>> GetListAsync()
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryAsync<Role>(sql, commandType: CommandType.Text);
@@ -400,14 +400,14 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Role>> GetListAsync(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
                 
             return await conn.QueryAsync<Role>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<Role> GetListByWriteDb()
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Query<Role>(sql, commandType: CommandType.Text);
@@ -415,7 +415,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Role>> GetListByWriteDbAsync()
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryAsync<Role>(sql, commandType: CommandType.Text);
@@ -423,7 +423,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<Role> GetListByWriteDb(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
                 
             if (trans == null)
                 return conn.Query<Role>(sql, commandType: CommandType.Text);
@@ -435,14 +435,14 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Role>> GetListByWriteDbAsync(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
+            string sql = "SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  ORDER BY id DESC";
                 
             return await conn.QueryAsync<Role>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<Role> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.Query<Role>(sql, param: param, commandType: CommandType.Text);
@@ -450,7 +450,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Role>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryAsync<Role>(sql, param: param, commandType: CommandType.Text);
@@ -458,7 +458,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<Role> GetPageByWriteDb(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Query<Role>(sql, param: param, commandType: CommandType.Text);
@@ -466,7 +466,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Role>> GetPageByWriteDbAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryAsync<Role>(sql, param: param, commandType: CommandType.Text);
@@ -474,7 +474,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<Role> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = string.Format("SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             if (trans == null)
                 return conn.Query<Role>(sql, param: param, commandType: CommandType.Text);
@@ -486,7 +486,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<Role>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = string.Format("SELECT id Id,name Name,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,name Name,status Status,remarks Remarks,createTime CreateTime FROM role  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             if (trans == null)
                 return await conn.QueryAsync<Role>(sql, param: param, commandType: CommandType.Text);
@@ -701,7 +701,7 @@ namespace Demo.DataAccess
         
         private string GetColumns()
         {
-            return "id Id,name Name,remarks Remarks,createTime CreateTime";
+            return "id Id,name Name,status Status,remarks Remarks,createTime CreateTime";
         }
 	}
 }

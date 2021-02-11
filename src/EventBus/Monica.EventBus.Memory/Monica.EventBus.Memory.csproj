@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Disruptor" Version="3.6.2" />
+    <PackageReference Include="Disruptor" Version="4.0.0-beta" />
   </ItemGroup>
 
   <ItemGroup>

@@ -35,10 +35,11 @@ namespace Monica.Web.Filter
         public int Seconds { get; set; }
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
-            var action = actionContext.RouteData.Values["action"];
-            var controller = actionContext.RouteData.Values["controller"];
+            var request = actionContext.HttpContext.Request;
+            //var action = actionContext.RouteData.Values["action"];
+            //var controller = actionContext.RouteData.Values["controller"];
             var ips = IpAddress.GetRemoteIpV4Address(actionContext.HttpContext);
-            var key = $"{controller}_{action}_{ips.First()}_{ips.ExpandAndToString().GetHashCode()}"; // 暂时用IP作为
+            var key = $"{ips.First()}{request.Path}{request.QueryString}";
             IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
             if (cache.Exist(key))
             {

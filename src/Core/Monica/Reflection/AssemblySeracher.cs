@@ -11,7 +11,7 @@ namespace Monica.Reflection
         protected override List<Assembly> FindAllItems()
         {
             List<Assembly> list = new List<Assembly>();
-            var libs = DependencyContext.Default.CompileLibraries.Where(lib => !lib.Serviceable);
+            var libs = DependencyContext.Default.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type == "project" && !lib.Name.StartsWith("Microsoft"));
             foreach (var lib in libs)
             {
                 var assembly = AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(lib.Name));

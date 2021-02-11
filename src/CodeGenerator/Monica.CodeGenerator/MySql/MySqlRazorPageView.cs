@@ -416,7 +416,7 @@ namespace Monica.CodeGenerator.MySql
                     strSql.AppendFormat("{0},", c.SqlColumn);
             }
             strSql = strSql.Remove(strSql.Length - 1, 1);
-            strSql.Append("); SELECT ");
+            strSql.Append(") SELECT ");
             foreach (var c in Model.Properties)
             {
                 if (!c.IsIdentity)

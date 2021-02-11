@@ -29,5 +29,9 @@ namespace Demo.DataAccess
 		/// 
 		/// </summary>
 		public DateTime CreateTime { get; set; }
+		/// <summary>
+		/// 状态
+		/// </summary>
+		public byte Status { get; set; }
     }
 }

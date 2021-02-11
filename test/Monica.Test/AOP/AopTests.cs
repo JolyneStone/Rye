@@ -11,13 +11,13 @@ namespace Monica.Test.AOP
 {
     public class AopTests
     {
-        [Fact()]
+        [Xunit.Fact()]
         public void Simple()
         {
             //var caller = new ReturnCaller<string>(default);
             //caller.Call(this, () => "123", null);
             var serviceCollection = new ServiceCollection()
-              .UseDynamicProxyService(true)
+              .UseDynamicProxyService()
               .AddScoped<ITest, TestClass>()
               .AddDistributedMemoryCache();
 
@@ -30,7 +30,7 @@ namespace Monica.Test.AOP
             //Assert.Equal("test", str);
             Debug.WriteLine("\n----------------------------------\n");
 
-            var proxyProvider = ProxyFlare.Flare.UseDefaultProviders(true).GetProvider();
+            var proxyProvider = services.GetRequiredService<IProxyProvider>();
             var test2 = proxyProvider.GetProxy<ITest, TestClass>();
             test2.Output(1);
             Assert.True(true);

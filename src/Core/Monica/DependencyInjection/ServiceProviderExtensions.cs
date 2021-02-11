@@ -20,15 +20,15 @@ namespace Monica.DependencyInjection
             return (IConfiguration)services.FirstOrDefault(d => d.ServiceType == typeof(IConfiguration))?.ImplementationInstance;
         }
 
-        /// <summary>
-        /// 获取MonicaOptions
-        /// </summary>
-        /// <param name="provider"></param>
-        /// <returns></returns>
-        public static MonicaOptions MonicaOptions(this IServiceProvider provider)
-        {
-            return provider.GetRequiredService<IOptions<MonicaOptions>>()?.Value;
-        }
+        ///// <summary>
+        ///// 获取MonicaOptions
+        ///// </summary>
+        ///// <param name="provider"></param>
+        ///// <returns></returns>
+        //public static MonicaOptions MonicaOptions(this IServiceProvider provider)
+        //{
+        //    return provider.GetRequiredService<IOptions<MonicaOptions>>()?.Value;
+        //}
 
         /// <summary>
         /// 获取指定类型的日志对象

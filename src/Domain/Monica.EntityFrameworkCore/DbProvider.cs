@@ -58,7 +58,7 @@ namespace Monica.EntityFrameworkCore
                 DbConnectionOptions dbConnectionOptions = dbName == null ? dbConnectionOptionsMap.First().Value : dbConnectionOptionsMap[dbName];
 
                 var builderOptions = _serviceProvider.GetServices<DbContextOptionsBuilderOptions>()
-                      ?.Where(d => (d.DbName == null || d.DbName == dbName) && (d.DbContextType == null || d.DbContextType == dbContextType))
+                      ?.Where(d => (dbName == null || d.DbName == null || d.DbName == dbName) && (d.DbContextType == null || d.DbContextType == dbContextType))
                       ?.OrderByDescending(d => d.DbName)
                       ?.OrderByDescending(d => d.DbContextType);
                 if (builderOptions == null || !builderOptions.Any())

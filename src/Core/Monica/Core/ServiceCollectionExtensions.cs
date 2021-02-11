@@ -78,6 +78,10 @@ namespace Monica
                     serviceCollection.AddLogging(builder => builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, MonicaLoggerProvider>()));
                 }
                 LogRecord.Options = options.Value?.Logger;
+                if (options.Value.AutoInjection)
+                {
+                    serviceCollection.AutoInject();
+                }
             }
             return serviceCollection;
         }

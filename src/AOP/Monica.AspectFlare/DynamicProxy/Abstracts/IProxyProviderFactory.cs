@@ -1,7 +1,7 @@
-﻿namespace Monica.AspectFlare.DynamicProxy
-{
-    public interface IProxyProviderFactory
-    {
-        IProxyProvider BuilderProvider(IProxyConfiguration configuration);
-    }
-}
+﻿//namespace Monica.AspectFlare.DynamicProxy
+//{
+//    public interface IProxyProviderFactory
+//    {
+//        IProxyProvider BuilderProvider(IProxyConfiguration configuration);
+//    }
+//}

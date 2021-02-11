@@ -6,25 +6,25 @@ using Monica.DataAccess;
 
 namespace Demo.DataAccess
 {
-    [Injection(ServiceLifetime.Singleton, InjectionPolicy.Replace)]
+    [Injection(ServiceLifetime.Scoped, InjectionPolicy.Replace)]
 	public interface IUserInfo : IDataBaseOperate<UserInfo>
 	{
-		bool Delete(long id);        
-        bool Delete(long id, IDbTransaction trans, IDbConnection conn);     
-        Task<bool> DeleteAsync(long id);
-        Task<bool> DeleteAsync(long id, IDbTransaction trans, IDbConnection conn);
-        UserInfo GetModel(long id);
-        UserInfo GetModelByWriteDb(long id);
-        Task<UserInfo> GetModelAsync(long id);
-        Task<UserInfo> GetModelByWriteDbAsync(long id);
-        UserInfo GetModel(long id, IDbTransaction trans, IDbConnection conn);
-        Task<UserInfo> GetModelAsync(long id, IDbTransaction trans, IDbConnection conn);
-        bool Exists(long id);
-        bool ExistsByWriteDb(long id);
-        Task<bool> ExistsAsync(long id);
-        Task<bool> ExistsByWriteDbAsync(long id);
-        bool Exists(long id, IDbTransaction trans, IDbConnection conn);
-        Task<bool> ExistsAsync(long id, IDbTransaction trans, IDbConnection conn);
-		long GetLastIdentity();
+		bool Delete(int id);        
+        bool Delete(int id, IDbTransaction trans, IDbConnection conn);     
+        Task<bool> DeleteAsync(int id);
+        Task<bool> DeleteAsync(int id, IDbTransaction trans, IDbConnection conn);
+        UserInfo GetModel(int id);
+        UserInfo GetModelByWriteDb(int id);
+        Task<UserInfo> GetModelAsync(int id);
+        Task<UserInfo> GetModelByWriteDbAsync(int id);
+        UserInfo GetModel(int id, IDbTransaction trans, IDbConnection conn);
+        Task<UserInfo> GetModelAsync(int id, IDbTransaction trans, IDbConnection conn);
+        bool Exists(int id);
+        bool ExistsByWriteDb(int id);
+        Task<bool> ExistsAsync(int id);
+        Task<bool> ExistsByWriteDbAsync(int id);
+        bool Exists(int id, IDbTransaction trans, IDbConnection conn);
+        Task<bool> ExistsAsync(int id, IDbTransaction trans, IDbConnection conn);
+		int GetLastIdentity();
 	}
 }

@@ -10,6 +10,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Monica.Jwt;
 using Monica.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace Monica
 {
@@ -81,29 +84,40 @@ namespace Monica
                 })
                 .AddJwtBearer(jwtOptions.Scheme, options =>
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = jwtOptions.GetValidationParameters();
+                    options.BackchannelHttpHandler = new HttpClientHandler()
                     {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret)), // key值长度至少是16
-
-                        ValidateIssuer = true,
-                        ValidIssuer = jwtOptions.Issuer,
-
-                        ValidateAudience = true,
-                        ValidAudience = jwtOptions.Audience,
-
-                        ValidateLifetime = jwtOptions.IsExpire,
-                        ClockSkew = TimeSpan.FromMinutes(jwtOptions.AccessExpireMins)
+                        UseDefaultCredentials = true,
+                    };
+                    //options.SecurityTokenValidators.Clear();
+                    //options.SecurityTokenValidators.Add(new UserJwtSecurityTokenHandler());
+                    options.Events = new JwtBearerEvents()
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            //Token expired
+                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                            {
+                                context.Response.Headers.Add("Token-Expired", "true");
+                            }
+                            return Task.CompletedTask;
+                        },
+                        // 生成SignalR的用户信息
+                        OnMessageReceived = context =>
+                        {
+                            string token = context.Request.Query["access_token"];
+                            string path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(token) && path.Contains("hub"))
+                            {
+                                context.Token = token;
+                            }
+                            return Task.CompletedTask;
+                        }
                     };
                 });
-
-                serviceCollection.AddAuthorization(opts =>
-                {
-                    opts.AddPolicy("MonicaPermission", policy => policy.Requirements.Add(new MonicaRequirement()));
-                });
-                serviceCollection.TryAddSingleton<IAuthorizationHandler, MonicaPolicyAuthorizationHandler>();
             }
-            serviceCollection.TryAddSingleton(typeof(IJwtTokenService<,,>), typeof(JwtTokenService<,,>));
+            serviceCollection.TryAddSingleton<IJwtTokenService, JwtTokenService>();
             return serviceCollection;
         }
     }

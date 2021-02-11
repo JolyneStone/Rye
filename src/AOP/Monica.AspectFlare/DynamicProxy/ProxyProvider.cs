@@ -6,15 +6,15 @@ namespace Monica.AspectFlare.DynamicProxy
 {
     public class ProxyProvider : IProxyProvider
     {
-        public ProxyProvider(IProxyConfiguration configuration, bool isValid)
+        public ProxyProvider(IProxyConfiguration configuration,
+            IProxyCollection collection,
+            IProxyTypeGenerator typeGenerator,
+            IProxyValidator validator)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _collection = new ProxyCollection();
-            _generator = new ProxyTypeGenerator(configuration);
-            if (isValid)
-            {
-                _validator = new ProxyValidator();
-            }
+            _collection = collection ?? throw new ArgumentNullException(nameof(collection));
+            _generator = typeGenerator ?? throw new ArgumentNullException(nameof(typeGenerator));
+            _validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
         private static readonly object _sync = new object();
@@ -58,12 +58,9 @@ namespace Monica.AspectFlare.DynamicProxy
                 throw new ArgumentNullException(nameof(classType));
             }
 
-            if (_validator != null)
+            if (!_validator.Validate(classType))
             {
-                if (!_validator.Validate(classType))
-                {
-                    throw new ArgumentException($"{classType.FullName} is an illegal type");
-                }
+                throw new ArgumentException($"{classType.FullName} is an illegal type");
             }
 
             var proxyType = _collection.GetProxyType(null, classType);
@@ -96,12 +93,9 @@ namespace Monica.AspectFlare.DynamicProxy
                 throw new ArgumentNullException(nameof(classType));
             }
 
-            if (_validator != null)
+            if (!_validator.Validate(interfaceType, classType))
             {
-                if (!_validator.Validate(interfaceType, classType))
-                {
-                    throw new ArgumentException($"{interfaceType.FullName} or {classType.FullName} are an illegal type");
-                }
+                throw new ArgumentException($"{interfaceType.FullName} or {classType.FullName} are an illegal type");
             }
 
             var proxyType = _collection.GetProxyType(interfaceType, classType);

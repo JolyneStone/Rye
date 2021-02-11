@@ -1,4 +1,5 @@
-﻿using System.Text.Encodings.Web;
+﻿using System;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
@@ -14,7 +15,7 @@ namespace Monica
                 PropertyNameCaseInsensitive = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-                ReferenceHandler = ReferenceHandler.Preserve,
+                //ReferenceHandler = ReferenceHandler.Preserve,
                 NumberHandling = JsonNumberHandling.AllowReadingFromString,
                 WriteIndented = true,
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
@@ -64,6 +65,27 @@ namespace Monica
             }
 
             return JsonSerializer.Deserialize<T>(value, options);
+        }
+
+        /// <summary>
+        /// 将Json字符串转化为指定类型的对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        public static object ToObject(this string value, Type type, JsonSerializerOptions options = null)
+        {
+            if (options != null)
+            {
+                options = _serializerOptions;
+            }
+
+            return typeof(JsonSerializer).GetMethod("Deserialize",
+                1, 
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static, null,
+                new Type[] { typeof(string), typeof(JsonSerializerOptions) },
+                null).Invoke(null, new object[] { value, options });
         }
     }
 }

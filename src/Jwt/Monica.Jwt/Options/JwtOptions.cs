@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+
 namespace Monica.Jwt.Options
 {
     /// <summary>
@@ -47,5 +51,32 @@ namespace Monica.Jwt.Options
         /// 方案名称，默认为Bearer
         /// </summary>
         public string Scheme { get; set; } = JwtBearerDefaults.AuthenticationScheme;
+
+        /// <summary>
+        /// 获取TokenValidationParameters
+        /// </summary>
+        /// <returns></returns>
+        public TokenValidationParameters GetValidationParameters()
+        {
+            var parameters = new TokenValidationParameters()
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret)), // key值长度至少是16
+                ValidateIssuer = true,
+                //IssuerValidator = (string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters) => Issuer,
+                ValidIssuer = Issuer,
+                RequireSignedTokens = false,
+                ValidateAudience = true,
+                ValidAudience = Audience,
+                ValidateLifetime = IsExpire,
+                RequireExpirationTime = IsExpire,
+                ClockSkew = TimeSpan.FromMinutes(AccessExpireMins),
+
+                LifetimeValidator = (before, expires, token, param) => expires > DateTime.UtcNow,
+                SignatureValidator = (token, param) => new JwtSecurityToken(token),
+            };
+
+            return parameters;
+        }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-
 using Monica.Logger;
-
 using System;
 
 namespace Monica.Web.Filter
@@ -72,8 +70,8 @@ namespace Monica.Web.Filter
             }
             logMessage += $"{elapsedMilliseconds} ms";
 
-            var action = context.RouteData.Values["action"];
-            LogRecord.Info(action + "_rsp", "Response:" + logMessage);
+            //var action = context.RouteData.Values["action"];
+            LogRecord.Info(context.HttpContext.Request.Path.Value.Trim('/').Replace("/", "_") + "_rsp", "Response:" + logMessage);
 
             if (elapsedMilliseconds >= 100d)
             {

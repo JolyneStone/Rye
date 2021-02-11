@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Domain\Monica.Entities\Monica.Entities.csproj" />
     <ProjectReference Include="..\..\src\Domain\Monica.EntityFrameworkCore.MySql\Monica.EntityFrameworkCore.MySql.csproj" />
-    <ProjectReference Include="..\Demo.Core\Demo.Core.csproj" />
   </ItemGroup>
 
 </Project>

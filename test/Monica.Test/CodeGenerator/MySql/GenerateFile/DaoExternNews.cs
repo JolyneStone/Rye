@@ -96,7 +96,7 @@ namespace Monica.DataAccess.MySql.Model
 
         public int InsertUpdate(ExternNews model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE ExternNews SET  SourceType=@SourceType, SourceId=@SourceId, IsPublish=@IsPublish, Title=@Title, ContractId=@ContractId WHERE 1=1  AND Id=@Id;INSERT INTO ExternNews (SourceType,SourceId,IsPublish,Title,ContractId); SELECT @SourceType,@SourceId,@IsPublish,@Title,@ContractId WHERE NOT EXISTS (SELECT 1 FROM ExternNews where 1=1  AND Id=@Id)";
+            string sql = "UPDATE ExternNews SET  SourceType=@SourceType, SourceId=@SourceId, IsPublish=@IsPublish, Title=@Title, ContractId=@ContractId WHERE 1=1  AND Id=@Id;INSERT INTO ExternNews (SourceType,SourceId,IsPublish,Title,ContractId) SELECT @SourceType,@SourceId,@IsPublish,@Title,@ContractId WHERE NOT EXISTS (SELECT 1 FROM ExternNews where 1=1  AND Id=@Id)";
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
             else
@@ -105,7 +105,7 @@ namespace Monica.DataAccess.MySql.Model
         
         public async Task<int> InsertUpdateAsync(ExternNews model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE ExternNews SET  SourceType=@SourceType, SourceId=@SourceId, IsPublish=@IsPublish, Title=@Title, ContractId=@ContractId WHERE 1=1  AND Id=@Id;INSERT INTO ExternNews (SourceType,SourceId,IsPublish,Title,ContractId); SELECT @SourceType,@SourceId,@IsPublish,@Title,@ContractId WHERE NOT EXISTS (SELECT 1 FROM ExternNews where 1=1  AND Id=@Id)";
+            string sql = "UPDATE ExternNews SET  SourceType=@SourceType, SourceId=@SourceId, IsPublish=@IsPublish, Title=@Title, ContractId=@ContractId WHERE 1=1  AND Id=@Id;INSERT INTO ExternNews (SourceType,SourceId,IsPublish,Title,ContractId) SELECT @SourceType,@SourceId,@IsPublish,@Title,@ContractId WHERE NOT EXISTS (SELECT 1 FROM ExternNews where 1=1  AND Id=@Id)";
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
             else

@@ -13,7 +13,7 @@ using System.Text;
 namespace Monica.EntityFrameworkCore
 {
     [DependsOnModules(typeof(DataAccessModule))]
-    public class EFCoreModule: StartupModule
+    public abstract class EFCoreModule: StartupModule
     {
         public override ModuleLevel Level => ModuleLevel.FrameWork;
         public override uint Order => 3;

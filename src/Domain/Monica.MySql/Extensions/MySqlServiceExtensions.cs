@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
+using Monica.DataAccess;
+
 using System;
 
 namespace Monica.MySql
@@ -81,6 +84,7 @@ namespace Monica.MySql
             }
 
             services.TryAddScoped<MySqlConnectionProvider, T>();
+            AddMySqlSecutiryPermissionService(services);
             return services;
         }
 
@@ -97,6 +101,7 @@ namespace Monica.MySql
                 throw new ArgumentNullException(nameof(providerFunc));
             }
             services.TryAddScoped<MySqlConnectionProvider>(providerFunc);
+            AddMySqlSecutiryPermissionService(services);
             return services;
         }
 
@@ -113,6 +118,7 @@ namespace Monica.MySql
             }
 
             services.TryAddScoped(typeof(MySqlConnectionProvider), providerType);
+            AddMySqlSecutiryPermissionService(services);
             return services;
         }
 
@@ -129,6 +135,19 @@ namespace Monica.MySql
             }
 
             services.TryAddScoped(typeof(MySqlConnectionProvider), providerFunc);
+            AddMySqlSecutiryPermissionService(services);
+            return services;
+        }
+
+        public static IServiceCollection AddMySqlSecutiryPermissionService(this IServiceCollection services)
+        {
+            if (services is null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.RemoveAll<ISecutiryPermissionService>();
+            services.TryAddScoped<ISecutiryPermissionService, MySqlSecutiryPermissionService>();
             return services;
         }
 

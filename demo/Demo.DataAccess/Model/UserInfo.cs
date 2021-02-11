@@ -8,7 +8,7 @@ namespace Demo.DataAccess
 		/// <summary>
 		/// 
 		/// </summary>
-		public long Id { get; set; }
+		public int Id { get; set; }
 		/// <summary>
 		/// 昵称
 		/// </summary>

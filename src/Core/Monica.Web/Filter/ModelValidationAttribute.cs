@@ -20,9 +20,9 @@ namespace Monica.Web.Filter
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
             var modelState = actionContext.ModelState;
-            var action = actionContext.RouteData.Values["action"];
-            var controller = actionContext.RouteData.Values["controller"];
-            var logName = $"{controller}_{action}_param";
+            //var action = actionContext.RouteData.Values["action"];
+            //var controller = actionContext.RouteData.Values["controller"];
+            var logName = $"{actionContext.HttpContext.Request.Path.Value.Trim('/').Replace("/", "_")}_req";
 
             if (!modelState.IsValid)
             {

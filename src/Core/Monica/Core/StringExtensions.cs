@@ -1,6 +1,8 @@
-﻿using Monica.Security;
+﻿using Monica.Reflection;
+using Monica.Security;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -346,6 +348,38 @@ namespace Monica
             }
 
             return new string(list.ToArray());
+        }
+
+        public static object TryConvertType(this string str, Type conversionType)
+        {
+            try
+            {
+                if (str == null)
+                {
+                    return default;
+                }
+                if (conversionType.IsNullableType())
+                {
+                    conversionType = conversionType.GetUnNullableType();
+                }
+                if(conversionType == typeof(string))
+                {
+                    return str;
+                }
+                if (conversionType.IsEnum)
+                {
+                    return Enum.Parse(conversionType, str);
+                }
+                if (conversionType == typeof(Guid))
+                {
+                    return Guid.Parse(str);
+                }
+                return TypeDescriptor.GetConverter(conversionType).ConvertFromInvariantString(str);
+            }
+            catch
+            {
+                return default;
+            }
         }
     }
 }

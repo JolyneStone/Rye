@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Monica.Web\Monica.Web.csproj" />
+    <ProjectReference Include="..\..\Domain\Monica.DataAccess\Monica.DataAccess.csproj" />
+    <ProjectReference Include="..\..\Jwt\Monica.Jwt\Monica.Jwt.csproj" />
+  </ItemGroup>
+
+</Project>

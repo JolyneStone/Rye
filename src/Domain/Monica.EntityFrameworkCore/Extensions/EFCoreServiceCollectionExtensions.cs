@@ -26,38 +26,38 @@ namespace Monica
             return services;
         }
 
-        /// <summary>
-        /// 添加Monica框架对EF Core的支持
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddEFCoreModule(this IServiceCollection services, Action<DbContextOptionsBuilderOptions> action)
-        {
-            var module = new EFCoreModule(action);
-            services.AddModule<EFCoreModule>(module);
-            return services;
-        }
+        ///// <summary>
+        ///// 添加Monica框架对EF Core的支持
+        ///// </summary>
+        ///// <param name="services"></param>
+        ///// <param name="action"></param>
+        ///// <returns></returns>
+        //public static IServiceCollection AddEFCoreModule(this IServiceCollection services, Action<DbContextOptionsBuilderOptions> action)
+        //{
+        //    var module = new EFCoreModule(action);
+        //    services.AddModule<EFCoreModule>(module);
+        //    return services;
+        //}
 
-        /// <summary>
-        /// 添加Monica框架对EF Core的支持
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="dbName"></param>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddEFCoreModule(this IServiceCollection services, string dbName = null, Action<DbContextOptionsBuilder> action = null)
-        {
-            var builder = new DbContextOptionsBuilder();
-            action?.Invoke(builder);
-            var module = new EFCoreModule(options =>
-            {
-                options.Builder = builder;
-                options.DbName = dbName;
-            });
-            services.AddModule<EFCoreModule>(module);
-            return services;
-        }
+        ///// <summary>
+        ///// 添加Monica框架对EF Core的支持
+        ///// </summary>
+        ///// <param name="services"></param>
+        ///// <param name="dbName"></param>
+        ///// <param name="action"></param>
+        ///// <returns></returns>
+        //public static IServiceCollection AddEFCoreModule(this IServiceCollection services, string dbName = null, Action<DbContextOptionsBuilder> action = null)
+        //{
+        //    var builder = new DbContextOptionsBuilder();
+        //    action?.Invoke(builder);
+        //    var module = new EFCoreModule(options =>
+        //    {
+        //        options.Builder = builder;
+        //        options.DbName = dbName;
+        //    });
+        //    services.AddModule<EFCoreModule>(module);
+        //    return services;
+        //}
 
         /// <summary>
         /// 添加DbContextOptionsBuilderOptions配置选项
@@ -70,7 +70,7 @@ namespace Monica
         {
             var builder = new DbContextOptionsBuilder();
             builderAction?.Invoke(builder);
-            services.AddSingleton(ServiceDescriptor.Singleton(typeof(DbContextOptionsBuilderOptions), new DbContextOptionsBuilderOptions(builder, dbName)));
+            services.TryAddSingleton<DbContextOptionsBuilderOptions>(new DbContextOptionsBuilderOptions(builder, dbName));
             return services;
         }
 
@@ -86,7 +86,8 @@ namespace Monica
         {
             var builder = new DbContextOptionsBuilder<TContext>();
             builderAction?.Invoke(builder);
-            services.AddSingleton(ServiceDescriptor.Singleton(typeof(DbContextOptionsBuilderOptions), new DbContextOptionsBuilderOptions(builder, dbName, typeof(TContext))));
+            services.TryAddSingleton<DbContextOptionsBuilderOptions>(new DbContextOptionsBuilderOptions(builder, dbName, typeof(TContext)));
+            services.TryAddScoped<IUnitOfWork>(service => service.GetRequiredService<IDbProvider>().GetUnitOfWork<TContext>());
             return services;
         }
 
