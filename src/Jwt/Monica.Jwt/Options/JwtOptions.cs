@@ -53,6 +53,11 @@ namespace Monica.Jwt.Options
         public string Scheme { get; set; } = JwtBearerDefaults.AuthenticationScheme;
 
         /// <summary>
+        /// 是否使用缓存
+        /// </summary>
+        public bool Cache { get; set; } = true; 
+
+        /// <summary>
         /// 获取TokenValidationParameters
         /// </summary>
         /// <returns></returns>

@@ -1,15 +1,13 @@
-﻿namespace Monica.Authorization.Entities
+﻿using Monica.Jwt.Entities;
+
+namespace Monica.Authorization.Entities
 {
-    public class PermissionTokenEntity
+    public class PermissionTokenEntity: TokenEntityBase
     {
         /// <summary>
         /// AppId
         /// </summary>
         public string AppId { get; set; }
-        /// <summary>
-        /// 用户Id
-        /// </summary>
-        public string UserId { get; set; }
         /// <summary>
         /// 角色Id集合
         /// </summary>

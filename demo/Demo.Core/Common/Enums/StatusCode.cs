@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Demo.Core.Common.Enums
 {
-    public enum StatusCode
+    public enum CommonStatusCode
     {
         #region 成功失败
 

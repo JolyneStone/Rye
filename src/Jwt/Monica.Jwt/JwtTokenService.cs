@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
+using Monica.Cache.Internal;
 using Monica.Enums;
 using Monica.Exceptions;
+using Monica.Jwt.Entities;
 using Monica.Jwt.Options;
 
 using System;
@@ -16,6 +19,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
+using System.Threading.Tasks;
 
 namespace Monica.Jwt
 {
@@ -23,10 +27,11 @@ namespace Monica.Jwt
     {
         private readonly JwtOptions _jwtOptions;
         private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
-
-        public JwtTokenService(IOptions<JwtOptions> jwtOptions)
+        private readonly IDistributedCache _distributedCache;
+        public JwtTokenService(IOptions<JwtOptions> jwtOptions, IDistributedCache distributedCache)
         {
             _jwtOptions = jwtOptions.Value;
+            _distributedCache = distributedCache;
         }
 
         /// <summary>
@@ -34,19 +39,32 @@ namespace Monica.Jwt
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public virtual ClaimsPrincipal ValidateToken(string token)
+        public virtual async Task<ClaimsPrincipal> ValidateTokenAsync(JwtTokenType jwtTokenType, string token)
         {
             ClaimsPrincipal principal = _tokenHandler.ValidateToken(token, _jwtOptions.GetValidationParameters(), out _);
+            if (_jwtOptions.Cache)
+            {
+                var clientType = principal.Claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.ClientType)).Value;
+                var userId = principal.Claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.UserId)).Value;
+                var tokenEntry = CacheEntryCollection.GetTokenEntry(jwtTokenType, clientType, userId, (int)_jwtOptions.AccessExpireMins * 60);
+
+                var cacheToken = await _distributedCache.GetStringAsync(tokenEntry.CacheKey);
+                if(cacheToken.IsNullOrEmpty() || cacheToken!= token)
+                {
+                    throw new MonicaException("Token is error");
+                }
+            }
             return principal;
         }
 
-        public virtual JsonWebToken CreateToken<T>(T tokenEntity, ClientType clientType = ClientType.Browser)
-            where T : class
+        public virtual async Task<JsonWebToken> CreateTokenAsync<T>(T tokenEntity)
+            where T : TokenEntityBase
         {
-            return GenerateToken(GetClaims(tokenEntity), clientType);
+            var claims = GetClaims(tokenEntity);
+            return await GenerateTokenAsync(claims);
         }
 
-        public virtual JsonWebToken RefreshToken(string refreshToken)
+        public virtual async Task<JsonWebToken> RefreshTokenAsync(string refreshToken)
         {
             Check.NotNull(refreshToken, nameof(refreshToken));
             TokenValidationParameters parameters = _jwtOptions.GetValidationParameters();
@@ -58,27 +76,33 @@ namespace Monica.Jwt
             }
 
             ClaimsPrincipal principal = _tokenHandler.ValidateToken(refreshToken, parameters, out _);
-            ClientType? clientType = jwtSecurityToken.Claims.FirstOrDefault(m => m.Type == "ClientType")?.Value.ParseByEnum<ClientType>()
-                 ?? ClientType.Browser;
 
-            JsonWebToken token = GenerateToken(principal.Claims.ToList(), clientType.Value);
-            return token;
+            return await GenerateTokenAsync(principal.Claims.ToList());
         }
 
-        private JsonWebToken GenerateToken(List<Claim> claims, ClientType clientType)
+        private async Task<JsonWebToken> GenerateTokenAsync(List<Claim> claims)
         {
-            if (claims == null)
-                claims = new List<Claim>();
-
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, $"{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}"));
             claims.Add(new Claim(JwtRegisteredClaimNames.Exp, $"{new DateTimeOffset(DateTime.Now.AddMinutes(_jwtOptions.AccessExpireMins)).ToUnixTimeSeconds()}"));
-            claims.Add(new Claim("ClientType", clientType.ToString()));
 
             // AccessToken
             var (accessToken, accessExpires) = CreateTokenCore(claims, _jwtOptions, JwtTokenType.AccessToken);
 
             // RefreshToken
             var (refreshToken, refreshExpires) = CreateTokenCore(claims, _jwtOptions, JwtTokenType.RefreshToken);
+
+            if (_jwtOptions.Cache)
+            {
+                var clientType = claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.ClientType)).Value;
+                var userId = claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.UserId)).Value;
+
+                var tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.AccessToken, clientType, userId, (int)_jwtOptions.AccessExpireMins * 60);
+                await _distributedCache.SetStringAsync(tokenEntry.CacheKey, accessToken, tokenEntry.Options);
+
+                tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.RefreshToken, clientType, userId, (int)_jwtOptions.AccessExpireMins * 60);
+                await _distributedCache.SetStringAsync(tokenEntry.CacheKey, accessToken, tokenEntry.Options);
+            }
+
             return new JsonWebToken()
             {
                 AccessToken = accessToken,
@@ -98,6 +122,7 @@ namespace Monica.Jwt
 
             DateTime expires;
             DateTime now = DateTime.UtcNow;
+            claims = claims.Append(new Claim("TokenType", ((int)tokenType).ToString()));
             if (tokenType == JwtTokenType.AccessToken)
             {
                 double minutes = options.AccessExpireMins > 0 ? options.AccessExpireMins : 5; //默认5分钟
@@ -105,17 +130,6 @@ namespace Monica.Jwt
             }
             else
             {
-                //if (refreshToken == null)
-                //{
-                //    double minutes = options.RefreshExpireMins > 0 ? options.RefreshExpireMins : 10080; // 默认7天
-                //    expires = now.AddMinutes(minutes);
-                //}
-                //else
-                //{
-                //    expires = refreshToken.EndUtcTime;
-                //}
-
-                claims = claims.Append(new Claim("TokenType", ((int)JwtTokenType.RefreshToken).ToString()));
                 double minutes = options.RefreshExpireMins > 0 ? options.RefreshExpireMins : 10080; // 默认7天
                 expires = now.AddMinutes(minutes);
             }
@@ -137,8 +151,7 @@ namespace Monica.Jwt
             return (accessToken, expires);
         }
 
-        private static List<Claim> GetClaims<T>(T requirement)
-            where T : class
+        private static List<Claim> GetClaims(object requirement)
         {
             if (requirement == null)
             {
@@ -164,7 +177,7 @@ namespace Monica.Jwt
             //    }
             //)).ToList();
             var claims = new List<Claim>();
-            foreach(var property in requirement.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty))
+            foreach (var property in requirement.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty))
             {
                 var value = property.GetValue(requirement);
                 if (value == null)

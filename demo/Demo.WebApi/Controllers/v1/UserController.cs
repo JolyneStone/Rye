@@ -19,6 +19,9 @@ using Monica.DataAccess;
 using Microsoft.AspNetCore.Authentication;
 using Monica.Jwt.Options;
 using Microsoft.Extensions.Options;
+using Monica.Authorization.Abstraction.Attributes;
+using Monica.Enums;
+using Demo.Core.Common.Enums;
 
 namespace Demo.WebApi.Controllers
 {
@@ -26,7 +29,7 @@ namespace Demo.WebApi.Controllers
     [ApiVersion("1")]
     [Route("v{v:apiVersion}/api/[controller]/[action]")]
     [ModelValidation]
-    [Authorize(policy: "MonicaPermission")]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly ILogger<UserController> _logger;
@@ -48,19 +51,18 @@ namespace Demo.WebApi.Controllers
             {
                 AppId = "1",
                 UserId = "1",
-                RoleIds = "1,2"
+                RoleIds = "1,2",
+                ClientType = ((int)ClientType.Browser).ToString()
             };
             IJwtTokenService service = HttpContext.RequestServices.GetService<IJwtTokenService>();
-            var token = service.CreateToken(entry, Monica.Enums.ClientType.Browser);
-            //var jwtOptions = HttpContext.RequestServices.GetRequiredService<IOptions<JwtOptions>>().Value;
-            //var principal = service.ValidateToken(token.AccessToken);
-            //await HttpContext.SignInAsync(jwtOptions.Scheme, principal);
-            return ApiResult<JsonWebToken>.Create((int)Demo.Core.Common.Enums.StatusCode.Success, token, "成功");
+            var token = await service.CreateTokenAsync(entry);
+            return ApiResult<JsonWebToken>.Create((int)CommonStatusCode.Success, token, "成功");
         }
 
         [HttpGet]
         public string Get()
         {
+            var p = HttpContext.User;
             return "Hello World!";
         }
     }

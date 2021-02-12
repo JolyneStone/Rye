@@ -126,7 +126,7 @@ namespace Demo.WebApi
             {
                 return new JsonResult(new ApiResult
                 {
-                    Code = (int)StatusCode.Fail,
+                    Code = (int)CommonStatusCode.Fail,
                     Message = "Unsupported Api Version",
                 });
             }
