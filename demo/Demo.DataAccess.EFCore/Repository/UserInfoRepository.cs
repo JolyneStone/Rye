@@ -1,6 +1,6 @@
 ﻿using Demo.DataAccess.EFCore.IRepository;
 using Demo.DataAccess.EFCore.Models;
-using Monica.DataAccess;
+using Monica.EntityFrameworkCore;
 
 namespace Demo.DataAccess.EFCore.Repository
 {

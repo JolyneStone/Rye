@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Monica.DataAccess;
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -6,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Monica.DataAccess
+namespace Monica.EntityFrameworkCore
 {
     public interface IUnitOfWork : IDisposable 
     {

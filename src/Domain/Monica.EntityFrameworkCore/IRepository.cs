@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Monica.DataAccess;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace Monica.DataAccess
+namespace Monica.EntityFrameworkCore
 {
     public interface IReadOnlyRepository<TEntity> where TEntity : class, IEntity
     {

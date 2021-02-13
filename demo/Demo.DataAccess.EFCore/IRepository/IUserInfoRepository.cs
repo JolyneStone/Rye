@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Demo.DataAccess.EFCore.IRepository
 {
-    public interface IUserInfoRepository: Monica.DataAccess.IRepository<UserInfo, int>
+    public interface IUserInfoRepository: Monica.EntityFrameworkCore.IRepository<UserInfo, int>
     {
     }
 }

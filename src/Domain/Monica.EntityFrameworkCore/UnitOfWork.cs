@@ -17,7 +17,6 @@ namespace Monica.EntityFrameworkCore
     /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly IDbContext _context;
         private readonly DbContext _dbContext;
         private readonly IRepositoryFactory _repositoryFactory;
@@ -26,7 +25,6 @@ namespace Monica.EntityFrameworkCore
         public UnitOfWork(IServiceProvider serviceProvider, IDbContext context)
         {
             Check.NotNull(serviceProvider, nameof(serviceProvider));
-            _serviceProvider = serviceProvider;
             _context = context;
             _dbContext = _context.AsDbContext();
             _repositoryFactory = serviceProvider.GetRequiredService<IRepositoryFactory>();

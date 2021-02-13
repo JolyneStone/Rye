@@ -18,9 +18,9 @@ namespace Monica.EntityFrameworkCore
         public override ModuleLevel Level => ModuleLevel.FrameWork;
         public override uint Order => 3;
 
-        private Action<DbContextOptionsBuilderOptions> _action;
+        protected readonly Action<MonicaDbContextOptionsBuilder> _action;
 
-        public EFCoreModule(Action<DbContextOptionsBuilderOptions> action = null)
+        public EFCoreModule(Action<MonicaDbContextOptionsBuilder> action = null)
         {
             _action = action;
         }

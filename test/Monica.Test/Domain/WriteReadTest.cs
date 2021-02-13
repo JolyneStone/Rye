@@ -1,16 +1,15 @@
-﻿using Monica.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using Xunit;
-using Monica.DataAccess;
-using Monica.EntityFrameworkCore.SqlServer;
-using Monica.EntityFrameworkCore.Options;
 using Microsoft.Extensions.Options;
-using Monica.Options;
+
 using Monica.DataAccess.Options;
+using Monica.EntityFrameworkCore;
+using Monica.EntityFrameworkCore.Options;
+
+using System;
+
+using Xunit;
 
 namespace Monica.Test.Domain
 {
@@ -28,17 +27,17 @@ namespace Monica.Test.Domain
                 .AddMonica()
                 .AddDbConnections()
                 .AddMonicaSqlServer()
-                .AddSingleton<DbContextOptionsBuilderOptions>(new DbContextOptionsBuilderOptions(new DbContextOptionsBuilder<TestDbContext>(), null, typeof(TestDbContext)));
+                .AddSingleton<DbContextOptionsBuilderOptions<TestDbContext>>(new DbContextOptionsBuilderOptions<TestDbContext>(new DbContextOptionsBuilder<TestDbContext>(), null));
 
             _serviceProvider = services.BuildServiceProvider();
 
-            //var dbProvider = serviceProvider.GetRequiredService<IDbProvider>();
-            //var uow = dbProvider.GetUnitOfWork<TestDbContext>("TestDb"); // 访问主库
+            var dbProvider = _serviceProvider.GetRequiredService<IDbProvider>();
+            var uow = dbProvider.GetUnitOfWork<TestDbContext>("MonicaTestDb"); // 访问主库
 
-            //var repoDbTest = uow.GetRepository<DbTest, int>();
-            //var obj = new DbTest { Name = "123", Date = DateTime.Now.Date };
-            //repoDbTest.Insert(obj);
-            //uow.SaveChanges();
+            var repoDbTest = uow.GetRepository<DbTest, int>();
+            var obj = new DbTest { Name = "123", Date = DateTime.Now.Date };
+            repoDbTest.Insert(obj);
+            uow.SaveChanges();
 
             //Console.ReadKey();
 

@@ -27,11 +27,10 @@ namespace Monica
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSqliteEFCodeModule<TContext>(this IServiceCollection services, string dbName = null, Action<DbContextOptionsBuilder<TContext>> action = null)
-            where TContext : DbContext
+        public static IServiceCollection AddSqliteEFCodeModule(this IServiceCollection services, Action<MonicaDbContextOptionsBuilder> action)
         {
-            var module = new SqliteEFCoreModule<TContext>(dbName, action);
-            return services.AddModule<SqliteEFCoreModule<TContext>>(module);
+            var module = new SqliteEFCoreModule(action);
+            return services.AddModule<SqliteEFCoreModule>(module);
         }
     }
 }

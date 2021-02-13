@@ -7,7 +7,8 @@ namespace Monica.EntityFrameworkCore.Sqlite
     {
         public DatabaseType Type => DatabaseType.Sqlite;
 
-        public DbContextOptionsBuilder Use(DbContextOptionsBuilder builder, string connectionString)
+        public DbContextOptionsBuilder<TDbContext> Use<TDbContext>(DbContextOptionsBuilder<TDbContext> builder, string connectionString)
+                where TDbContext : DbContext, IDbContext
         {
             return builder.UseSqlite(connectionString);
         }

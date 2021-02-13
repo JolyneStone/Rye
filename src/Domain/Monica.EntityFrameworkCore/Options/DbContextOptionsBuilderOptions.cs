@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
+using Monica.DataAccess;
+
 using System;
 
 namespace Monica.EntityFrameworkCore.Options
@@ -6,7 +9,8 @@ namespace Monica.EntityFrameworkCore.Options
     /// <summary>
     /// DbContextOptionsBuilder配置选项
     /// </summary>
-    public class DbContextOptionsBuilderOptions
+    public class DbContextOptionsBuilderOptions<TDbContext>
+        where TDbContext: DbContext, IDbContext
     {
         /// <summary>
         /// 配置DbContextOptionsBuilder, dbName指定数据库名称, 为null时表示所有数据库,默认为null
@@ -21,15 +25,13 @@ namespace Monica.EntityFrameworkCore.Options
         /// <param name="build"></param>
         /// <param name="dbName"></param>
         /// <param name="dbContextType"></param>
-        public DbContextOptionsBuilderOptions(DbContextOptionsBuilder build, string dbName = null, Type dbContextType = null)
+        public DbContextOptionsBuilderOptions(DbContextOptionsBuilder<TDbContext> build, string dbName = null)
         {
             Builder = build;
             DbName = dbName;
-            DbContextType = dbContextType;
         }
 
-        public DbContextOptionsBuilder Builder { get; set; }
+        public DbContextOptionsBuilder<TDbContext> Builder { get; set; }
         public string DbName { get; set; }
-        public Type DbContextType { get; set; }
     }
 }

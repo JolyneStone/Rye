@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Monica.DataAccess
+namespace Monica.EntityFrameworkCore
 {
     /// <summary>
     /// 数据上下文接口

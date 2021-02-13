@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Monica.DataAccess;
 
-namespace Monica.DataAccess
+using System;
+
+namespace Monica.EntityFrameworkCore
 {
     /// <summary>
     /// 仓储工厂接口

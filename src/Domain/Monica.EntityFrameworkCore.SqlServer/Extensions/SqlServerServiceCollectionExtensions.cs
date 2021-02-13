@@ -27,11 +27,10 @@ namespace Monica
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSqlServerEFCodeModule<TContext>(this IServiceCollection services, string dbName = null, Action<DbContextOptionsBuilder<TContext>> action = null)
-            where TContext: DbContext
+        public static IServiceCollection AddSqlServerEFCodeModule(this IServiceCollection services, Action<MonicaDbContextOptionsBuilder> action)
         {
-            var module = new SqlServerEFCoreModule<TContext>(dbName, action);
-            return services.AddModule<SqlServerEFCoreModule<TContext>>(module);
+            var module = new SqlServerEFCoreModule(action);
+            return services.AddModule<SqlServerEFCoreModule>(module);
         }
     }
 }

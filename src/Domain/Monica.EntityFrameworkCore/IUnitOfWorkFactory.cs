@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Monica.DataAccess
+namespace Monica.EntityFrameworkCore
 {
     /// <summary>
     /// UnitOfWork工厂接口

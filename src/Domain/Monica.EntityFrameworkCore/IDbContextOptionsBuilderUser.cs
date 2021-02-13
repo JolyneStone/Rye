@@ -15,12 +15,22 @@ namespace Monica.EntityFrameworkCore
         /// </summary>
         DatabaseType Type { get; }
 
+        ///// <summary>
+        ///// 使用数据库
+        ///// </summary>
+        ///// <param name="builder">创建器</param>
+        ///// <param name="connectionString">连接字符串</param>
+        ///// <returns></returns>
+        //DbContextOptionsBuilder Use(DbContextOptionsBuilder builder, string connectionString);
+
         /// <summary>
         /// 使用数据库
         /// </summary>
-        /// <param name="builder">创建器</param>
-        /// <param name="connectionString">连接字符串</param>
+        /// <typeparam name="TDbContext"></typeparam>
+        /// <param name="builder"></param>
+        /// <param name="connectionString"></param>
         /// <returns></returns>
-        DbContextOptionsBuilder Use(DbContextOptionsBuilder builder, string connectionString);
+        DbContextOptionsBuilder<TDbContext> Use<TDbContext>(DbContextOptionsBuilder<TDbContext> builder, string connectionString)
+            where TDbContext : DbContext, IDbContext;
     }
 }

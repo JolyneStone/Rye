@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using Monica.Enums;
 
 namespace Monica.EntityFrameworkCore.MySql
@@ -7,7 +8,8 @@ namespace Monica.EntityFrameworkCore.MySql
     {
         public DatabaseType Type => DatabaseType.MySql;
 
-        public DbContextOptionsBuilder Use(DbContextOptionsBuilder builder, string connectionString)
+        public DbContextOptionsBuilder<TDbContext> Use<TDbContext>(DbContextOptionsBuilder<TDbContext> builder, string connectionString)
+            where TDbContext : DbContext, IDbContext
         {
             return builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         }

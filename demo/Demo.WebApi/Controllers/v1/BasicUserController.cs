@@ -1,27 +1,18 @@
 ﻿using Demo.Core.Common;
 using Demo.Core.Common.Enums;
-using Demo.DataAccess.EFCore.IRepository;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
+using Monica.Authorization.Entities;
+using Monica.EntityFrameworkCore;
+using Monica.Enums;
 using Monica.Jwt;
 using Monica.Web.Filter;
 
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Monica.Authorization.Abstraction;
-using Monica.Authorization.Entities;
-using System.Collections.Generic;
-using Monica.DataAccess;
-using Microsoft.AspNetCore.Authentication;
-using Monica.Jwt.Options;
-using Microsoft.Extensions.Options;
-using Monica.Authorization.Abstraction.Attributes;
-using Monica.Enums;
-using Demo.Core.Common.Enums;
 
 namespace Demo.WebApi.Controllers
 {
@@ -30,12 +21,12 @@ namespace Demo.WebApi.Controllers
     [Route("v{v:apiVersion}/api/[controller]/[action]")]
     [ModelValidation]
     [Authorize]
-    public class UserController : Controller
+    public class BasicUserController : Controller
     {
-        private readonly ILogger<UserController> _logger;
+        private readonly ILogger<BasicUserController> _logger;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UserController(ILogger<UserController> logger,
+        public BasicUserController(ILogger<BasicUserController> logger,
             IUnitOfWork unitOfWork)
         {
             _logger = logger;

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Demo.DataAccess.EFCore.Models;
+
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Demo.DataAccess.EFCore.Models;
+
 using Monica.EntityFrameworkCore;
 
 #nullable disable
@@ -10,6 +10,10 @@ namespace Demo.DataAccess.EFCore.DbContexts
 {
     public partial class DefaultDbContext : DbContextBase
     {
+        //public DefaultDbContext()
+        //{
+        //}
+
         public DefaultDbContext(DbContextOptions<DefaultDbContext> options)
             : base(options)
         {
@@ -20,6 +24,8 @@ namespace Demo.DataAccess.EFCore.DbContexts
         }
 
         public virtual DbSet<AppInfo> AppInfo { get; set; }
+        public virtual DbSet<ConfigDictionary> ConfigDictionary { get; set; }
+        public virtual DbSet<LangDictionary> LangDictionary { get; set; }
         public virtual DbSet<Permission> Permission { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<RolePermission> RolePermission { get; set; }
@@ -30,7 +36,6 @@ namespace Demo.DataAccess.EFCore.DbContexts
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseMySql("server=127.0.0.1;database=MonicaDemo;uid=root;pwd=Mysql_zzq123;pooling=false;sslmode=None;charset=utf8mb4;port=3306", Microsoft.EntityFrameworkCore.ServerVersion.FromString("8.0.20-mysql"));
             }
         }
@@ -83,6 +88,55 @@ namespace Demo.DataAccess.EFCore.DbContexts
                 entity.Property(e => e.Status)
                     .HasColumnName("status")
                     .HasComment("状态");
+            });
+
+            modelBuilder.Entity<ConfigDictionary>(entity =>
+            {
+                entity.HasKey(e => e.DicKey)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("configDictionary");
+
+                entity.Property(e => e.DicKey)
+                    .HasColumnType("varchar(255)")
+                    .HasColumnName("dicKey")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.DicValue)
+                    .IsRequired()
+                    .HasColumnType("varchar(8000)")
+                    .HasColumnName("dicValue")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+            });
+
+            modelBuilder.Entity<LangDictionary>(entity =>
+            {
+                entity.HasKey(e => new { e.DicKey, e.Lang })
+                    .HasName("PRIMARY")
+                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+                entity.ToTable("langDictionary");
+
+                entity.Property(e => e.DicKey)
+                    .HasColumnType("varchar(255)")
+                    .HasColumnName("dicKey")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Lang)
+                    .HasColumnType("varchar(50)")
+                    .HasColumnName("lang")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.DicValue)
+                    .IsRequired()
+                    .HasColumnType("varchar(8000)")
+                    .HasColumnName("dicValue")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
             });
 
             modelBuilder.Entity<Permission>(entity =>

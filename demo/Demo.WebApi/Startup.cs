@@ -79,7 +79,10 @@ namespace Demo.WebApi
                 })
                 .AddRedisCacheModule()
                 .AddMySqlModule<MyDbConnectionProvider>()
-                .AddMySqlEFCodeModule<DefaultDbContext>("MonicaDemo")
+                .AddMySqlEFCodeModule(builder =>
+                {
+                    builder.AddDbContext<DefaultDbContext>("MonicaDemo");
+                })
                 .AddJwtModule()
                 .AddAuthorizationModule()
                 .AddModule<DemoModule>()
