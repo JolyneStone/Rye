@@ -5,14 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Domain\Monica.MySql\Monica.MySql.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Rye.Entities\Rye.Entities.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Rye.MySql\Rye.MySql.csproj" />
     <ProjectReference Include="..\Demo.Core\Demo.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Model\" />
-    <Folder Include="Interface\" />
-    <Folder Include="Dao\" />
+    <Folder Include="Dto\" />
   </ItemGroup>
 
 </Project>

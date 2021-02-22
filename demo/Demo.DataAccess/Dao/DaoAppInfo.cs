@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Dapper;
-using Monica.DataAccess;
-using Monica.MySql;
+using Rye.DataAccess;
+using Rye.MySql;
 
 namespace Demo.DataAccess
 {
@@ -143,7 +143,7 @@ namespace Demo.DataAccess
         
         public async Task<int> UpdateAsync(AppInfo model, IDbTransaction trans, IDbConnection conn)
 		{
-            string sql = "GetUpdateSql()";
+            string sql = "UPDATE appInfo SET  name=@Name, remark=@Remark, appKey=@AppKey, appSecret=@AppSecret, createTime=@CreateTime, status=@Status WHERE 1=1  AND appId=@AppId";
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
             else
@@ -372,7 +372,7 @@ namespace Demo.DataAccess
 		
         public IEnumerable<AppInfo> GetList()
         {
-            string sql = "GetSelectAllSql()";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime,status Status FROM appInfo  ORDER BY appId DESC";
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.Query<AppInfo>(sql, commandType: CommandType.Text);
@@ -388,7 +388,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<AppInfo> GetList(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "GetSelectAllSql()";
+            string sql = "SELECT appId AppId,name Name,remark Remark,appKey AppKey,appSecret AppSecret,createTime CreateTime,status Status FROM appInfo  ORDER BY appId DESC";
                 
             if (trans == null)
                 return conn.Query<AppInfo>(sql, commandType: CommandType.Text);

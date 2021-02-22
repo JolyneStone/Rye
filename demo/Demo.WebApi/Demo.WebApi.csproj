@@ -15,18 +15,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AOP\Monica.AspectFlare.DependencyInjection\Monica.AspectFlare.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\src\AOP\Monica.AspectFlare\Monica.AspectFlare.csproj" />
-    <ProjectReference Include="..\..\src\Authorization\Monica.Authorization\Monica.Authorization.csproj" />
-    <ProjectReference Include="..\..\src\Cache\Monica.Cache.Redis\Monica.Cache.Redis.csproj" />
-    <ProjectReference Include="..\..\src\Cache\Monica.Cache\Monica.Cache.csproj" />
-    <ProjectReference Include="..\..\src\Core\Monica.Web\Monica.Web.csproj" />
-    <ProjectReference Include="..\..\src\Core\Monica\Monica.csproj" />
-    <ProjectReference Include="..\..\src\Domain\Monica.DataAccess\Monica.DataAccess.csproj" />
-    <ProjectReference Include="..\..\src\Domain\Monica.EntityFrameworkCore.MySql\Monica.EntityFrameworkCore.MySql.csproj" />
-    <ProjectReference Include="..\..\src\Domain\Monica.MySql\Monica.MySql.csproj" />
-    <ProjectReference Include="..\..\src\EventBus\Monica.EventBus.Memory\Monica.EventBus.Memory.csproj" />
-    <ProjectReference Include="..\..\src\Jwt\Monica.Jwt\Monica.Jwt.csproj" />
+    <ProjectReference Include="..\..\src\Authorization\Rye.Authorization\Rye.Authorization.csproj" />
+    <ProjectReference Include="..\..\src\Cache\Rye.Cache.Redis\Rye.Cache.Redis.csproj" />
+    <ProjectReference Include="..\..\src\Core\Rye.Web\Rye.Web.csproj" />
+    <ProjectReference Include="..\..\src\Core\Rye\Rye.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Rye.DataAccess\Rye.DataAccess.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Rye.EntityFrameworkCore.MySql\Rye.EntityFrameworkCore.MySql.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Rye.MySql\Rye.MySql.csproj" />
+    <ProjectReference Include="..\..\src\EventBus\Rye.EventBus.Memory\Rye.EventBus.Memory.csproj" />
+    <ProjectReference Include="..\..\src\Jwt\Rye.Jwt\Rye.Jwt.csproj" />
     <ProjectReference Include="..\Demo.Core\Demo.Core.csproj" />
     <ProjectReference Include="..\Demo.DataAccess.EFCore\Demo.DataAccess.EFCore.csproj" />
     <ProjectReference Include="..\Demo.DataAccess\Demo.DataAccess.csproj" />
@@ -34,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Model\Intput\" />
     <Folder Include="Model\Output\" />
   </ItemGroup>
 

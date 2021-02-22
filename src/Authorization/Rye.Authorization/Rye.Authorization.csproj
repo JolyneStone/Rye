@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\Rye.Entities\Rye.Entities.csproj" />
+    <ProjectReference Include="..\Rye.Authorization.Abstraction\Rye.Authorization.Abstraction.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -2,12 +2,12 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Monica.DataAccess;
+using Rye.DataAccess;
 
 namespace Demo.DataAccess
 {
     [Injection(ServiceLifetime.Scoped, InjectionPolicy.Replace)]
-	public interface IPermission : IDataBaseOperate<Permission>
+	public partial interface IPermission : IDataBaseOperate<Permission>
 	{
 		bool Delete(int id);        
         bool Delete(int id, IDbTransaction trans, IDbConnection conn);     

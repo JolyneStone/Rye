@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.0-preview-20210127-04" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.0-preview-20210115-03" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.0-preview-20210115-03" />
+    <PackageReference Include="coverlet.collector" Version="3.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CodeGenerator\Rye.CodeGenerator\Rye.CodeGenerator.csproj" />
+    <ProjectReference Include="..\..\src\Core\Rye\Rye.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Rye.DataAccess\Rye.DataAccess.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Rye.EntityFrameworkCore.SqlServer\Rye.EntityFrameworkCore.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Rye.EntityFrameworkCore\Rye.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Rye.SqlServer\Rye.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\EventBus\Rye.EventBus.Memory\Rye.EventBus.Memory.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="CodeGenerator\MySql\GenerateFile\" />
+    <Folder Include="CodeGenerator\SqlServer\GenerateFile\" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

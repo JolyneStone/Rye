@@ -9,7 +9,7 @@ namespace Demo.DataAccess.EFCore.Models
     {
         public int Id { get; set; }
         public string Nickame { get; set; }
-        public string Phome { get; set; }
+        public string Phone { get; set; }
         public string Email { get; set; }
         public sbyte Status { get; set; }
         public DateTime RegisterTime { get; set; }

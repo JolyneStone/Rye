@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CodeGenerator\Monica.CodeGenerator\Monica.CodeGenerator.csproj" />
-    <ProjectReference Include="..\..\src\Core\Monica\Monica.csproj" />
-    <ProjectReference Include="..\..\src\Domain\Monica.MySql\Monica.MySql.csproj" />
+    <ProjectReference Include="..\..\src\CodeGenerator\Rye.CodeGenerator\Rye.CodeGenerator.csproj" />
+    <ProjectReference Include="..\..\src\Core\Rye\Rye.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Rye.MySql\Rye.MySql.csproj" />
     <ProjectReference Include="..\Demo.Core\Demo.Core.csproj" />
     <ProjectReference Include="..\Demo.DataAccess\Demo.DataAccess.csproj" />
   </ItemGroup>

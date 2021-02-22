@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Dapper;
-using Monica.DataAccess;
-using Monica.MySql;
+using Rye.DataAccess;
+using Rye.MySql;
 
 namespace Demo.DataAccess
 {
@@ -28,7 +28,7 @@ namespace Demo.DataAccess
 
         public int Insert(UserInfo model, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
+        	string sql = "INSERT INTO userInfo (nickame,phone,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phone,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
 
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
@@ -38,7 +38,7 @@ namespace Demo.DataAccess
 
         public async Task<int> InsertAsync(UserInfo model, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
+        	string sql = "INSERT INTO userInfo (nickame,phone,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phone,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
 
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
@@ -60,7 +60,7 @@ namespace Demo.DataAccess
 
         public int BatchInsert(IEnumerable<UserInfo> items, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
+        	string sql = "INSERT INTO userInfo (nickame,phone,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phone,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
 
             if (trans == null)
                 return conn.Execute(sql, param: items, commandType: CommandType.Text);
@@ -70,7 +70,7 @@ namespace Demo.DataAccess
         
         public async Task<int> BatchInsertAsync(IEnumerable<UserInfo> items, IDbTransaction trans, IDbConnection conn)
         {
-        	string sql = "INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
+        	string sql = "INSERT INTO userInfo (nickame,phone,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phone,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
 
              if (trans == null)
                 return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
@@ -80,7 +80,7 @@ namespace Demo.DataAccess
 
         public int BatchInsert(IEnumerable<UserInfo> items)
         {
-        	string sql = "INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
+        	string sql = "INSERT INTO userInfo (nickame,phone,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phone,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Execute(sql, param: items, commandType: CommandType.Text);
@@ -88,7 +88,7 @@ namespace Demo.DataAccess
         
         public async Task<int> BatchInsertAsync(IEnumerable<UserInfo> items)
         {
-        	string sql = "INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
+        	string sql = "INSERT INTO userInfo (nickame,phone,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) VALUES (@Nickame,@Phone,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture);";
 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
@@ -96,7 +96,7 @@ namespace Demo.DataAccess
 
         public int InsertUpdate(UserInfo model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE userInfo SET  nickame=@Nickame, phome=@Phome, email=@Email, status=@Status, registerTime=@RegisterTime, updateTime=@UpdateTime, lock=@Lock, lockTime=@LockTime, password=@Password, appId=@AppId, profilePicture=@ProfilePicture WHERE 1=1  AND id=@Id;INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) SELECT @Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture WHERE NOT EXISTS (SELECT 1 FROM userInfo where 1=1  AND id=@Id)";
+            string sql = "UPDATE userInfo SET  nickame=@Nickame, phone=@Phone, email=@Email, status=@Status, registerTime=@RegisterTime, updateTime=@UpdateTime, lock=@Lock, lockTime=@LockTime, password=@Password, appId=@AppId, profilePicture=@ProfilePicture WHERE 1=1  AND id=@Id;INSERT INTO userInfo (nickame,phone,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) SELECT @Nickame,@Phone,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture WHERE NOT EXISTS (SELECT 1 FROM userInfo where 1=1  AND id=@Id)";
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
             else
@@ -105,7 +105,7 @@ namespace Demo.DataAccess
         
         public async Task<int> InsertUpdateAsync(UserInfo model, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "UPDATE userInfo SET  nickame=@Nickame, phome=@Phome, email=@Email, status=@Status, registerTime=@RegisterTime, updateTime=@UpdateTime, lock=@Lock, lockTime=@LockTime, password=@Password, appId=@AppId, profilePicture=@ProfilePicture WHERE 1=1  AND id=@Id;INSERT INTO userInfo (nickame,phome,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) SELECT @Nickame,@Phome,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture WHERE NOT EXISTS (SELECT 1 FROM userInfo where 1=1  AND id=@Id)";
+            string sql = "UPDATE userInfo SET  nickame=@Nickame, phone=@Phone, email=@Email, status=@Status, registerTime=@RegisterTime, updateTime=@UpdateTime, lock=@Lock, lockTime=@LockTime, password=@Password, appId=@AppId, profilePicture=@ProfilePicture WHERE 1=1  AND id=@Id;INSERT INTO userInfo (nickame,phone,email,status,registerTime,updateTime,lock,lockTime,password,appId,profilePicture) SELECT @Nickame,@Phone,@Email,@Status,@RegisterTime,@UpdateTime,@Lock,@LockTime,@Password,@AppId,@ProfilePicture WHERE NOT EXISTS (SELECT 1 FROM userInfo where 1=1  AND id=@Id)";
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
             else
@@ -128,7 +128,7 @@ namespace Demo.DataAccess
         
         public int Update(UserInfo model, IDbTransaction trans, IDbConnection conn)
 		{
-            string sql = "UPDATE userInfo SET  nickame=@Nickame, phome=@Phome, email=@Email, status=@Status, registerTime=@RegisterTime, updateTime=@UpdateTime, lock=@Lock, lockTime=@LockTime, password=@Password, appId=@AppId, profilePicture=@ProfilePicture WHERE 1=1  AND id=@Id";
+            string sql = "UPDATE userInfo SET  nickame=@Nickame, phone=@Phone, email=@Email, status=@Status, registerTime=@RegisterTime, updateTime=@UpdateTime, lock=@Lock, lockTime=@LockTime, password=@Password, appId=@AppId, profilePicture=@ProfilePicture WHERE 1=1  AND id=@Id";
             if (trans == null)
                 return conn.Execute(sql, param: model, commandType: CommandType.Text);
             else
@@ -143,7 +143,7 @@ namespace Demo.DataAccess
         
         public async Task<int> UpdateAsync(UserInfo model, IDbTransaction trans, IDbConnection conn)
 		{
-            string sql = "GetUpdateSql()";
+            string sql = "UPDATE userInfo SET  nickame=@Nickame, phone=@Phone, email=@Email, status=@Status, registerTime=@RegisterTime, updateTime=@UpdateTime, lock=@Lock, lockTime=@LockTime, password=@Password, appId=@AppId, profilePicture=@ProfilePicture WHERE 1=1  AND id=@Id";
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
             else
@@ -192,7 +192,7 @@ namespace Demo.DataAccess
 
         public UserInfo GetModel(int id)
 		{
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -202,7 +202,7 @@ namespace Demo.DataAccess
         
         public UserInfo GetModelByWriteDb(int id)
 		{
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -212,7 +212,7 @@ namespace Demo.DataAccess
         
         public async Task<UserInfo> GetModelAsync(int id)
 		{  
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -222,7 +222,7 @@ namespace Demo.DataAccess
         
         public async Task<UserInfo> GetModelByWriteDbAsync(int id)
 		{  
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
@@ -232,7 +232,7 @@ namespace Demo.DataAccess
 
         public UserInfo GetModel(int id, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
             
@@ -246,7 +246,7 @@ namespace Demo.DataAccess
 
         public async Task<UserInfo> GetModelAsync(int id, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo WHERE 1=1 AND id=@Id";
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
             
@@ -260,7 +260,7 @@ namespace Demo.DataAccess
 
         public UserInfo GetModel(object param, string whereSql)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.QueryFirstOrDefault<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -268,7 +268,7 @@ namespace Demo.DataAccess
 
         public async Task<UserInfo> GetModelAsync(object param, string whereSql)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryFirstOrDefaultAsync<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -276,7 +276,7 @@ namespace Demo.DataAccess
 
         public UserInfo GetModelByWriteDb(object param, string whereSql)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.QueryFirstOrDefault<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -284,7 +284,7 @@ namespace Demo.DataAccess
 
         public async Task<UserInfo> GetModelByWriteDbAsync(object param, string whereSql)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryFirstOrDefaultAsync<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -292,7 +292,7 @@ namespace Demo.DataAccess
 
         public UserInfo GetModel(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             if (trans == null)
                 return conn.QueryFirstOrDefault<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -304,7 +304,7 @@ namespace Demo.DataAccess
 
         public async Task<UserInfo> GetModelAsync(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
             if (trans == null)
                 return await conn.QueryFirstOrDefaultAsync<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -316,7 +316,7 @@ namespace Demo.DataAccess
 
         public UserInfo FirstOrDefault(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.QueryFirstOrDefault<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -324,7 +324,7 @@ namespace Demo.DataAccess
 
         public async Task<UserInfo> FirstOrDefaultAsync(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryFirstOrDefaultAsync<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -332,7 +332,7 @@ namespace Demo.DataAccess
 
         public UserInfo FirstOrDefaultByWriteDb(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.QueryFirstOrDefault<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -340,7 +340,7 @@ namespace Demo.DataAccess
 
         public async Task<UserInfo> FirstOrDefaultByWriteDbAsync(object param, string whereSql, string orderSql)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryFirstOrDefaultAsync<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -348,7 +348,7 @@ namespace Demo.DataAccess
 
         public UserInfo FirstOrDefault(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             if (trans == null)
                 return conn.QueryFirstOrDefault<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -360,7 +360,7 @@ namespace Demo.DataAccess
 
         public async Task<UserInfo> FirstOrDefaultAsync(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
             if (trans == null)
                 return await conn.QueryFirstOrDefaultAsync<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -372,7 +372,7 @@ namespace Demo.DataAccess
 		
         public IEnumerable<UserInfo> GetList()
         {
-            string sql = "GetSelectAllSql()";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.Query<UserInfo>(sql, commandType: CommandType.Text);
@@ -380,7 +380,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<UserInfo>> GetListAsync()
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
             
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryAsync<UserInfo>(sql, commandType: CommandType.Text);
@@ -388,7 +388,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<UserInfo> GetList(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "GetSelectAllSql()";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
                 
             if (trans == null)
                 return conn.Query<UserInfo>(sql, commandType: CommandType.Text);
@@ -400,14 +400,14 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<UserInfo>> GetListAsync(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
                 
             return await conn.QueryAsync<UserInfo>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<UserInfo> GetListByWriteDb()
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Query<UserInfo>(sql, commandType: CommandType.Text);
@@ -415,7 +415,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<UserInfo>> GetListByWriteDbAsync()
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryAsync<UserInfo>(sql, commandType: CommandType.Text);
@@ -423,7 +423,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<UserInfo> GetListByWriteDb(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
                 
             if (trans == null)
                 return conn.Query<UserInfo>(sql, commandType: CommandType.Text);
@@ -435,14 +435,14 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<UserInfo>> GetListByWriteDbAsync(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
+            string sql = "SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  ORDER BY id DESC";
                 
             return await conn.QueryAsync<UserInfo>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<UserInfo> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.Query<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -450,7 +450,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<UserInfo>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return await conn.QueryAsync<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -458,7 +458,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<UserInfo> GetPageByWriteDb(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return conn.Query<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -466,7 +466,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<UserInfo>> GetPageByWriteDbAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
-            string sql = string.Format("SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             IDbConnection conn = ConnectionProvider.GetConnection();
             return await conn.QueryAsync<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -474,7 +474,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<UserInfo> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = string.Format("SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             if (trans == null)
                 return conn.Query<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -486,7 +486,7 @@ namespace Demo.DataAccess
 
         public async Task<IEnumerable<UserInfo>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
         {
-            string sql = string.Format("SELECT id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
+            string sql = string.Format("SELECT id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture FROM userInfo  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
             if (trans == null)
                 return await conn.QueryAsync<UserInfo>(sql, param: param, commandType: CommandType.Text);
@@ -701,7 +701,7 @@ namespace Demo.DataAccess
         
         private string GetColumns()
         {
-            return "id Id,nickame Nickame,phome Phome,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture";
+            return "id Id,nickame Nickame,phone Phone,email Email,status Status,registerTime RegisterTime,updateTime UpdateTime,lock Lock,lockTime LockTime,password Password,appId AppId,profilePicture ProfilePicture";
         }
 	}
 }

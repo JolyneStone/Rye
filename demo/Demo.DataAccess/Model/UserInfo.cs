@@ -16,7 +16,7 @@ namespace Demo.DataAccess
 		/// <summary>
 		/// 手机号
 		/// </summary>
-		public string Phome { get; set; }
+		public string Phone { get; set; }
 		/// <summary>
 		/// 邮箱
 		/// </summary>

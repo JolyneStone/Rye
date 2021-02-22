@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.78" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.2.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.9.0-3.final" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.9.0-3.final" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0-3.final" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Razor" Version="5.0.3" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Scripting" Version="3.9.0-3.final" />
+    <PackageReference Include="MySql.Data" Version="8.0.23" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.0-alpha.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Rye\Rye.csproj" />
+    <ProjectReference Include="..\..\Domain\Rye.DataAccess\Rye.DataAccess.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Templates\Interface.tp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\ModelObject.tp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\MySqlDao.tp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\SqlServerDao.tp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

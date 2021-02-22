@@ -1,8 +1,8 @@
 ﻿using Demo.Core.Common.Enums;
 using Microsoft.Extensions.Options;
-using Monica;
-using Monica.DataAccess.Options;
-using Monica.MySql;
+using Rye;
+using Rye.DataAccess.Options;
+using Rye.MySql;
 
 namespace Demo.DataAccess
 {
@@ -14,12 +14,12 @@ namespace Demo.DataAccess
 
         protected override string GetRealOnlyDbConnectionString()
         {
-            return GetConnectionString(DbConfig.DbMonica_Read.GetDescription());
+            return GetConnectionString(DbConfig.DbRye_Read.GetDescription());
         }
 
         protected override string GetWriteDbConnectionString()
         {
-            return GetConnectionString(DbConfig.DbMonica.GetDescription());
+            return GetConnectionString(DbConfig.DbRye.GetDescription());
         }
     }
 }

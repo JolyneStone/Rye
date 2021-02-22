@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Dapper;
-using Monica.DataAccess;
-using Monica.MySql;
+using Rye.DataAccess;
+using Rye.MySql;
 
 namespace Demo.DataAccess
 {
@@ -138,7 +138,7 @@ namespace Demo.DataAccess
         
         public async Task<int> UpdateAsync(UserRole model, IDbTransaction trans, IDbConnection conn)
 		{
-            string sql = "GetUpdateSql()";
+            string sql = "";
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
             else
@@ -375,7 +375,7 @@ namespace Demo.DataAccess
 		
         public IEnumerable<UserRole> GetList()
         {
-            string sql = "GetSelectAllSql()";
+            string sql = "SELECT userId UserId,roleId RoleId FROM userRole  ORDER BY userId DESC,roleId DESC";
                 
             IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
             return conn.Query<UserRole>(sql, commandType: CommandType.Text);
@@ -391,7 +391,7 @@ namespace Demo.DataAccess
 
         public IEnumerable<UserRole> GetList(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "GetSelectAllSql()";
+            string sql = "SELECT userId UserId,roleId RoleId FROM userRole  ORDER BY userId DESC,roleId DESC";
                 
             if (trans == null)
                 return conn.Query<UserRole>(sql, commandType: CommandType.Text);

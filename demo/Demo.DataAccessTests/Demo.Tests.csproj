@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CodeGenerator\Monica.CodeGenerator\Monica.CodeGenerator.csproj" />
+    <ProjectReference Include="..\..\src\CodeGenerator\Rye.CodeGenerator\Rye.CodeGenerator.csproj" />
     <ProjectReference Include="..\Demo.DataAccess\Demo.DataAccess.csproj" />
   </ItemGroup>
 

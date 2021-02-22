@@ -5,8 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Authorization\Rye.Authorization.Abstraction\Rye.Authorization.Abstraction.csproj" />
     <ProjectReference Include="..\Demo.DataAccess.EFCore\Demo.DataAccess.EFCore.csproj" />
     <ProjectReference Include="..\Demo.DataAccess\Demo.DataAccess.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
   </ItemGroup>
 
 </Project>

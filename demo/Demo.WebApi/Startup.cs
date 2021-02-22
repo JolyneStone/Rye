@@ -11,15 +11,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-using Monica;
-using Monica.MySql;
-using Monica.Web;
+using Rye;
+using Rye.MySql;
+using Rye.Web;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -66,7 +65,7 @@ namespace Demo.WebApi
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen(options => options.OperationFilter<SwaggerDefaultValues>());
 
-            services = services.UseDynamicProxyService(); // Ê¹ÓÃ¶¯Ì¬´úÀí
+            services = services.UseDynamicProxyService(); // Ê¹ï¿½Ã¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
             services
                 .AddCoreModule(options =>
                 {
@@ -77,11 +76,15 @@ namespace Demo.WebApi
                     options.GlobalActionFilter.Enabled = true;
                     options.GlobalExceptionFilter.Enabled = true;
                 })
+                .AddBusinessModule(options =>
+                {
+                    options.VerfiyCodeExpire = 5 * 60;
+                })
                 .AddRedisCacheModule()
                 .AddMySqlModule<MyDbConnectionProvider>()
                 .AddMySqlEFCodeModule(builder =>
                 {
-                    builder.AddDbContext<DefaultDbContext>("MonicaDemo");
+                    builder.AddDbContext<DefaultDbContext>("RyeDemo");
                 })
                 .AddJwtModule()
                 .AddAuthorizationModule()
@@ -97,7 +100,6 @@ namespace Demo.WebApi
             }
 
             app.UseHttpsRedirection();
-
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
@@ -107,6 +109,7 @@ namespace Demo.WebApi
                 }
             });
             app.UseRouting();
+            app.UseSecurity(); // Ê¹ï¿½Ã¼Ó½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

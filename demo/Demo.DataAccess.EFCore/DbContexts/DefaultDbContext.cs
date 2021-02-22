@@ -1,25 +1,21 @@
-﻿using Demo.DataAccess.EFCore.Models;
-
+﻿using System;
 using Microsoft.EntityFrameworkCore;
-
-using Monica.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Demo.DataAccess.EFCore.Models;
+using Rye.EntityFrameworkCore;
 
 #nullable disable
 
 namespace Demo.DataAccess.EFCore.DbContexts
 {
-    public partial class DefaultDbContext : DbContextBase
+    public partial class DefaultDbContext : DbContextBase<DefaultDbContext>
     {
-        //public DefaultDbContext()
-        //{
-        //}
-
-        public DefaultDbContext(DbContextOptions<DefaultDbContext> options)
-            : base(options)
+        public DefaultDbContext()
         {
         }
 
-        public DefaultDbContext(DbContextOptions options) : base(options)
+        public DefaultDbContext(DbContextOptions<DefaultDbContext> options)
+            : base(options)
         {
         }
 
@@ -36,7 +32,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql("server=127.0.0.1;database=MonicaDemo;uid=root;pwd=Mysql_zzq123;pooling=false;sslmode=None;charset=utf8mb4;port=3306", Microsoft.EntityFrameworkCore.ServerVersion.FromString("8.0.20-mysql"));
+                optionsBuilder.UseMySql("server=127.0.0.1;database=RyeDemo;uid=root;pwd=Mysql_zzq123;pooling=false;sslmode=None;charset=utf8mb4;port=3306", Microsoft.EntityFrameworkCore.ServerVersion.FromString("8.0.20-mysql"));
             }
         }
 
@@ -281,10 +277,10 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Phome)
+                entity.Property(e => e.Phone)
                     .IsRequired()
                     .HasColumnType("varchar(100)")
-                    .HasColumnName("phome")
+                    .HasColumnName("phone")
                     .HasDefaultValueSql("''")
                     .HasComment("手机号")
                     .HasCharSet("utf8mb4")
