@@ -38,7 +38,8 @@ namespace Rye.Business.Validate
             }
 
             var entry = CacheEntryCollection.GetVerifyCodeEntry(id);
-            bool flag = code.Equals(_cacheService.Get<string>(entry.CacheKey), StringComparison.OrdinalIgnoreCase);
+            var validCode = _cacheService.Get<string>(entry.CacheKey);
+            bool flag = code.Equals(validCode, StringComparison.InvariantCultureIgnoreCase);
             if (removeIfSuccess && flag)
             {
                 _cacheService.Remove(entry.CacheKey);
@@ -68,7 +69,7 @@ namespace Rye.Business.Validate
                 image.Save(ms, ImageFormat.Png);
                 byte[] bytes = ms.ToArray();
                 string str = $"data:image/png;base64,{bytes.ToBase64String()}{Separator}{id}";
-                return str.ToBase64String();
+                return str;
             }
         }
     }

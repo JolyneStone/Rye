@@ -35,7 +35,7 @@ namespace Rye.SqlServer.Service
             parameter.Add("@status", (int)EntityStatus.Enabled);
             using (var conn = _connectionProvider.GetReadOnlyConnection())
             {
-                appSecret = conn.QueryFirstOrDefault<string>(sql, param: parameter);
+                appSecret = conn.Connection.QueryFirstOrDefault<string>(sql, param: parameter);
             }
 
             if (!appSecret.IsNullOrEmpty())

@@ -12,7 +12,7 @@ namespace Rye.DataAccess
             return provider.GetConnectionString(@enum.GetDescription());
         }
 
-        public static IDbConnection GetDbConnectionByName(this IConnectionProvider provider, Enum @enum)
+        public static Connector GetDbConnectionByName(this IConnectionProvider provider, Enum @enum)
         {
             Check.NotNull(provider, nameof(provider));
             Check.NotNull(@enum, nameof(@enum));

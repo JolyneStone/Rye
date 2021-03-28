@@ -73,7 +73,7 @@ namespace Demo.WebApi.Controllers
         {
             if (msg == null)
             {
-                msg = _langService.Get(Lang, @enum);
+                msg = LangService.Get(Lang, @enum);
             }
             return ApiResult.Create(@enum.GetHashCode(), msg);
         }
@@ -82,7 +82,7 @@ namespace Demo.WebApi.Controllers
         {
             if (msg == null)
             {
-                msg = _langService.Get(Lang, @enum);
+                msg = LangService.Get(Lang, @enum);
             }
             return ApiResult<T>.Create(@enum.GetHashCode(), data, msg);
         }

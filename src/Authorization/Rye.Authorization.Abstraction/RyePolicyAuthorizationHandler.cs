@@ -21,14 +21,11 @@ namespace Rye.Authorization.Abstraction
     {
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, RyeRequirement requirement)
         {
-            //var httpContext = context.Resource as HttpContext;
-            //var result = await httpContext.AuthenticateAsync();
             if (await AuthorizeCoreAsync(context))
             {
                 context.Succeed(requirement);
                 return;
             }
-
             context.Fail();
         }
 

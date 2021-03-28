@@ -3,6 +3,7 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 using Rye.CodeGenerator.SqlServer;
@@ -71,7 +72,7 @@ namespace Rye.CodeGenerator.CodeGenerator.SqlServer.Tests
         public async Task DaoTest()
         {
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddScoped<SqlServerConnectionProvider, TestSqlServerConnectionProvider>();
+            serviceCollection.TryAddSingleton<SqlServerConnectionProvider, TestSqlServerConnectionProvider>();
 
             var services = serviceCollection.BuildServiceProvider();
             var externNewsDataAccess = new DaoExternNews(services.GetRequiredService<SqlServerConnectionProvider>());

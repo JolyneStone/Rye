@@ -43,14 +43,14 @@ namespace Demo.DataAccess
 
         public int Insert(RolePermission model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return Insert(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return Insert(model, null, conn.Connection);
         }
 
         public async Task<int> InsertAsync(RolePermission model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await InsertAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await InsertAsync(model, null, conn.Connection);
         }
 
         public int BatchInsert(IEnumerable<RolePermission> items, IDbTransaction trans, IDbConnection conn)
@@ -77,16 +77,16 @@ namespace Demo.DataAccess
         {
         	string sql = "INSERT INTO rolePermission (roleId,permissionId) VALUES (@RoleId,@PermissionId);";
 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.Execute(sql, param: items, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.Execute(sql, param: items, commandType: CommandType.Text);
         }
         
         public async Task<int> BatchInsertAsync(IEnumerable<RolePermission> items)
         {
         	string sql = "INSERT INTO rolePermission (roleId,permissionId) VALUES (@RoleId,@PermissionId);";
 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
         }
 
         public int InsertUpdate(RolePermission model, IDbTransaction trans, IDbConnection conn)
@@ -109,16 +109,14 @@ namespace Demo.DataAccess
 
         public int InsertUpdate(RolePermission model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            {
-                return InsertUpdate(model, null, conn);
-            }
+            using Connector conn = ConnectionProvider.GetConnection();
+            return InsertUpdate(model, null, conn.Connection);
         }
         
         public async Task<int> InsertUpdateAsync(RolePermission model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await InsertUpdateAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await InsertUpdateAsync(model, null, conn.Connection);
         }
         
         public int Update(RolePermission model, IDbTransaction trans, IDbConnection conn)
@@ -132,8 +130,8 @@ namespace Demo.DataAccess
         
         public int Update(RolePermission model)
 		{
-			IDbConnection conn = ConnectionProvider.GetConnection();
-            return Update(model, null, conn);
+			using Connector conn = ConnectionProvider.GetConnection();
+            return Update(model, null, conn.Connection);
 		}
         
         public async Task<int> UpdateAsync(RolePermission model, IDbTransaction trans, IDbConnection conn)
@@ -147,8 +145,8 @@ namespace Demo.DataAccess
         
         public async Task<int> UpdateAsync(RolePermission model)
 		{
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await UpdateAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await UpdateAsync(model, null, conn.Connection);
         }
 
         public bool Delete(int roleId,int permissionId, IDbTransaction trans, IDbConnection conn)
@@ -165,8 +163,8 @@ namespace Demo.DataAccess
 
         public bool Delete(int roleId,int permissionId)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return Delete(roleId,permissionId, null,conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return Delete(roleId,permissionId, null, conn.Connection);
         }
 
         public async Task<bool> DeleteAsync(int roleId,int permissionId, IDbTransaction trans, IDbConnection conn)
@@ -183,8 +181,8 @@ namespace Demo.DataAccess
 
         public async Task<bool> DeleteAsync(int roleId,int permissionId)
         {   
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await DeleteAsync(roleId,permissionId, null,conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await DeleteAsync(roleId,permissionId, null, conn.Connection);
         }
 
         public RolePermission GetModel(int roleId,int permissionId)
@@ -194,8 +192,8 @@ namespace Demo.DataAccess
 			_params.Add("@RoleId", value: roleId, direction: ParameterDirection.Input);
 			_params.Add("@PermissionId", value: permissionId, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.QueryFirstOrDefault<RolePermission>(sql, param: _params, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.QueryFirstOrDefault<RolePermission>(sql, param: _params, commandType: CommandType.Text);
 		}				
         
         public RolePermission GetModelByWriteDb(int roleId,int permissionId)
@@ -205,8 +203,8 @@ namespace Demo.DataAccess
 			_params.Add("@RoleId", value: roleId, direction: ParameterDirection.Input);
 			_params.Add("@PermissionId", value: permissionId, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.QueryFirstOrDefault<RolePermission>(sql, param: _params, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.QueryFirstOrDefault<RolePermission>(sql, param: _params, commandType: CommandType.Text);
 		}
         
         public async Task<RolePermission> GetModelAsync(int roleId,int permissionId)
@@ -216,8 +214,8 @@ namespace Demo.DataAccess
 			_params.Add("@RoleId", value: roleId, direction: ParameterDirection.Input);
 			_params.Add("@PermissionId", value: permissionId, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryFirstOrDefaultAsync<RolePermission>(sql, param: _params, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<RolePermission>(sql, param: _params, commandType: CommandType.Text);
 		}	
         
         public async Task<RolePermission> GetModelByWriteDbAsync(int roleId,int permissionId)
@@ -227,8 +225,8 @@ namespace Demo.DataAccess
 			_params.Add("@RoleId", value: roleId, direction: ParameterDirection.Input);
 			_params.Add("@PermissionId", value: permissionId, direction: ParameterDirection.Input);
                 
-    		IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryFirstOrDefaultAsync<RolePermission>(sql, param: _params, commandType: CommandType.Text);
+    		using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<RolePermission>(sql, param: _params, commandType: CommandType.Text);
 		}	
 
         public RolePermission GetModel(int roleId,int permissionId, IDbTransaction trans, IDbConnection conn)
@@ -265,32 +263,32 @@ namespace Demo.DataAccess
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.QueryFirstOrDefault<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.QueryFirstOrDefault<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<RolePermission> GetModelAsync(object param, string whereSql)
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryFirstOrDefaultAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public RolePermission GetModelByWriteDb(object param, string whereSql)
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.QueryFirstOrDefault<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.QueryFirstOrDefault<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<RolePermission> GetModelByWriteDbAsync(object param, string whereSql)
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryFirstOrDefaultAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public RolePermission GetModel(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
@@ -321,32 +319,32 @@ namespace Demo.DataAccess
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.QueryFirstOrDefault<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.QueryFirstOrDefault<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<RolePermission> FirstOrDefaultAsync(object param, string whereSql, string orderSql)
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryFirstOrDefaultAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public RolePermission FirstOrDefaultByWriteDb(object param, string whereSql, string orderSql)
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.QueryFirstOrDefault<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.QueryFirstOrDefault<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<RolePermission> FirstOrDefaultByWriteDbAsync(object param, string whereSql, string orderSql)
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryFirstOrDefaultAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public RolePermission FirstOrDefault(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)
@@ -377,16 +375,16 @@ namespace Demo.DataAccess
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission  ORDER BY roleId DESC,permissionId DESC";
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.Query<RolePermission>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.Query<RolePermission>(sql, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<RolePermission>> GetListAsync()
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission  ORDER BY roleId DESC,permissionId DESC";
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryAsync<RolePermission>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryAsync<RolePermission>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<RolePermission> GetList(IDbTransaction trans, IDbConnection conn)
@@ -412,16 +410,16 @@ namespace Demo.DataAccess
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission  ORDER BY roleId DESC,permissionId DESC";
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.Query<RolePermission>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.Query<RolePermission>(sql, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<RolePermission>> GetListByWriteDbAsync()
         {
             string sql = "SELECT roleId RoleId,permissionId PermissionId FROM rolePermission  ORDER BY roleId DESC,permissionId DESC";
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryAsync<RolePermission>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryAsync<RolePermission>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<RolePermission> GetListByWriteDb(IDbTransaction trans, IDbConnection conn)
@@ -447,32 +445,32 @@ namespace Demo.DataAccess
         {
             string sql = string.Format("SELECT roleId RoleId,permissionId PermissionId FROM rolePermission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.Query<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.Query<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<RolePermission>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
             string sql = string.Format("SELECT roleId RoleId,permissionId PermissionId FROM rolePermission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public IEnumerable<RolePermission> GetPageByWriteDb(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
             string sql = string.Format("SELECT roleId RoleId,permissionId PermissionId FROM rolePermission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.Query<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.Query<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<RolePermission>> GetPageByWriteDbAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
             string sql = string.Format("SELECT roleId RoleId,permissionId PermissionId FROM rolePermission  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryAsync<RolePermission>(sql, param: param, commandType: CommandType.Text);
         }
 
         public IEnumerable<RolePermission> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
@@ -506,8 +504,8 @@ namespace Demo.DataAccess
 			_params.Add("@RoleId", value: roleId, direction: ParameterDirection.Input);
 			_params.Add("@PermissionId", value: permissionId, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public bool ExistsByWriteDb(int roleId,int permissionId)
@@ -517,8 +515,8 @@ namespace Demo.DataAccess
 			_params.Add("@RoleId", value: roleId, direction: ParameterDirection.Input);
 			_params.Add("@PermissionId", value: permissionId, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsAsync(int roleId,int permissionId)
@@ -528,8 +526,8 @@ namespace Demo.DataAccess
 			_params.Add("@RoleId", value: roleId, direction: ParameterDirection.Input);
 			_params.Add("@PermissionId", value: permissionId, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsByWriteDbAsync(int roleId,int permissionId)
@@ -539,8 +537,8 @@ namespace Demo.DataAccess
 			_params.Add("@RoleId", value: roleId, direction: ParameterDirection.Input);
 			_params.Add("@PermissionId", value: permissionId, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public bool Exists(int roleId,int permissionId, IDbTransaction trans, IDbConnection conn)
@@ -572,29 +570,29 @@ namespace Demo.DataAccess
         public bool Exists(object param, string whereSql)
         {
             string sql = "SELECT 1 FROM [rolePermission] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + " LIMIT 1";
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsAsync(object param, string whereSql)
         {
             string sql = "SELECT 1 FROM [rolePermission] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + " LIMIT 1";
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public bool ExistsByWriteDb(object param, string whereSql)
         {
             string sql = "SELECT 1 FROM [rolePermission] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + " LIMIT 1";
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsByWriteDbAsync(object param, string whereSql)
         {
             string sql = "SELECT 1 FROM [rolePermission] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + " LIMIT 1";
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public bool Exists(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
@@ -618,57 +616,57 @@ namespace Demo.DataAccess
         public int Count()
         {
             string sql = "SELECT COUNT(1) FROM rolePermission ";
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, commandType: CommandType.Text);
         }
 
         public async Task<int> CountAsync()
         {
             string sql = "SELECT COUNT(1) FROM rolePermission ";
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
         }
 
         public int CountByWriteDb()
         {
             string sql = "SELECT COUNT(1) FROM rolePermission ";
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, commandType: CommandType.Text);
         }
 
         public async Task<int> CountByWriteDbAsync()
         {
             string sql = "SELECT COUNT(1) FROM rolePermission ";
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
         }
 
         public int Count(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM rolePermission  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<int> CountAsync(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM rolePermission  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public int CountByWriteDb(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM rolePermission  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
         }
         
         public async Task<int> CountByWriteDbAsync(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM rolePermission  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public int Count(IDbTransaction trans, IDbConnection conn)

@@ -4,12 +4,6 @@ using Demo.Core.Common;
 
 using Rye.Cache;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Demo.DataAccess
 {
     public partial class DaoAppInfo
@@ -20,9 +14,9 @@ namespace Demo.DataAccess
             var param = new DynamicParameters();
             param.Add("@appKey", appKey);
 
-            using(var conn = ConnectionProvider.GetReadOnlyConnection())
+            using (var conn = ConnectionProvider.GetReadOnlyConnection())
             {
-                return conn.QueryFirstOrDefault<AppInfo>(sql, param: param);
+                return conn.Connection.QueryFirstOrDefault<AppInfo>(sql, param: param);
             }
         }
 

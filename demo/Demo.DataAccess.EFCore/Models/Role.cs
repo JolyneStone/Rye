@@ -8,6 +8,7 @@ namespace Demo.DataAccess.EFCore.Models
     public partial class Role
     {
         public int Id { get; set; }
+        public int AppId { get; set; }
         public string Name { get; set; }
         public sbyte Status { get; set; }
         public string Remarks { get; set; }

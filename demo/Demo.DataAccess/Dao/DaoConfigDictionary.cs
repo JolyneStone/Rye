@@ -43,14 +43,14 @@ namespace Demo.DataAccess
 
         public int Insert(ConfigDictionary model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return Insert(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return Insert(model, null, conn.Connection);
         }
 
         public async Task<int> InsertAsync(ConfigDictionary model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await InsertAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await InsertAsync(model, null, conn.Connection);
         }
 
         public int BatchInsert(IEnumerable<ConfigDictionary> items, IDbTransaction trans, IDbConnection conn)
@@ -77,16 +77,16 @@ namespace Demo.DataAccess
         {
         	string sql = "INSERT INTO configDictionary (dicKey,dicValue) VALUES (@DicKey,@DicValue);";
 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.Execute(sql, param: items, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.Execute(sql, param: items, commandType: CommandType.Text);
         }
         
         public async Task<int> BatchInsertAsync(IEnumerable<ConfigDictionary> items)
         {
         	string sql = "INSERT INTO configDictionary (dicKey,dicValue) VALUES (@DicKey,@DicValue);";
 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
         }
 
         public int InsertUpdate(ConfigDictionary model, IDbTransaction trans, IDbConnection conn)
@@ -109,16 +109,14 @@ namespace Demo.DataAccess
 
         public int InsertUpdate(ConfigDictionary model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            {
-                return InsertUpdate(model, null, conn);
-            }
+            using Connector conn = ConnectionProvider.GetConnection();
+            return InsertUpdate(model, null, conn.Connection);
         }
         
         public async Task<int> InsertUpdateAsync(ConfigDictionary model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await InsertUpdateAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await InsertUpdateAsync(model, null, conn.Connection);
         }
         
         public int Update(ConfigDictionary model, IDbTransaction trans, IDbConnection conn)
@@ -132,8 +130,8 @@ namespace Demo.DataAccess
         
         public int Update(ConfigDictionary model)
 		{
-			IDbConnection conn = ConnectionProvider.GetConnection();
-            return Update(model, null, conn);
+			using Connector conn = ConnectionProvider.GetConnection();
+            return Update(model, null, conn.Connection);
 		}
         
         public async Task<int> UpdateAsync(ConfigDictionary model, IDbTransaction trans, IDbConnection conn)
@@ -147,8 +145,8 @@ namespace Demo.DataAccess
         
         public async Task<int> UpdateAsync(ConfigDictionary model)
 		{
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await UpdateAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await UpdateAsync(model, null, conn.Connection);
         }
 
         public bool Delete(string dicKey, IDbTransaction trans, IDbConnection conn)
@@ -164,8 +162,8 @@ namespace Demo.DataAccess
 
         public bool Delete(string dicKey)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return Delete(dicKey, null,conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return Delete(dicKey, null, conn.Connection);
         }
 
         public async Task<bool> DeleteAsync(string dicKey, IDbTransaction trans, IDbConnection conn)
@@ -181,8 +179,8 @@ namespace Demo.DataAccess
 
         public async Task<bool> DeleteAsync(string dicKey)
         {   
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await DeleteAsync(dicKey, null,conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await DeleteAsync(dicKey, null, conn.Connection);
         }
 
         public ConfigDictionary GetModel(string dicKey)
@@ -191,8 +189,8 @@ namespace Demo.DataAccess
             var _params = new DynamicParameters();
 			_params.Add("@DicKey", value: dicKey, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.QueryFirstOrDefault<ConfigDictionary>(sql, param: _params, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.QueryFirstOrDefault<ConfigDictionary>(sql, param: _params, commandType: CommandType.Text);
 		}				
         
         public ConfigDictionary GetModelByWriteDb(string dicKey)
@@ -201,8 +199,8 @@ namespace Demo.DataAccess
             var _params = new DynamicParameters();
 			_params.Add("@DicKey", value: dicKey, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.QueryFirstOrDefault<ConfigDictionary>(sql, param: _params, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.QueryFirstOrDefault<ConfigDictionary>(sql, param: _params, commandType: CommandType.Text);
 		}
         
         public async Task<ConfigDictionary> GetModelAsync(string dicKey)
@@ -211,8 +209,8 @@ namespace Demo.DataAccess
             var _params = new DynamicParameters();
 			_params.Add("@DicKey", value: dicKey, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: _params, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: _params, commandType: CommandType.Text);
 		}	
         
         public async Task<ConfigDictionary> GetModelByWriteDbAsync(string dicKey)
@@ -221,8 +219,8 @@ namespace Demo.DataAccess
             var _params = new DynamicParameters();
 			_params.Add("@DicKey", value: dicKey, direction: ParameterDirection.Input);
                 
-    		IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: _params, commandType: CommandType.Text);
+    		using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: _params, commandType: CommandType.Text);
 		}	
 
         public ConfigDictionary GetModel(string dicKey, IDbTransaction trans, IDbConnection conn)
@@ -257,32 +255,32 @@ namespace Demo.DataAccess
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.QueryFirstOrDefault<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.QueryFirstOrDefault<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<ConfigDictionary> GetModelAsync(object param, string whereSql)
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public ConfigDictionary GetModelByWriteDb(object param, string whereSql)
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.QueryFirstOrDefault<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.QueryFirstOrDefault<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<ConfigDictionary> GetModelByWriteDbAsync(object param, string whereSql)
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary LIMIT 1 WHERE 1=1 AND " + whereSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public ConfigDictionary GetModel(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
@@ -313,32 +311,32 @@ namespace Demo.DataAccess
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.QueryFirstOrDefault<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.QueryFirstOrDefault<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<ConfigDictionary> FirstOrDefaultAsync(object param, string whereSql, string orderSql)
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public ConfigDictionary FirstOrDefaultByWriteDb(object param, string whereSql, string orderSql)
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.QueryFirstOrDefault<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.QueryFirstOrDefault<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<ConfigDictionary> FirstOrDefaultByWriteDbAsync(object param, string whereSql, string orderSql)
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary LIMIT 1 WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql + " LIMIT 1";
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public ConfigDictionary FirstOrDefault(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)
@@ -369,16 +367,16 @@ namespace Demo.DataAccess
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary  ORDER BY dicKey DESC";
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.Query<ConfigDictionary>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.Query<ConfigDictionary>(sql, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<ConfigDictionary>> GetListAsync()
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary  ORDER BY dicKey DESC";
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryAsync<ConfigDictionary>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryAsync<ConfigDictionary>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<ConfigDictionary> GetList(IDbTransaction trans, IDbConnection conn)
@@ -404,16 +402,16 @@ namespace Demo.DataAccess
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary  ORDER BY dicKey DESC";
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.Query<ConfigDictionary>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.Query<ConfigDictionary>(sql, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<ConfigDictionary>> GetListByWriteDbAsync()
         {
             string sql = "SELECT dicKey DicKey,dicValue DicValue FROM configDictionary  ORDER BY dicKey DESC";
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryAsync<ConfigDictionary>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryAsync<ConfigDictionary>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<ConfigDictionary> GetListByWriteDb(IDbTransaction trans, IDbConnection conn)
@@ -439,32 +437,32 @@ namespace Demo.DataAccess
         {
             string sql = string.Format("SELECT dicKey DicKey,dicValue DicValue FROM configDictionary  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.Query<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.Query<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<ConfigDictionary>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
             string sql = string.Format("SELECT dicKey DicKey,dicValue DicValue FROM configDictionary  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public IEnumerable<ConfigDictionary> GetPageByWriteDb(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
             string sql = string.Format("SELECT dicKey DicKey,dicValue DicValue FROM configDictionary  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.Query<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.Query<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<ConfigDictionary>> GetPageByWriteDbAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
             string sql = string.Format("SELECT dicKey DicKey,dicValue DicValue FROM configDictionary  WHERE {0} ORDER BY {1} LIMIT {3},{2}", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryAsync<ConfigDictionary>(sql, param: param, commandType: CommandType.Text);
         }
 
         public IEnumerable<ConfigDictionary> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
@@ -497,8 +495,8 @@ namespace Demo.DataAccess
             var _params = new DynamicParameters();
 			_params.Add("@DicKey", value: dicKey, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public bool ExistsByWriteDb(string dicKey)
@@ -507,8 +505,8 @@ namespace Demo.DataAccess
             var _params = new DynamicParameters();
 			_params.Add("@DicKey", value: dicKey, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsAsync(string dicKey)
@@ -517,8 +515,8 @@ namespace Demo.DataAccess
             var _params = new DynamicParameters();
 			_params.Add("@DicKey", value: dicKey, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsByWriteDbAsync(string dicKey)
@@ -527,8 +525,8 @@ namespace Demo.DataAccess
             var _params = new DynamicParameters();
 			_params.Add("@DicKey", value: dicKey, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public bool Exists(string dicKey, IDbTransaction trans, IDbConnection conn)
@@ -558,29 +556,29 @@ namespace Demo.DataAccess
         public bool Exists(object param, string whereSql)
         {
             string sql = "SELECT 1 FROM [configDictionary] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + " LIMIT 1";
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsAsync(object param, string whereSql)
         {
             string sql = "SELECT 1 FROM [configDictionary] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + " LIMIT 1";
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public bool ExistsByWriteDb(object param, string whereSql)
         {
             string sql = "SELECT 1 FROM [configDictionary] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + " LIMIT 1";
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsByWriteDbAsync(object param, string whereSql)
         {
             string sql = "SELECT 1 FROM [configDictionary] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + " LIMIT 1";
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public bool Exists(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
@@ -604,57 +602,57 @@ namespace Demo.DataAccess
         public int Count()
         {
             string sql = "SELECT COUNT(1) FROM configDictionary ";
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, commandType: CommandType.Text);
         }
 
         public async Task<int> CountAsync()
         {
             string sql = "SELECT COUNT(1) FROM configDictionary ";
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
         }
 
         public int CountByWriteDb()
         {
             string sql = "SELECT COUNT(1) FROM configDictionary ";
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, commandType: CommandType.Text);
         }
 
         public async Task<int> CountByWriteDbAsync()
         {
             string sql = "SELECT COUNT(1) FROM configDictionary ";
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
         }
 
         public int Count(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM configDictionary  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<int> CountAsync(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM configDictionary  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public int CountByWriteDb(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM configDictionary  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
         }
         
         public async Task<int> CountByWriteDbAsync(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM configDictionary  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public int Count(IDbTransaction trans, IDbConnection conn)

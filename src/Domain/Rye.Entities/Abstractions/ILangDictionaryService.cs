@@ -5,6 +5,6 @@ namespace Rye.Entities.Abstractions
 {
     public interface ILangDictionaryService
     {
-        IEnumerable<IEntityLangDictionaryBase> GetEnableList();
+        IEnumerable<(string lang, string dicKey, string dicValue)> GetEnableList();
     }
 }

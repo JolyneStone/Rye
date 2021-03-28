@@ -171,8 +171,8 @@ namespace Rye.EntityFrameworkCore
                 DbConnectionOptions dbConnectionOptions = dbName == null ? dbConnectionOptionsMap.First().Value : dbConnectionOptionsMap[dbName];
 
                 var builderOptions = serviceProvider.GetServices<DbContextOptionsBuilderOptions<TDbContext>>()
-                      ?.Where(d => dbName == null || d.DbName == null || d.DbName == dbName)
-                      ?.OrderByDescending(d => d.DbName);
+                      ?.OrderByDescending(d => d.DbName == dbName)
+                      ?.ThenBy(d => d.DbName);
                 if (builderOptions == null || !builderOptions.Any())
                 {
                     throw new RyeException("无法获取匹配的DbContextOptionsBuilder");

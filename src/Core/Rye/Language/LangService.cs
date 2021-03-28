@@ -25,13 +25,13 @@ namespace Rye.Language
             var dictionary = MemoryCacheManager.Get<Dictionary<string, Dictionary<string, string>>>(entry.CacheKey);
             if (dictionary == null)
             {
-                IEnumerable<IEntityLangDictionaryBase> _list = _langDictionaryService.GetEnableList();
+                IEnumerable<(string lang, string dicKey, string dicValue)> _list = _langDictionaryService.GetEnableList();
                 if (_list != null && _list.Any())
                 {
                     dictionary = new Dictionary<string, Dictionary<string, string>>();
-                    foreach (var item in _list.GroupBy(d => d.DicKey))
+                    foreach (var item in _list.GroupBy(d => d.dicKey))
                     {
-                        dictionary.Add(item.Key, item.ToDictionary(d => d.Lang, d => d.DicValue));
+                        dictionary.Add(item.Key, item.ToDictionary(d => d.lang, d => d.dicValue));
                     }
                     MemoryCacheManager.Set(entry.CacheKey, dictionary, entry.Expire);
                     return dictionary;

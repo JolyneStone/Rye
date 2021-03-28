@@ -71,7 +71,7 @@ namespace Rye
             //}
             //serviceCollection.TryAddSingleton<IConfigureOptions<RyeOptions>, RyeOptionsSetup>();
             serviceCollection.TryAddSingleton<ISearcher<Assembly>, AssemblySeracher>();
-            serviceCollection.TryAddScoped<ILangService, LangService>();
+            serviceCollection.TryAddSingleton<ILangService, LangService>();
             using (var services = serviceCollection.BuildServiceProvider())
             {
                 using (var scope = services.CreateScope())
@@ -161,7 +161,7 @@ namespace Rye
         public static IServiceCollection AddSecuritySupport<T>(this IServiceCollection serviceCollection)
             where T: class, ISecurityService
         {
-            return serviceCollection.AddScoped<ISecurityService, T>();
+            return serviceCollection.AddSingleton<ISecurityService, T>();
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace Rye
                 throw new ArgumentNullException(nameof(factory));
             }
 
-            return serviceCollection.AddScoped<ISecurityService, T>(factory);
+            return serviceCollection.AddSingleton<ISecurityService, T>(factory);
         }
     }
 }

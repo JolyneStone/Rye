@@ -18,6 +18,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Text.Unicode;
 using System.Threading.Tasks;
 
@@ -49,7 +50,7 @@ namespace Rye.Jwt
                 var tokenEntry = CacheEntryCollection.GetTokenEntry(jwtTokenType, clientType, userId, (int)_jwtOptions.AccessExpireMins * 60);
 
                 var cacheToken = await _distributedCache.GetStringAsync(tokenEntry.CacheKey);
-                if(cacheToken.IsNullOrEmpty() || cacheToken!= token)
+                if (cacheToken.IsNullOrEmpty() || cacheToken != token)
                 {
                     throw new RyeException("Token is error");
                 }
@@ -78,6 +79,15 @@ namespace Rye.Jwt
             ClaimsPrincipal principal = _tokenHandler.ValidateToken(refreshToken, parameters, out _);
 
             return await GenerateTokenAsync(principal.Claims.ToList());
+        }
+
+        public virtual async Task DeleteTokenAsync(string userId, string clientType)
+        {
+            var tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.AccessToken, clientType, userId);
+            await _distributedCache.RemoveAsync(tokenEntry.CacheKey);
+
+            tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.RefreshToken, clientType, userId);
+            await _distributedCache.RemoveAsync(tokenEntry.CacheKey);
         }
 
         private async Task<JsonWebToken> GenerateTokenAsync(List<Claim> claims)
@@ -158,42 +168,41 @@ namespace Rye.Jwt
                 return new List<Claim>();
             }
 
-            //var serializerOptions = new JsonSerializerOptions
-            //{
-            //    PropertyNameCaseInsensitive = false,
-            //    NumberHandling = JsonNumberHandling.AllowReadingFromString,
-            //    WriteIndented = true,
-            //    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-            //};
-            //var dic = requirement.ToJsonString(serializerOptions).ToObject<Dictionary<string, JsonElement>>(serializerOptions);
-            //return dic.Select(d => new Claim(
-            //    d.Key,
-            //    d.Value.ValueKind switch
-            //    {
-            //        JsonValueKind.Object => d.Value.ToJsonString(),
-            //        JsonValueKind.Null => string.Empty,
-            //        JsonValueKind.Array => string.Join(",", d.Value.EnumerateArray().Select(e => e.GetString())),
-            //        _=> d.Value.ToString()
-            //    }
-            //)).ToList();
-            var claims = new List<Claim>();
-            foreach (var property in requirement.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty))
+            var serializerOptions = new JsonSerializerOptions
             {
-                var value = property.GetValue(requirement);
-                if (value == null)
-                {
-                    claims.Add(new Claim(property.Name, string.Empty));
-                }
-                else if (property.PropertyType.IsPrimitive || property.PropertyType == typeof(string))
-                {
-                    claims.Add(new Claim(property.Name, value.ToString()));
-                }
-                else
-                {
-                    claims.Add(new Claim(property.Name, value.ToJsonString()));
-                }
-            }
-            return claims;
+                PropertyNameCaseInsensitive = false,
+                NumberHandling = JsonNumberHandling.AllowReadingFromString,
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+            };
+            var dic = requirement.ToJsonString(serializerOptions).ToObject<Dictionary<string, JsonElement>>(serializerOptions);
+            return dic.Select(d =>
+            {
+                var tempStr = d.Value.GetRawText();
+                return new Claim(
+                d.Key,
+                tempStr.IsNullOrEmpty() || tempStr.Length < 3 ?
+                    "" :
+                    new string(tempStr.AsSpan(1, tempStr.Length - 2)));
+            }).ToList();
+            //var claims = new List<Claim>();
+            //foreach (var property in requirement.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty))
+            //{
+            //    var value = property.GetValue(requirement);
+            //    if (value == null)
+            //    {
+            //        claims.Add(new Claim(property.Name, string.Empty));
+            //    }
+            //    else if (property.PropertyType.IsPrimitive || property.PropertyType == typeof(string))
+            //    {
+            //        claims.Add(new Claim(property.Name, value.ToString()));
+            //    }
+            //    else
+            //    {
+            //        claims.Add(new Claim(property.Name, value.ToJsonString()));
+            //    }
+            //}
+            //return claims;
         }
     }
 }

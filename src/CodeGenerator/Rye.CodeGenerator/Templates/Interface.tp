@@ -6,7 +6,7 @@ using Rye.DataAccess;
 
 namespace @Model.NameSpace
 {
-    @RawInline($"[Injection(ServiceLifetime.Scoped, InjectionPolicy.Replace)]")
+    @RawInline($"[Injection(ServiceLifetime.Singleton, InjectionPolicy.Replace)]")
 	@RawInline($"public partial interface I{Model.Name} : IDataBaseOperate<{Model.Name}>")
 	{
 		@RawInline($"bool Delete({GetPrimaryKeyParams()});")        

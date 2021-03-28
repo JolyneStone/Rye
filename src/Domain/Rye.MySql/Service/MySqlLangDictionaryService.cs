@@ -13,12 +13,12 @@ namespace Rye.MySql.Service
             _connectionProvider = connectionProvider;
         }
 
-        public IEnumerable<IEntityLangDictionaryBase> GetEnableList()
+        public IEnumerable<(string lang, string dicKey, string dicValue)> GetEnableList()
         {
             var sql = "select `lang`, `dicKey`, `dicValue` from `langDictionary`";
             using(var conn = _connectionProvider.GetReadOnlyConnection())
             {
-                return conn.Query<IEntityLangDictionaryBase>(sql);
+                return conn.Connection.Query<(string lang, string dicKey, string dicValue)>(sql);
             }
         }
     }

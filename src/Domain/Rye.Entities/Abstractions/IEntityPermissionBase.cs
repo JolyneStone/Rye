@@ -27,5 +27,10 @@ namespace Rye.Entities.Abstractions
         /// 权限编码
         /// </summary>
         string Code { get; set; }
+
+        /// <summary>
+        /// 权限类型
+        /// </summary>
+        sbyte Type { get; set; }
     }
 }

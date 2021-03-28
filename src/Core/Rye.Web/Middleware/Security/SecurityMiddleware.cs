@@ -15,7 +15,11 @@ using Rye.Web.Options;
 using Rye.Web.ResponseProvider.Security;
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Rye.Web.Middleware
@@ -69,40 +73,53 @@ namespace Rye.Web.Middleware
                     await WriteResponseAsync(context, attr.EncryptResponseBody, securityService, null, null, responseTempBody);
                 }
 
-                Stream requestOrigin = context.Request.Body;
                 try
                 {
-                    if (string.Equals(context.Request.Method, "get", StringComparison.InvariantCultureIgnoreCase) && attr.DecryptRequestBody)//解密
+                    if (attr.DecryptRequestBody && !string.Equals(context.Request.Method, "get", StringComparison.InvariantCultureIgnoreCase) &&
+                        context.Request.Form != null)//解密
                     {
                         #region 解密请求包体的内容  
-                        string requestStr;
-                        if (requestOrigin.CanRead)
+                        try
                         {
-                            try
+                            var formCollection = context.Request.Form;
+                            var dic = new Dictionary<string, StringValues>();
+                            foreach (var key in formCollection.Keys)
                             {
-                                using (var reader = new StreamReader(requestOrigin))
+                                var val = formCollection[key];
+                                if (string.Equals(key, "param", StringComparison.InvariantCultureIgnoreCase))
                                 {
-                                    requestStr = await reader.ReadToEndAsync();
+                                    var param = securityService.Decrypt(appKey, appSecret, val.ToString());
+                                    var paramDic = param.ToObject<Dictionary<string, JsonElement>>();
+                                    if (paramDic != null)
+                                    {
+                                        foreach (var pair in paramDic)
+                                        {
+                                            var tempStr = pair.Value.GetRawText();
+                                            dic.Add(pair.Key,
+                                                new StringValues(tempStr.IsNullOrEmpty() || tempStr.Length<3 ? 
+                                                    "" :
+                                                    new string(tempStr.AsSpan(1, tempStr.Length - 2))));
+                                        }
+                                    }
                                 }
-                                if (!requestStr.IsNullOrEmpty())
+                                else
                                 {
-                                    requestStr = requestStr.ToObject<SecurityBody>().Param;
-                                    var requestBytes = securityService.Decrypt(appKey, appSecret, Convert.FromBase64String(requestStr));
-                                    MemoryStream inputStream = new MemoryStream(requestBytes);
-                                    inputStream.Position = 0;
-                                    context.Request.Body = inputStream;
+                                    dic.Add(key, val);
                                 }
                             }
-                            catch (Exception ex)
-                            {
-                                _logger.LogError(ex.ToString());
-                            }
+                            var fc = new FormCollection(dic);
+                            context.Request.Form = fc;
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex.ToString());
                         }
                         #endregion
                     }
                     if (attr.EncryptResponseBody)
                     {
                         #region 返回的内容进行加密处理
+                        var originResponse = context.Response.Body;
                         using (MemoryStream newResponse = new MemoryStream())
                         {
                             context.Response.Body = newResponse;
@@ -115,9 +132,10 @@ namespace Rye.Web.Middleware
                                 responseTempBody = await streamReader.ReadToEndAsync(); //action返回的数据
                             }
                         }
+
+                        context.Response.Body = originResponse;
                         if (!string.IsNullOrEmpty(responseTempBody))
                         {
-                            responseTempBody = responseTempBody.ToObject<SecurityBody>().Param;
                             await WriteResponseAsync(context, attr.EncryptResponseBody, securityService, appKey, appSecret, responseTempBody);
                         }
 
@@ -132,23 +150,18 @@ namespace Rye.Web.Middleware
                 {
                     _logger.LogError(ex.ToString());
                 }
-                finally
-                {
-                    requestOrigin?.Dispose();
-                }
             }
         }
 
         private async Task WriteResponseAsync(HttpContext context, bool encrypt, ISecurityService securityService, string appKey, string appSecret, string value)
         {
-            Stream responseOrigin = context.Response.Body;
             if (encrypt && !appKey.IsNullOrEmpty() && !appSecret.IsNullOrEmpty())
             {
                 value = securityService.Encrypt(appKey, appSecret, value); //加密再给body
             }
             context.Response.Headers["Content-length"] = value.Length.ToString();
+            Stream responseOrigin = context.Response.Body;
             await responseOrigin.FlushAsync();
-            responseOrigin.Position = 0;
             using (StreamWriter streamWriter = new StreamWriter(responseOrigin))
             {
                 await streamWriter.WriteAsync(value);

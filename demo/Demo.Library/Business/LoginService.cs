@@ -14,6 +14,7 @@ using Rye.Util;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Demo.Core;
 
 namespace Demo.Library.Business
 {
@@ -72,7 +73,7 @@ namespace Demo.Library.Business
                 return (CommonStatusCode.AccountAlreadyLock, null);
             }
 
-            if (userInfo.Password != HashManager.GetMd5(HashManager.GetMd5(password)))
+            if (userInfo.Password != password.ToPassword())
             {
                 userInfo.Lock++;
                 uow = _provider.GetUnitOfWorkByWriteDb();
@@ -94,6 +95,8 @@ namespace Demo.Library.Business
 
             var userRoleRepository = uow.GetReadOnlyRepository<UserRole, string>();
             var roleIds = await userRoleRepository.Query(d => d.UserId == userInfo.Id).Select(d => d.RoleId).ToArrayAsync();
+            var rolesRepository = uow.GetReadOnlyRepository<Role, int>();
+            roleIds = await rolesRepository.Query(d => d.AppId == appInfo.AppId && roleIds.Contains(d.Id)).Select(d => d.Id).ToArrayAsync();
 
             return (CommonStatusCode.Success, new LoginUserInfoDto
             {

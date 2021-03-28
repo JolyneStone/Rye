@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Demo.Library.Abstraction
 {
-    [Injection(ServiceLifetime.Scoped, InjectionPolicy.Replace)]
+    [Injection(ServiceLifetime.Singleton, InjectionPolicy.Replace)]
     public interface ILoginService
     {
         Task<(CommonStatusCode, LoginUserInfoDto)> LoginAsync(string appKey, string mobile, string password);

@@ -8,7 +8,7 @@ namespace Demo.Core.Common.Enums
         #region 成功失败
 
         [Description("成功"), LangKey("SUCCESS")]
-        Success = 1,
+        Success = 200,
 
         [Description("失败"), LangKey("FAIL")]
         Fail = -1,
@@ -27,28 +27,31 @@ namespace Demo.Core.Common.Enums
         ParametersError = 4,
 
         [Description("userToken失效"), LangKey("USERTOKEN_INVALID")]
-        UsertokenInvalid = 5,
+        UsertokenInvalid = 400,
+
+        [Description("无权访问"), LangKey("NO_PERMISSION")]
+        NoPermission = 401,
 
         [Description("请求受限"), LangKey("LIMITED_REQUEST")]
-        BanRequest = 6,
+        BanRequest = 7,
 
         [Description("网络错误，请联系客服！"), LangKey("BLACKUSERTIP")]
-        BlackUserTip = 7,
+        BlackUserTip = 8,
 
         [Description("网络异常"), LangKey("NETWORK_ANOMALY")]
-        NetworkAnomaly = 8,
+        NetworkAnomaly = 9,
 
         [Description("网络环境差, 请稍后重试"), LangKey("TRADE_NETWORK_ERROR")]
-        TradeNetworkError = 9,
+        TradeNetworkError = 10,
 
         [Description("数据不存在"), LangKey("DATA_NOT_FUND")]
-        DataNotFund = 10,
+        DataNotFund = 11,
 
         [Description("数据库异常"), LangKey("DATABASE_EXCEPTION")]
-        DbError = 11,
+        DbError = 12,
         
         [Description("App不存在, 请检查App Key是否正确"), LangKey("APP_NOT_EXIST")]
-        AppNotExist = 12,
+        AppNotExist = 13,
         #endregion
 
         #region 用户

@@ -24,8 +24,8 @@ namespace @Model.NameSpace
         {
             @Raw($"\t\tpublic {identityProperty.Type} GetLastIdentity()")
             @Raw("\t\t{")
-                @Raw("\t\t\tIDbConnection conn = ConnectionProvider.GetConnection();")
-                @Raw($"\t\t\treturn conn.ExecuteScalar<{identityProperty.Type}>(\"SELECT SCOPE_IDENTITY()\");")
+                @Raw("\t\t\tusing Connector conn = ConnectionProvider.GetConnection();")
+                @Raw($"\t\t\treturn conn.Connection.ExecuteScalar<{identityProperty.Type}>(\"SELECT SCOPE_IDENTITY()\");")
             @Raw("\t\t}")
         }
 
@@ -49,14 +49,14 @@ namespace @Model.NameSpace
 
         public int @RawInline($"Insert({Model.Name} model)")
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return Insert(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return Insert(model, null, conn.Connection);
         }
 
         public async Task<int> @RawInline($"InsertAsync({Model.Name} model)")
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await InsertAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await InsertAsync(model, null, conn.Connection);
         }
 
         public int @RawInline($"BatchInsert(IEnumerable<{Model.Name}> items, IDbTransaction trans, IDbConnection conn)")
@@ -80,15 +80,15 @@ namespace @Model.NameSpace
         public int @RawInline($"BatchInsert(IEnumerable<{Model.Name}> items)")
         {
         @Raw($"\tstring sql = \"{GetInsertSql()}\";")
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.Execute(sql, param: items, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.Execute(sql, param: items, commandType: CommandType.Text);
         }
         
         @RawInline($"public async Task<int> BatchInsertAsync(IEnumerable<{Model.Name}> items)")
         {
         @Raw($"\tstring sql = \"{GetInsertSql()}\";")
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
         }
 
         @RawInline($"public int InsertUpdate({Model.Name} model, IDbTransaction trans, IDbConnection conn)")
@@ -111,16 +111,14 @@ namespace @Model.NameSpace
 
         @RawInline($"public int InsertUpdate({Model.Name} model)")
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            {
-                return InsertUpdate(model, null, conn);
-            }
+            using Connector conn = ConnectionProvider.GetConnection();
+            return InsertUpdate(model, null, conn.Connection);
         }
         
         @RawInline($"public async Task<int> InsertUpdateAsync({Model.Name} model)")
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await InsertUpdateAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await InsertUpdateAsync(model, null, conn.Connection);
         }
         
         @RawInline($"public int Update({Model.Name} model, IDbTransaction trans, IDbConnection conn)")
@@ -134,8 +132,8 @@ namespace @Model.NameSpace
         
         @RawInline($"public int Update({Model.Name} model)")
 		{
-			IDbConnection conn = ConnectionProvider.GetConnection();
-            return Update(model, null, conn);
+			using Connector conn = ConnectionProvider.GetConnection();
+            return Update(model, null, conn.Connection);
 		}
         
         @RawInline($"public async Task<int> UpdateAsync({Model.Name} model, IDbTransaction trans, IDbConnection conn)")
@@ -149,8 +147,8 @@ namespace @Model.NameSpace
         
         @RawInline($"public async Task<int> UpdateAsync({Model.Name} model)")
 		{
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await UpdateAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await UpdateAsync(model, null, conn.Connection);
         }
 
         @RawInline($"public bool Delete({GetPrimaryKeyParams()}, IDbTransaction trans, IDbConnection conn)")
@@ -172,8 +170,8 @@ namespace @Model.NameSpace
 
         @RawInline($"public bool Delete({GetPrimaryKeyParams()})")
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return Delete({GetPrimaryKeyParamsValue()}, null,conn);")
+            using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return Delete({GetPrimaryKeyParamsValue()}, null, conn.Connection);")
         }
 
         @RawInline($"public async Task<bool> DeleteAsync({GetPrimaryKeyParams()}, IDbTransaction trans, IDbConnection conn)")
@@ -195,8 +193,8 @@ namespace @Model.NameSpace
 
         @RawInline($"public async Task<bool> DeleteAsync({GetPrimaryKeyParams()})")
         {   
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return await DeleteAsync({GetPrimaryKeyParamsValue()}, null,conn);")
+            using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return await DeleteAsync({GetPrimaryKeyParamsValue()}, null, conn.Connection);")
         }
 
         @RawInline($"public {Model.Name} GetModel({GetPrimaryKeyParams()})")
@@ -211,8 +209,8 @@ namespace @Model.NameSpace
                 }        		
         	}
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            @RawInline($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: _params, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            @RawInline($"return conn.Connection.QueryFirstOrDefault<{Model.Name}>(sql, param: _params, commandType: CommandType.Text);")
 		}				
         
         @RawInline($"public {Model.Name} GetModelByWriteDb({GetPrimaryKeyParams()})")
@@ -227,8 +225,8 @@ namespace @Model.NameSpace
                 }        		
         	}
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: _params, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return conn.Connection.QueryFirstOrDefault<{Model.Name}>(sql, param: _params, commandType: CommandType.Text);")
 		}
         
         @RawInline($"public async Task<{Model.Name}> GetModelAsync({GetPrimaryKeyParams()})")
@@ -243,8 +241,8 @@ namespace @Model.NameSpace
                 }        		
         	}
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            @RawInline($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: _params, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            @RawInline($"return await conn.Connection.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: _params, commandType: CommandType.Text);")
 		}	
         
         @RawInline($"public async Task<{Model.Name}> GetModelByWriteDbAsync({GetPrimaryKeyParams()})")
@@ -259,8 +257,8 @@ namespace @Model.NameSpace
                 }        		
         	}
                 
-    		IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: _params, commandType: CommandType.Text);")
+    		using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return await conn.Connection.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: _params, commandType: CommandType.Text);")
 		}	
 
         @RawInline($"public {Model.Name} GetModel({GetPrimaryKeyParams()}, IDbTransaction trans, IDbConnection conn)")
@@ -303,32 +301,32 @@ namespace @Model.NameSpace
         {
             @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql;")
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            @RawInline($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            @RawInline($"return conn.Connection.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public async Task<{Model.Name}> GetModelAsync(object param, string whereSql)")
         {
             @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql;")
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            @RawInline($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            @RawInline($"return await conn.Connection.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public {Model.Name} GetModelByWriteDb(object param, string whereSql)")
         {
             @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql;")
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return conn.Connection.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public async Task<{Model.Name}> GetModelByWriteDbAsync(object param, string whereSql)")
         {
             @RawInline($"string sql = \"{GetSelectWithNoParamSql()} WHERE 1=1 AND \" + whereSql;")
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return await conn.Connection.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public {Model.Name} GetModel(object param, string whereSql, IDbTransaction trans, IDbConnection conn)")
@@ -355,32 +353,32 @@ namespace @Model.NameSpace
         {
             @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql;")
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            @RawInline($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            @RawInline($"return conn.Connection.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public async Task<{Model.Name}> FirstOrDefaultAsync(object param, string whereSql, string orderSql)")
         {
             @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql;")
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            @RawInline($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            @RawInline($"return await conn.Connection.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public {Model.Name} FirstOrDefaultByWriteDb(object param, string whereSql, string orderSql)")
         {
             @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql;")
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return conn.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return conn.Connection.QueryFirstOrDefault<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public async Task<{Model.Name}> FirstOrDefaultByWriteDbAsync(object param, string whereSql, string orderSql)")
         {
             @RawInline($"string sql = \"{GetFirstOrDefaultWithNoParamSql()} WHERE 1=1 AND \" + whereSql + \"ORDER BY \" + orderSql;")
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return await conn.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return await conn.Connection.QueryFirstOrDefaultAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public {Model.Name} FirstOrDefault(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)")
@@ -407,16 +405,16 @@ namespace @Model.NameSpace
         {
             @RawInline($"string sql = \"{GetSelectAllSql()}\";")
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            @RawInline($"return conn.Query<{Model.Name}>(sql, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            @RawInline($"return conn.Connection.Query<{Model.Name}>(sql, commandType: CommandType.Text);")
         }
 
         @RawInline($"public async Task<IEnumerable<{Model.Name}>> GetListAsync()")
         {
             @RawInline($"string sql = \"{GetSelectAllSql()}\";")
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            @RawInline($"return await conn.QueryAsync<{Model.Name}>(sql, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            @RawInline($"return await conn.Connection.QueryAsync<{Model.Name}>(sql, commandType: CommandType.Text);")
         }
 
         @RawInline($"public IEnumerable<{Model.Name}> GetList(IDbTransaction trans, IDbConnection conn)")
@@ -440,16 +438,16 @@ namespace @Model.NameSpace
         {
             @RawInline($"string sql = \"{GetSelectAllSql()}\";")
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return conn.Query<{Model.Name}>(sql, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return conn.Connection.Query<{Model.Name}>(sql, commandType: CommandType.Text);")
         }
 
         @RawInline($"public async Task<IEnumerable<{Model.Name}>> GetListByWriteDbAsync()")
         {
             @RawInline($"string sql = \"{GetSelectAllSql()}\";")
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return await conn.QueryAsync<{Model.Name}>(sql, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return await conn.Connection.QueryAsync<{Model.Name}>(sql, commandType: CommandType.Text);")
         }
 
         @RawInline($"public IEnumerable<{Model.Name}> GetListByWriteDb(IDbTransaction trans, IDbConnection conn)")
@@ -473,32 +471,32 @@ namespace @Model.NameSpace
         {
             @RawInline($"string sql = string.Format(\"{GetSelectPageSql()}\", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);")
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            @RawInline($"return conn.Query<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            @RawInline($"return conn.Connection.Query<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public async Task<IEnumerable<{Model.Name}>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)")
         {
             @RawInline($"string sql = string.Format(\"{GetSelectPageSql()}\", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);")
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            @RawInline($"return await conn.QueryAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            @RawInline($"return await conn.Connection.QueryAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public IEnumerable<{Model.Name}> GetPageByWriteDb(object param, string whereSql, string orderSql, int pageIndex, int pageSize)")
         {
             @RawInline($"string sql = string.Format(\"{GetSelectPageSql()}\", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);")
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return conn.Query<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return conn.Connection.Query<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public async Task<IEnumerable<{Model.Name}>> GetPageByWriteDbAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)")
         {
             @RawInline($"string sql = string.Format(\"{GetSelectPageSql()}\", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);")
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            @RawInline($"return await conn.QueryAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
+            using Connector conn = ConnectionProvider.GetConnection();
+            @RawInline($"return await conn.Connection.QueryAsync<{Model.Name}>(sql, param: param, commandType: CommandType.Text);")
         }
 
         @RawInline($"public IEnumerable<{Model.Name}> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)")
@@ -533,8 +531,8 @@ namespace @Model.NameSpace
                 }        		
         	}
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         @RawInline($"public bool ExistsByWriteDb({GetPrimaryKeyParams()})")
@@ -549,8 +547,8 @@ namespace @Model.NameSpace
                 }        		
         	}
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         @RawInline($"public async Task<bool> ExistsAsync({GetPrimaryKeyParams()})")
@@ -565,8 +563,8 @@ namespace @Model.NameSpace
                 }        		
         	}
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         @RawInline($"public async Task<bool> ExistsByWriteDbAsync({GetPrimaryKeyParams()})")
@@ -581,8 +579,8 @@ namespace @Model.NameSpace
                 }        		
         	}
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         @RawInline($"public bool Exists({GetPrimaryKeyParams()}, IDbTransaction trans, IDbConnection conn)")
@@ -624,29 +622,29 @@ namespace @Model.NameSpace
         public bool Exists(object param, string whereSql)
         {
             @RawInline($"string sql = \"SELECT TOP 1 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql;")
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsAsync(object param, string whereSql)
         {
             @RawInline($"string sql = \"SELECT TOP 1 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql;")
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public bool ExistsByWriteDb(object param, string whereSql)
         {
             @RawInline($"string sql = \"SELECT TOP 1 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql;")
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsByWriteDbAsync(object param, string whereSql)
         {
             @RawInline($"string sql = \"SELECT TOP 1 1 FROM [{Model.SqlTable}] WITH(NOLOCK) WHERE 1=1 AND \" + whereSql;")
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public bool Exists(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
@@ -670,57 +668,57 @@ namespace @Model.NameSpace
         public int Count()
         {
             @RawInline($"string sql = \"{GetCountSql()}\";")
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, commandType: CommandType.Text);
         }
 
         public async Task<int> CountAsync()
         {
             @RawInline($"string sql = \"{GetCountSql()}\";")
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
         }
 
         public int CountByWriteDb()
         {
             @RawInline($"string sql = \"{GetCountSql()}\";")
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, commandType: CommandType.Text);
         }
 
         public async Task<int> CountByWriteDbAsync()
         {
             @RawInline($"string sql = \"{GetCountSql()}\";")
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
         }
 
         public int Count(object param, string whereSql)
         {
             @RawInline($"string sql = \"{GetCountSql()} WHERE 1=1 AND \" + whereSql;")
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<int> CountAsync(object param, string whereSql)
         {
             @RawInline($"string sql = \"{GetCountSql()} WHERE 1=1 AND \" + whereSql;")
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public int CountByWriteDb(object param, string whereSql)
         {
             @RawInline($"string sql = \"{GetCountSql()} WHERE 1=1 AND \" + whereSql;")
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
         }
         
         public async Task<int> CountByWriteDbAsync(object param, string whereSql)
         {
             @RawInline($"string sql = \"{GetCountSql()} WHERE 1=1 AND \" + whereSql;")
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public int Count(IDbTransaction trans, IDbConnection conn)

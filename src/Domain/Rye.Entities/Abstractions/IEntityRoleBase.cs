@@ -6,7 +6,9 @@ namespace Rye.Entities.Abstractions
     /// 角色实体基类
     /// </summary>
     /// <typeparam name="TRoleKey"></typeparam>
-    public interface IEntityRoleBase<TRoleKey>: IEntity<TRoleKey> where TRoleKey: IEquatable<TRoleKey>
+    public interface IEntityRoleBase<TRoleKey, TAppKey>: IEntity<TRoleKey> 
+        where TRoleKey: IEquatable<TRoleKey>
+        where TAppKey: IEquatable<TAppKey>
     {
         /// <summary>
         /// 角色主键
@@ -17,5 +19,10 @@ namespace Rye.Entities.Abstractions
         /// 状态
         /// </summary>
         sbyte Status { get; set; }
+
+        /// <summary>
+        /// App Id
+        /// </summary>
+        TAppKey AppId { get; set; }
     }
 }

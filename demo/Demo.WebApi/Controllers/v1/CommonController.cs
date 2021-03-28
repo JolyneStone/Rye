@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Rye.Business.Validate;
 using Rye.Security;
+using Rye.Web.Attribute;
 
 using System.Drawing;
 
@@ -46,6 +47,13 @@ namespace Demo.WebApi.Controllers.v1
                 [FromServices] ISecurityService securityService)
         {
             return securityService.Decrypt(appId, param);
+        }
+
+        [Security(decryptRequestBody: true, encryptResponseBody: true)]
+        [HttpPost]
+        public string SecurityTest([FromForm]string val)
+        {
+            return val;
         }
     }
 }

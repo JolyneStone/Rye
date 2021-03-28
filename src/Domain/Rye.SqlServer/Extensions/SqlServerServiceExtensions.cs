@@ -85,7 +85,7 @@ namespace Rye.SqlServer
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.TryAddScoped<SqlServerConnectionProvider, T>();
+            services.TryAddSingleton<SqlServerConnectionProvider, T>();
             AddSqlServerInternalService(services);
             return services;
         }
@@ -102,7 +102,7 @@ namespace Rye.SqlServer
             {
                 throw new ArgumentNullException(nameof(providerFunc));
             }
-            services.TryAddScoped<SqlServerConnectionProvider>(providerFunc);
+            services.TryAddSingleton<SqlServerConnectionProvider>(providerFunc);
             AddSqlServerInternalService(services);
             return services;
         }
@@ -119,7 +119,7 @@ namespace Rye.SqlServer
                 throw new ArgumentNullException(nameof(providerType));
             }
 
-            services.TryAddScoped(typeof(SqlServerConnectionProvider), providerType);
+            services.TryAddSingleton(typeof(SqlServerConnectionProvider), providerType);
             AddSqlServerInternalService(services);
             return services;
         }
@@ -136,29 +136,33 @@ namespace Rye.SqlServer
                 throw new ArgumentNullException(nameof(providerFunc));
             }
 
-            services.TryAddScoped(typeof(SqlServerConnectionProvider), providerFunc);
+            services.TryAddSingleton(typeof(SqlServerConnectionProvider), providerFunc);
             AddSqlServerInternalService(services);
             return services;
         }
 
-        public static IServiceCollection AddSqlServerInternalService(this IServiceCollection services)
+        public static IServiceCollection AddSqlServerInternalService(this IServiceCollection serviceCollection)
         {
-            if (services is null)
+            if (serviceCollection is null)
             {
-                throw new ArgumentNullException(nameof(services));
+                throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            services.RemoveAll<IPermissionService>();
-            services.TryAddScoped<IPermissionService, SqlServerPermissionService>();
+            serviceCollection.RemoveAll<ILangDictionaryService>();
+            serviceCollection.TryAddSingleton<ILangDictionaryService, SqlServerLangDictionaryService>();
 
 
-            services.RemoveAll<ILangDictionaryService>();
-            services.TryAddScoped<ILangDictionaryService, SqlServerLangDictionaryService>();
+            serviceCollection.RemoveAll<IAppInfoService>();
+            serviceCollection.TryAddSingleton<IAppInfoService, SqlServerAppInfoService>();
+            return serviceCollection;
+        }
 
-
-            services.RemoveAll<IAppInfoService>();
-            services.TryAddScoped<IAppInfoService, SqlServerAppInfoService>();
-            return services;
+        public static IServiceCollection AddSqlServerPersmission<TPermissionKey>(this IServiceCollection serviceCollection)
+            where TPermissionKey: IEquatable<TPermissionKey>
+        {
+            serviceCollection.RemoveAll<IPermissionService<TPermissionKey>>();
+            serviceCollection.TryAddSingleton<IPermissionService<TPermissionKey>, SqlServerPermissionService<TPermissionKey>>();
+            return serviceCollection;
         }
 
         //public static IServiceCollection AddSqlServerDbConnectionProvider<T>(this IServiceCollection services, ServiceLifetime serviceLifetime)

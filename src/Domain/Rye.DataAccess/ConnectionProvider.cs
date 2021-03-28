@@ -2,6 +2,8 @@
 
 using Rye.Configuration;
 using Rye.DataAccess.Options;
+using Rye.DataAccess.Pool;
+using Rye.Threading;
 
 using System.Collections.Generic;
 using System.Data;
@@ -11,8 +13,9 @@ namespace Rye.DataAccess
 {
     public abstract class ConnectionProvider : IConnectionProvider
     {
-        private readonly object _sync = new object();
-        private readonly Dictionary<string, IDbConnection> _connnectionPools = new Dictionary<string, IDbConnection>();
+        private readonly LockObject _locker = new LockObject();
+        //private readonly Dictionary<string, IDbConnection> _connnectionPools = new Dictionary<string, IDbConnection>();
+        private readonly Dictionary<string, ConnectionPool> _connectionPools = new Dictionary<string, ConnectionPool>();
         private readonly DbConnectionMapOptions _options;
 
         public ConnectionProvider(IOptions<DbConnectionMapOptions> options)
@@ -20,21 +23,21 @@ namespace Rye.DataAccess
             _options = options.Value;
         }
 
-        public IDbConnection GetConnection()
+        public Connector GetConnection(bool usePool = true)
         {
-            string connectString = GetWriteDbConnectionString();
-            return GetDbConnectionCore(connectString);
+            string connectionString = GetWriteDbConnectionString();
+            return GetDbConnection(connectionString, usePool);
         }
 
-        public IDbConnection GetReadOnlyConnection()
+        public Connector GetReadOnlyConnection(bool usePool = true)
         {
-            string connectString = GetRealOnlyDbConnectionString();
-            if (string.IsNullOrEmpty(connectString))
+            string connectionString = GetRealOnlyDbConnectionString();
+            if (string.IsNullOrEmpty(connectionString))
             {
-                connectString = GetWriteDbConnectionString();
+                connectionString = GetWriteDbConnectionString();
             }
 
-            return GetDbConnectionCore(connectString);
+            return GetDbConnection(connectionString, usePool);
         }
 
         public virtual string GetConnectionString(string connectionName)
@@ -43,42 +46,92 @@ namespace Rye.DataAccess
             return _options[connectionName]?.ConnectionString;
         }
 
-        public IDbConnection GetDbConnection(string connectionString)
+        public Connector GetDbConnection(string connectionString, bool usePool = true)
         {
-            if (!_connnectionPools.TryGetValue(connectionString, out var conn) || conn.State == ConnectionState.Closed)
+            Connector conn;
+            if (!usePool)
             {
-                lock (_sync)
+                conn = new Connector(GetDbConnectionCore(connectionString));
+            }
+            else
+            {
+                conn = GetDbConnectionByPool(connectionString);
+                if (conn == null)
                 {
-                    if (!_connnectionPools.TryGetValue(connectionString, out conn))
-                    {
-                        conn = GetDbConnectionCore(connectionString);
-                        _connnectionPools[connectionString] = conn;
-                    }
+                    conn = new Connector(GetDbConnectionCore(connectionString));
                 }
             }
-            if (conn.State != ConnectionState.Open)
-                conn.Open();
+
             return conn;
         }
 
-        public IDbConnection GetDbConnectionByName(string connectionName)
+        public Connector GetDbConnectionByName(string connectionName, bool usePool = true)
         {
             var connectionString = GetConnectionString(connectionName);
-            if (!_connnectionPools.TryGetValue(connectionString, out var conn) || conn.State == ConnectionState.Closed)
+            Connector conn;
+            if (!usePool)
             {
-                lock (_sync)
+                conn = new Connector(GetDbConnectionCore(connectionString));
+            }
+            else
+            {
+                conn = GetDbConnectionByPool(connectionString);
+                if (conn == null)
                 {
-                    if (!_connnectionPools.TryGetValue(connectionString, out conn))
-                    {
-                        conn = GetDbConnectionCore(connectionString);
-                        _connnectionPools[connectionString] = conn;
-                    }
+                    conn = new Connector(GetDbConnectionCore(connectionString));
                 }
             }
-            if (conn.State != ConnectionState.Open)
-                conn.Open();
+
             return conn;
         }
+
+        private Connector GetDbConnectionByPool(string connectionString)
+        {
+            if (!_connectionPools.TryGetValue(connectionString, out var pool))
+            {
+                if (!_options.TryGetValue(connectionString, out var option))
+                {
+                    return null;
+                }
+
+                try
+                {
+                    _locker.Enter();
+                    pool = new ConnectionPool(new ConnectionPoolPolicy(this, connectionString), option.MaxPool);
+                    _connectionPools.Add(connectionString, pool);
+                }
+                finally
+                {
+                    _locker.Exit();
+                }
+            }
+
+            return pool.Get();
+        }
+
+        //public IDbConnection GetDbConnection(string connectionString)
+        //{
+        //    return GetDbConnectionCore(connectionString);
+        //}
+
+        //public IDbConnection GetDbConnectionByName(string connectionName)
+        //{
+        //    var connectionString = GetConnectionString(connectionName);
+        //    return GetDbConnectionCore(connectionString);
+        //}
+
+        //public IDbConnection GetConnection()
+        //{
+        //    string connectionString = GetWriteDbConnectionString();
+        //    return GetDbConnectionCore(connectionString);
+        //}
+
+        //public IDbConnection GetReadOnlyConnection()
+        //{
+        //    string connectionString = GetRealOnlyDbConnectionString();
+        //    return GetDbConnectionCore(connectionString);
+        //}
+
 
         protected abstract IDbConnection GetDbConnectionCore(string connectionString);
 
@@ -87,19 +140,5 @@ namespace Rye.DataAccess
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected abstract string GetRealOnlyDbConnectionString();
-
-        public void Dispose()
-        {
-            if (_connnectionPools != null)
-            {
-                foreach (var conn in _connnectionPools)
-                {
-                    if (conn.Value != null && conn.Value.State != ConnectionState.Closed)
-                    {
-                        conn.Value.Dispose();
-                    }
-                }
-            }
-        }
     }
 }

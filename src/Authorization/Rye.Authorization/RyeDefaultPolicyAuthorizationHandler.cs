@@ -33,7 +33,8 @@ using System.Threading.Tasks;
 
 namespace Rye.Authorization.Abstraction
 {
-    public class RyeDefaultPolicyAuthorizationHandler : RyePolicyAuthorizationHandler
+    public class RyeDefaultPolicyAuthorizationHandler<TPermissionKey> : RyePolicyAuthorizationHandler
+        where TPermissionKey : IEquatable<TPermissionKey>
     {
         /// <summary>
         /// 根据用户角色进行权限认证
@@ -59,18 +60,29 @@ namespace Rye.Authorization.Abstraction
                 null :
                 endpointMetadata.GetMetadata<TokenValidAttribute>();
 
-            if (!httpContext.Request.Headers.TryGetValue("Authorization", out var authorizationToken))
+            if (!httpContext.Request.Headers.TryGetValue("Authorization", out var authorizationTokenVal))
             {
                 if (tokenValidAttribute != null)
                 {
                     return true;
                 }
+                SetHttpStatusCode(httpContext, HttpStatusCode.OK);
                 await WriteResponseAsync(httpContext, provider.CreateNotLoginResponse(new AuthorizationResponseContext(context)).Value);
-                httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
                 return false;
             }
             var jwtOptions = services.GetRequiredService<IOptions<JwtOptions>>().Value;
-            var token = authorizationToken.ToString().Substring(jwtOptions.Scheme.Length + 1);
+            var authorizationToken = authorizationTokenVal.ToString();
+            if (authorizationToken.Length < jwtOptions.Scheme.Length + 1)
+            {
+                if (tokenValidAttribute != null)
+                {
+                    return true;
+                }
+                SetHttpStatusCode(httpContext, HttpStatusCode.OK);
+                await WriteResponseAsync(httpContext, provider.CreateNotLoginResponse(new AuthorizationResponseContext(context)).Value);
+                return false;
+            }
+            var token = authorizationToken.Substring(jwtOptions.Scheme.Length + 1);
             var (validResult, principal) = await ValidTokenAsync(context, httpContext, provider, token);
             if (!validResult)
                 return false;
@@ -81,11 +93,11 @@ namespace Rye.Authorization.Abstraction
             }
 
             httpContext.User = principal;
-            var userId = httpContext.User?.Claims.FirstOrDefault(c => c.Type == nameof(PermissionTokenEntity.UserId))?.Value;
+            var userId = httpContext.User?.Claims.FirstOrDefault(c => c.Type.Equals(nameof(PermissionTokenEntity.UserId), StringComparison.InvariantCultureIgnoreCase))?.Value;
             if (userId.IsNullOrEmpty())
             {
+                SetHttpStatusCode(httpContext, HttpStatusCode.OK);
                 await WriteResponseAsync(httpContext, provider.CreateNotLoginResponse(new AuthorizationResponseContext(context)).Value);
-                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return false;
             }
 
@@ -99,12 +111,12 @@ namespace Rye.Authorization.Abstraction
                 return true;
             }
             var url = httpContext.Request.Path.Value.ToLower();
-            var roleIds = httpContext.User.Claims.FirstOrDefault(c => c.Type == nameof(PermissionTokenEntity.RoleIds))?.Value;
-            var secutiryPermissionService = services.GetRequiredService<IPermissionService>();
+            var roleIds = httpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(nameof(PermissionTokenEntity.RoleIds), StringComparison.InvariantCultureIgnoreCase))?.Value;
+            var secutiryPermissionService = services.GetRequiredService<IPermissionService<TPermissionKey>>();
             if (roleIds.IsNullOrEmpty())
             {
+                SetHttpStatusCode(httpContext, HttpStatusCode.OK);
                 await WriteResponseAsync(httpContext, provider.CreatePermissionNotAllowResponse(new AuthorizationResponseContext(context)).Value);
-                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return false;
             }
 
@@ -120,11 +132,13 @@ namespace Rye.Authorization.Abstraction
                 }
             }
 
-            var authCode = authCodeAttribute.AuthCode ?? httpContext.GetRouteValue("action").ToString() ?? string.Empty;
-            if (!permissionList.Any(d => string.Equals(d, authCode, System.StringComparison.OrdinalIgnoreCase)))
+            var controller = httpContext.GetRouteValue("action")?.ToString();
+            var action = httpContext.GetRouteValue("action")?.ToString();
+            var authCode = authCodeAttribute.AuthCode ?? $"{controller}.{action}";
+            if (!permissionList.Any(d => string.Equals(d, authCode, System.StringComparison.InvariantCultureIgnoreCase)))
             {
+                SetHttpStatusCode(httpContext, HttpStatusCode.OK);
                 await WriteResponseAsync(httpContext, provider.CreatePermissionNotAllowResponse(new AuthorizationResponseContext(context)).Value);
-                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return false;
             }
 
@@ -140,7 +154,7 @@ namespace Rye.Authorization.Abstraction
             ClaimsPrincipal principal = null;
             var services = httpContext.RequestServices;
             var tokenService = services.GetRequiredService<IJwtTokenService>();
-            var logger = services.GetRequiredService<ILogger<RyeDefaultPolicyAuthorizationHandler>>();
+            var logger = services.GetRequiredService<ILogger<RyeDefaultPolicyAuthorizationHandler<TPermissionKey>>>();
 
             try
             {
@@ -149,27 +163,34 @@ namespace Rye.Authorization.Abstraction
             catch (SecurityTokenInvalidLifetimeException lifetimeEx)
             {
                 logger.LogError(lifetimeEx.ToString());
+                SetHttpStatusCode(httpContext, HttpStatusCode.OK);
                 await WriteResponseAsync(httpContext, provider.CreateTokenExpireResponse(new AuthorizationResponseContext(context)).Value);
-                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return (false, principal);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.ToString());
                 await WriteResponseAsync(httpContext, provider.CreateTokenErrorResponse(new AuthorizationResponseContext(context)).Value);
-                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return (false, principal);
             }
-            var tokenTypeStr = httpContext.User?.Claims.FirstOrDefault(c => c.Type == "TokenType")?.Value;
+            var tokenTypeStr = principal.Claims.FirstOrDefault(c => c.Type.Equals("TokenType", StringComparison.InvariantCultureIgnoreCase))?.Value;
             if (tokenTypeStr.IsNullOrEmpty() || tokenTypeStr.ParseByInt() != (int)JwtTokenType.AccessToken)
             {
                 logger.LogError("JwtTokenType error");
+                SetHttpStatusCode(httpContext, HttpStatusCode.OK);
                 await WriteResponseAsync(httpContext, provider.CreateTokenErrorResponse(new AuthorizationResponseContext(context)).Value);
-                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return (false, principal);
             }
 
             return (true, principal);
+        }
+
+        private static void SetHttpStatusCode(HttpContext httpContext, HttpStatusCode statusCode)
+        {
+            if (!httpContext.Response.HasStarted)
+            {
+                httpContext.Response.StatusCode = (int)statusCode;
+            }
         }
 
         private static async Task WriteResponseAsync(HttpContext context, object value)

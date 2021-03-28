@@ -3,18 +3,21 @@ using Demo.Core.Common.Enums;
 using Demo.Core.Model.Input;
 using Demo.Library.Abstraction;
 using Demo.Library.Dto;
-using Demo.WebApi.Attribute;
 using Demo.WebApi.Model.Intput;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
 using Rye;
 using Rye.Authorization.Abstraction.Attributes;
 using Rye.Business.Validate;
+using Rye.Entities.Abstractions;
 using Rye.Jwt;
-using Rye.Web.Attribute;
+using Rye.Web.Filter;
 
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -26,29 +29,42 @@ namespace Demo.WebApi.Controllers
     public class BasicUserController : BaseController
     {
         private readonly ILogger<BasicUserController> _logger;
-        private readonly ILoginService _loginService;
+        private readonly IUserService _userService;
+        private readonly IJwtTokenService _jwtTokenService;
 
         public BasicUserController(ILogger<BasicUserController> logger,
-            ILoginService loginService)
+            IUserService userService,
+            IJwtTokenService jwtTokenService)
         {
             _logger = logger;
-            _loginService = loginService;
+            _userService = userService;
+            _jwtTokenService = jwtTokenService;
         }
 
-        [Security(decryptRequestBody: true, encryptResponseBody: true)]
+        /// <summary>
+        /// 用户登录
+        /// </summary>
+        /// <param name="basicInput"></param>
+        /// <param name="input"></param>
+        /// <param name="loginService"></param>
+        /// <param name="verifyCodeService"></param>
+        /// <param name="jwtTokenService"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ApiResult<JsonWebToken>> Login([FromQuery] BasicInput basicInput, [FromForm] LoginInput input,
-            [FromServices] IVerifyCodeService verifyCodeService,
-            [FromServices] IJwtTokenService jwtTokenService)
+        public async Task<ApiResult<JsonWebToken>> Login([FromQuery] BasicInput basicInput, [FromBody] LoginInput input,
+            [FromServices] ILoginService loginService)
         {
-            var validResult = verifyCodeService.CheckCode(input.VerifyCode, input.VerifyCodeId, false);
-            if (!validResult)
-            {
-                return Result<JsonWebToken>(CommonStatusCode.VerifyCodeError);
-            }
+            //var validResult = verifyCodeService.CheckCode(input.VerifyCodeId, input.VerifyCode, false);
+            //if (!validResult)
+            //{
+            //    return Result<JsonWebToken>(CommonStatusCode.VerifyCodeError);
+            //}
 
-            var (code, userInfo) = await _loginService.LoginAsync(basicInput.AppKey, input.Account, input.Password);
+            var (code, userInfo) = await loginService.LoginAsync(
+                basicInput.AppKey,
+                input.Account.FromBase64String(),
+                input.Password.FromBase64String());
             if (code != CommonStatusCode.Success)
             {
                 return Result<JsonWebToken>(code);
@@ -65,13 +81,39 @@ namespace Demo.WebApi.Controllers
                 Email = userInfo.Email,
                 Phone = userInfo.Phone
             };
-            var token = await jwtTokenService.CreateTokenAsync(entry);
+            var token = await _jwtTokenService.CreateTokenAsync(entry);
             return Result(CommonStatusCode.Success, token);
         }
 
+        /// <summary>
+        /// 退出登录
+        /// </summary>
+        /// <param name="basicInput"></param>
+        /// <returns></returns>
         [HttpGet]
-        public async Task<ApiResult<JsonWebToken>> RefreshToken([FromQuery]BasicInput basicInput, [FromQuery]string refreshToken,
-            [FromServices] IJwtTokenService tokenService)
+        [AllowAnonymous]
+        public async Task<ApiResult> Logout([FromQuery] BasicInput basicInput, [FromQuery] string token)
+        {
+            if(token.IsNullOrEmpty())
+                return Result(CommonStatusCode.Success);
+
+            var principal = await _jwtTokenService.ValidateTokenAsync(JwtTokenType.AccessToken, token);
+            var userIdStr = principal.Claims.FirstOrDefault(d => d.Type.Equals("UserId", StringComparison.InvariantCultureIgnoreCase))?.Value;
+            var clientType = basicInput.ClientType.ToString();
+
+            await _jwtTokenService.DeleteTokenAsync(userIdStr, clientType);
+            return Result(CommonStatusCode.Success);
+        }
+
+        /// <summary>
+        /// 刷新Token
+        /// </summary>
+        /// <param name="basicInput"></param>
+        /// <param name="refreshToken"></param>
+        /// <param name="tokenService"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<ApiResult<JsonWebToken>> RefreshToken([FromQuery] BasicInput basicInput, [FromQuery] string refreshToken)
         {
             if (refreshToken.IsNullOrEmpty())
             {
@@ -81,7 +123,7 @@ namespace Demo.WebApi.Controllers
             ClaimsPrincipal principal;
             try
             {
-                principal = await tokenService.ValidateTokenAsync(JwtTokenType.RefreshToken, refreshToken);
+                principal = await _jwtTokenService.ValidateTokenAsync(JwtTokenType.RefreshToken, refreshToken);
             }
             catch (Exception ex)
             {
@@ -89,8 +131,27 @@ namespace Demo.WebApi.Controllers
                 return Result<JsonWebToken>(CommonStatusCode.Fail);
             }
 
-            var token = await tokenService.RefreshTokenAsync(refreshToken);
+            var token = await _jwtTokenService.RefreshTokenAsync(refreshToken);
             return Result(CommonStatusCode.Success, token);
         }
+
+        /// <summary>
+        /// 获取用户信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<ApiResult<UserInfoDto>> GetUserInfo([FromQuery] BasicInput basicInput)
+        {
+            var appIdStr = HttpContext.User.Claims.FirstOrDefault(d => d.Type.Equals("AppId", StringComparison.InvariantCultureIgnoreCase))?.Value;
+            var userIdStr = HttpContext.User.Claims.FirstOrDefault(d => d.Type.Equals("UserId", StringComparison.InvariantCultureIgnoreCase))?.Value;
+            if (appIdStr.IsNullOrEmpty() || userIdStr.IsNullOrEmpty())
+            {
+                return Result<UserInfoDto>(CommonStatusCode.UsertokenInvalid);
+            }
+
+            return Result(CommonStatusCode.Success,
+                await _userService.GetBasicUserAsync(appIdStr.ParseByInt(), userIdStr.ParseByInt()));
+        }
+
     }
 }

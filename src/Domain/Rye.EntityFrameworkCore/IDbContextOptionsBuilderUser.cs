@@ -11,7 +11,7 @@ namespace Rye.EntityFrameworkCore
     public interface IDbContextOptionsBuilderUser
     {
         /// <summary>
-        /// 获取 数据库类型名称，如 SQLSERVER，MYSQL，SQLITE等
+        /// 获取 数据库类型名称，如 SQLSERVER，MYSQL等
         /// </summary>
         DatabaseType Type { get; }
 

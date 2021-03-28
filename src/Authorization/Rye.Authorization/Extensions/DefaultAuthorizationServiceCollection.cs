@@ -21,9 +21,10 @@ namespace Rye
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static IServiceCollection AddRyeAuthorization(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddRyeAuthorization<TPermissionKey>(this IServiceCollection serviceCollection)
+            where TPermissionKey: IEquatable<TPermissionKey>
         {
-            return serviceCollection.AddRyeAuthorization(ConfigureBuilder);
+            return serviceCollection.AddRyeAuthorization(ConfigureBuilder<TPermissionKey>);
         }
 
         /// <summary>
@@ -31,19 +32,21 @@ namespace Rye
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static IServiceCollection AddAuthorizationModule(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddAuthorizationModule<TPermissionKey>(this IServiceCollection serviceCollection)
+            where TPermissionKey: IEquatable<TPermissionKey>
         {
-            return serviceCollection.AddAuthorizationModule(ConfigureBuilder);
+            return serviceCollection.AddAuthorizationModule(ConfigureBuilder<TPermissionKey>);
         }
 
-        private static void ConfigureBuilder(IModuleAuthorizationBuilder builder)
+        private static void ConfigureBuilder<TPermissionKey>(IModuleAuthorizationBuilder builder)
+            where TPermissionKey: IEquatable<TPermissionKey>
         {
             builder.ConfigureOptions = options =>
             {
                 options.InvokeHandlersAfterFailure = false;
                 options.AddPolicy("RyePermission", policy => policy.Requirements.Add(new RyeRequirement()));
             };
-            builder.UseHandle<RyeDefaultPolicyAuthorizationHandler>();
+            builder.UseHandle<RyeDefaultPolicyAuthorizationHandler<TPermissionKey>>();
         }
     }
 }

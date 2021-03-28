@@ -85,7 +85,7 @@ namespace Rye.MySql
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.TryAddScoped<MySqlConnectionProvider, T>();
+            services.TryAddSingleton<MySqlConnectionProvider, T>();
             AddMySqlInternalService(services);
             return services;
         }
@@ -102,7 +102,7 @@ namespace Rye.MySql
             {
                 throw new ArgumentNullException(nameof(providerFunc));
             }
-            services.TryAddScoped<MySqlConnectionProvider>(providerFunc);
+            services.TryAddSingleton<MySqlConnectionProvider>(providerFunc);
             AddMySqlInternalService(services);
             return services;
         }
@@ -119,7 +119,7 @@ namespace Rye.MySql
                 throw new ArgumentNullException(nameof(providerType));
             }
 
-            services.TryAddScoped(typeof(MySqlConnectionProvider), providerType);
+            services.TryAddSingleton(typeof(MySqlConnectionProvider), providerType);
             AddMySqlInternalService(services);
             return services;
         }
@@ -136,27 +136,32 @@ namespace Rye.MySql
                 throw new ArgumentNullException(nameof(providerFunc));
             }
 
-            services.TryAddScoped(typeof(MySqlConnectionProvider), providerFunc);
+            services.TryAddSingleton(typeof(MySqlConnectionProvider), providerFunc);
             AddMySqlInternalService(services);
             return services;
         }
 
-        private static IServiceCollection AddMySqlInternalService(this IServiceCollection services)
+        private static IServiceCollection AddMySqlInternalService(this IServiceCollection serviceCollection)
         {
-            if (services is null)
+            if (serviceCollection is null)
             {
-                throw new ArgumentNullException(nameof(services));
+                throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            services.RemoveAll<ILangDictionaryService>();
-            services.TryAddScoped<ILangDictionaryService, MySqlLangDictionaryService>();
+            serviceCollection.RemoveAll<ILangDictionaryService>();
+            serviceCollection.TryAddSingleton<ILangDictionaryService, MySqlLangDictionaryService>();
 
-            services.RemoveAll<IPermissionService>();
-            services.TryAddScoped<IPermissionService, MySqlPermissionService>();
+            serviceCollection.RemoveAll<IAppInfoService>();
+            serviceCollection.TryAddSingleton<IAppInfoService, MySqlAppInfoService>();
+            return serviceCollection;
+        }
 
-            services.RemoveAll<IAppInfoService>();
-            services.TryAddScoped<IAppInfoService, MySqlAppInfoService>();
-            return services;
+        public static IServiceCollection AddMySqlPersmission<TPermissionKey>(this IServiceCollection serviceCollection)
+            where TPermissionKey : IEquatable<TPermissionKey>
+        {
+            serviceCollection.RemoveAll<IPermissionService<TPermissionKey>>();
+            serviceCollection.TryAddSingleton<IPermissionService<TPermissionKey>, MySqlPermissionService<TPermissionKey>>();
+            return serviceCollection;
         }
 
         //public static IServiceCollection AddMySqlDbConnectionProvider<T>(this IServiceCollection services, ServiceLifetime serviceLifetime)

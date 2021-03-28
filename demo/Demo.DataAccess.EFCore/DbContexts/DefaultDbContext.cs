@@ -8,7 +8,7 @@ using Rye.EntityFrameworkCore;
 
 namespace Demo.DataAccess.EFCore.DbContexts
 {
-    public partial class DefaultDbContext : DbContextBase<DefaultDbContext>
+    public partial class DefaultDbContext : DbContext
     {
         public DefaultDbContext()
         {
@@ -32,6 +32,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseMySql("server=127.0.0.1;database=RyeDemo;uid=root;pwd=Mysql_zzq123;pooling=false;sslmode=None;charset=utf8mb4;port=3306", Microsoft.EntityFrameworkCore.ServerVersion.FromString("8.0.20-mysql"));
             }
         }
@@ -147,11 +148,16 @@ namespace Demo.DataAccess.EFCore.DbContexts
 
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasColumnType("varchar(100)")
+                    .HasColumnType("varchar(255)")
                     .HasColumnName("code")
-                    .HasComment("权限码")
+                    .HasComment("权限编码")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .HasCollation("utf8mb4_bin");
+
+                entity.Property(e => e.CreateTime)
+                    .HasColumnType("datetime")
+                    .HasColumnName("createTime")
+                    .HasComment("创建时间");
 
                 entity.Property(e => e.Icon)
                     .IsRequired()
@@ -159,19 +165,35 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("icon")
                     .HasComment("图标")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .HasCollation("utf8mb4_bin");
+
+                entity.Property(e => e.Link)
+                    .IsRequired()
+                    .HasColumnType("varchar(1024)")
+                    .HasColumnName("link")
+                    .HasComment("地址")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_bin");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasColumnType("varchar(50)")
+                    .HasColumnType("varchar(100)")
                     .HasColumnName("name")
                     .HasComment("权限名称")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .HasCollation("utf8mb4_bin");
 
                 entity.Property(e => e.ParentId)
                     .HasColumnName("parentId")
                     .HasComment("父级权限Id");
+
+                entity.Property(e => e.Remark)
+                    .IsRequired()
+                    .HasColumnType("varchar(1024)")
+                    .HasColumnName("remark")
+                    .HasComment("备注")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_bin");
 
                 entity.Property(e => e.Sort)
                     .HasColumnName("sort")
@@ -180,6 +202,10 @@ namespace Demo.DataAccess.EFCore.DbContexts
                 entity.Property(e => e.Status)
                     .HasColumnName("status")
                     .HasComment("状态");
+
+                entity.Property(e => e.Type)
+                    .HasColumnName("type")
+                    .HasComment("权限类型");
 
                 entity.Property(e => e.UpdateTime)
                     .HasColumnType("datetime")
@@ -192,6 +218,10 @@ namespace Demo.DataAccess.EFCore.DbContexts
                 entity.ToTable("role");
 
                 entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.AppId)
+                    .HasColumnName("appId")
+                    .HasComment("App Id");
 
                 entity.Property(e => e.CreateTime)
                     .HasColumnType("datetime")

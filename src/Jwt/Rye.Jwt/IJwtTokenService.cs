@@ -33,5 +33,13 @@ namespace Rye.Jwt
         /// <param name="token"></param>
         /// <returns></returns>
         Task<ClaimsPrincipal> ValidateTokenAsync(JwtTokenType jwtTokenType, string token);
+
+        /// <summary>
+        /// 从缓存中删除token
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="clientType"></param>
+        /// <returns></returns>
+        Task DeleteTokenAsync(string userId, string clientType);
     }
 }

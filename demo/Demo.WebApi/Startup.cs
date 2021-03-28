@@ -62,10 +62,19 @@ namespace Demo.WebApi
                 options.SubstituteApiVersionInUrl = true;
             });
 
+            services.AddCors(option => option.AddPolicy("cors", policy =>
+            {
+                policy.AllowAnyMethod()
+                        .SetIsOriginAllowed(_ => true)
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+            }));
+
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen(options => options.OperationFilter<SwaggerDefaultValues>());
 
-            services = services.UseDynamicProxyService(); // ʹ�ö�̬����
+            services = services.UseDynamicProxyService();
+            services.AddMySqlPersmission<int>();
             services
                 .AddCoreModule(options =>
                 {
@@ -84,10 +93,11 @@ namespace Demo.WebApi
                 .AddMySqlModule<MyDbConnectionProvider>()
                 .AddMySqlEFCodeModule(builder =>
                 {
-                    builder.AddDbContext<DefaultDbContext>("RyeDemo");
+                    builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye.GetDescription());
+                    builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye_Read.GetDescription());
                 })
                 .AddJwtModule()
-                .AddAuthorizationModule()
+                .AddAuthorizationModule<int>()
                 .AddModule<DemoModule>()
                 .ConfigureModule();
         }
@@ -100,6 +110,7 @@ namespace Demo.WebApi
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
@@ -108,8 +119,10 @@ namespace Demo.WebApi
                     options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
                 }
             });
+
+            app.UseCors("cors");
             app.UseRouting();
-            app.UseSecurity(); // ʹ�üӽ����м��
+            app.UseSecurity();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

@@ -1,18 +1,20 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+
+using Rye.DataAccess.Pool;
+
 using System;
 using System.Data;
 
 namespace Rye.DataAccess
 {
-    //[Injection(ServiceLifetime.Scoped, InjectionPolicy.Replace)]
-    public interface IConnectionProvider : IDisposable
+    public interface IConnectionProvider
     {
-        IDbConnection GetDbConnection(string connectionString);
-        IDbConnection GetDbConnectionByName(string connectionName);
+        Connector GetDbConnection(string connectionString, bool usePool = true);
+        Connector GetDbConnectionByName(string connectionName, bool usePool = true);
 
-        IDbConnection GetConnection();
+        Connector GetConnection(bool usePool = true);
 
-        IDbConnection GetReadOnlyConnection();
+        Connector GetReadOnlyConnection(bool usePool = true);
 
         string GetConnectionString(string connectionName);
 

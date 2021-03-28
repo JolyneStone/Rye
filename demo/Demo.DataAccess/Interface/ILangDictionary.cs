@@ -6,7 +6,7 @@ using Rye.DataAccess;
 
 namespace Demo.DataAccess
 {
-    [Injection(ServiceLifetime.Scoped, InjectionPolicy.Replace)]
+    [Injection(ServiceLifetime.Singleton, InjectionPolicy.Replace)]
 	public partial interface ILangDictionary : IDataBaseOperate<LangDictionary>
 	{
 		bool Delete(string dicKey,string lang);        

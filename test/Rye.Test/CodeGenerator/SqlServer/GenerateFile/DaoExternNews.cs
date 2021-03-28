@@ -22,8 +22,8 @@ namespace Rye.DataAccess.Model
 
 		public long GetLastIdentity()
 		{
-			IDbConnection conn = ConnectionProvider.GetConnection();
-			return conn.ExecuteScalar<long>("SELECT SCOPE_IDENTITY()");
+			using Connector conn = ConnectionProvider.GetConnection();
+			return conn.Connection.ExecuteScalar<long>("SELECT SCOPE_IDENTITY()");
 		}
 
         public int Insert(ExternNews model, IDbTransaction trans, IDbConnection conn)
@@ -48,14 +48,14 @@ namespace Rye.DataAccess.Model
 
         public int Insert(ExternNews model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return Insert(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return Insert(model, null, conn.Connection);
         }
 
         public async Task<int> InsertAsync(ExternNews model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await InsertAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await InsertAsync(model, null, conn.Connection);
         }
 
         public int BatchInsert(IEnumerable<ExternNews> items, IDbTransaction trans, IDbConnection conn)
@@ -82,16 +82,16 @@ namespace Rye.DataAccess.Model
         {
         	string sql = "INSERT INTO [ExternNews] ([SourceType],[SourceId],[IsPublish],[PublishTime],[BannerType],[IsHot],[IsRecommend],[Sort],[RealReadNum],[DefaultReadNum],[RealCollectionNum],[DefaultCollectionNum],[Title],[Summary],[LinkUrl],[Tags],[CoverImg],[Html],[BannerSort],[NewsType],[secondaryType],[resourceUrl],[ContractId]) VALUES (@SourceType,@SourceId,@IsPublish,@PublishTime,@BannerType,@IsHot,@IsRecommend,@Sort,@RealReadNum,@DefaultReadNum,@RealCollectionNum,@DefaultCollectionNum,@Title,@Summary,@LinkUrl,@Tags,@CoverImg,@Html,@BannerSort,@NewsType,@SecondaryType,@ResourceUrl,@ContractId);";
 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.Execute(sql, param: items, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.Execute(sql, param: items, commandType: CommandType.Text);
         }
         
         public async Task<int> BatchInsertAsync(IEnumerable<ExternNews> items)
         {
         	string sql = "INSERT INTO [ExternNews] ([SourceType],[SourceId],[IsPublish],[PublishTime],[BannerType],[IsHot],[IsRecommend],[Sort],[RealReadNum],[DefaultReadNum],[RealCollectionNum],[DefaultCollectionNum],[Title],[Summary],[LinkUrl],[Tags],[CoverImg],[Html],[BannerSort],[NewsType],[secondaryType],[resourceUrl],[ContractId]) VALUES (@SourceType,@SourceId,@IsPublish,@PublishTime,@BannerType,@IsHot,@IsRecommend,@Sort,@RealReadNum,@DefaultReadNum,@RealCollectionNum,@DefaultCollectionNum,@Title,@Summary,@LinkUrl,@Tags,@CoverImg,@Html,@BannerSort,@NewsType,@SecondaryType,@ResourceUrl,@ContractId);";
 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteAsync(sql, param: items, commandType: CommandType.Text);
         }
 
         public int InsertUpdate(ExternNews model, IDbTransaction trans, IDbConnection conn)
@@ -114,16 +114,14 @@ namespace Rye.DataAccess.Model
 
         public int InsertUpdate(ExternNews model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            {
-                return InsertUpdate(model, null, conn);
-            }
+            using Connector conn = ConnectionProvider.GetConnection();
+            return InsertUpdate(model, null, conn.Connection);
         }
         
         public async Task<int> InsertUpdateAsync(ExternNews model)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await InsertUpdateAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await InsertUpdateAsync(model, null, conn.Connection);
         }
         
         public int Update(ExternNews model, IDbTransaction trans, IDbConnection conn)
@@ -137,13 +135,13 @@ namespace Rye.DataAccess.Model
         
         public int Update(ExternNews model)
 		{
-			IDbConnection conn = ConnectionProvider.GetConnection();
-            return Update(model, null, conn);
+			using Connector conn = ConnectionProvider.GetConnection();
+            return Update(model, null, conn.Connection);
 		}
         
         public async Task<int> UpdateAsync(ExternNews model, IDbTransaction trans, IDbConnection conn)
 		{
-            string sql = "GetUpdateSql()";
+            string sql = "UPDATE [ExternNews] SET  [SourceType]=@SourceType, [SourceId]=@SourceId, [IsPublish]=@IsPublish, [PublishTime]=@PublishTime, [BannerType]=@BannerType, [IsHot]=@IsHot, [IsRecommend]=@IsRecommend, [Sort]=@Sort, [RealReadNum]=@RealReadNum, [DefaultReadNum]=@DefaultReadNum, [RealCollectionNum]=@RealCollectionNum, [DefaultCollectionNum]=@DefaultCollectionNum, [Title]=@Title, [Summary]=@Summary, [LinkUrl]=@LinkUrl, [Tags]=@Tags, [CoverImg]=@CoverImg, [Html]=@Html, [BannerSort]=@BannerSort, [NewsType]=@NewsType, [secondaryType]=@SecondaryType, [resourceUrl]=@ResourceUrl, [ContractId]=@ContractId WHERE 1=1  AND [Id]=@Id";
             if (trans == null)
                 return await conn.ExecuteAsync(sql, param: model, commandType: CommandType.Text);
             else
@@ -152,8 +150,8 @@ namespace Rye.DataAccess.Model
         
         public async Task<int> UpdateAsync(ExternNews model)
 		{
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await UpdateAsync(model, null, conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await UpdateAsync(model, null, conn.Connection);
         }
 
         public bool Delete(long id, IDbTransaction trans, IDbConnection conn)
@@ -169,8 +167,8 @@ namespace Rye.DataAccess.Model
 
         public bool Delete(long id)
         {
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return Delete(id, null,conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return Delete(id, null, conn.Connection);
         }
 
         public async Task<bool> DeleteAsync(long id, IDbTransaction trans, IDbConnection conn)
@@ -186,8 +184,8 @@ namespace Rye.DataAccess.Model
 
         public async Task<bool> DeleteAsync(long id)
         {   
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await DeleteAsync(id, null,conn);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await DeleteAsync(id, null, conn.Connection);
         }
 
         public ExternNews GetModel(long id)
@@ -196,8 +194,8 @@ namespace Rye.DataAccess.Model
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.QueryFirstOrDefault<ExternNews>(sql, param: _params, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.QueryFirstOrDefault<ExternNews>(sql, param: _params, commandType: CommandType.Text);
 		}				
         
         public ExternNews GetModelByWriteDb(long id)
@@ -206,8 +204,8 @@ namespace Rye.DataAccess.Model
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.QueryFirstOrDefault<ExternNews>(sql, param: _params, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.QueryFirstOrDefault<ExternNews>(sql, param: _params, commandType: CommandType.Text);
 		}
         
         public async Task<ExternNews> GetModelAsync(long id)
@@ -216,8 +214,8 @@ namespace Rye.DataAccess.Model
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryFirstOrDefaultAsync<ExternNews>(sql, param: _params, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ExternNews>(sql, param: _params, commandType: CommandType.Text);
 		}	
         
         public async Task<ExternNews> GetModelByWriteDbAsync(long id)
@@ -226,8 +224,8 @@ namespace Rye.DataAccess.Model
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
-    		IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryFirstOrDefaultAsync<ExternNews>(sql, param: _params, commandType: CommandType.Text);
+    		using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ExternNews>(sql, param: _params, commandType: CommandType.Text);
 		}	
 
         public ExternNews GetModel(long id, IDbTransaction trans, IDbConnection conn)
@@ -262,32 +260,32 @@ namespace Rye.DataAccess.Model
         {
             string sql = "SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql;
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.QueryFirstOrDefault<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.QueryFirstOrDefault<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<ExternNews> GetModelAsync(object param, string whereSql)
         {
             string sql = "SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql;
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryFirstOrDefaultAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public ExternNews GetModelByWriteDb(object param, string whereSql)
         {
             string sql = "SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql;
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.QueryFirstOrDefault<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.QueryFirstOrDefault<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<ExternNews> GetModelByWriteDbAsync(object param, string whereSql)
         {
             string sql = "SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql;
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryFirstOrDefaultAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public ExternNews GetModel(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
@@ -318,32 +316,32 @@ namespace Rye.DataAccess.Model
         {
             string sql = "SELECT TOP 1 [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql;
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.QueryFirstOrDefault<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.QueryFirstOrDefault<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<ExternNews> FirstOrDefaultAsync(object param, string whereSql, string orderSql)
         {
             string sql = "SELECT TOP 1 [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql;
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryFirstOrDefaultAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public ExternNews FirstOrDefaultByWriteDb(object param, string whereSql, string orderSql)
         {
             string sql = "SELECT TOP 1 [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql;
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.QueryFirstOrDefault<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.QueryFirstOrDefault<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<ExternNews> FirstOrDefaultByWriteDbAsync(object param, string whereSql, string orderSql)
         {
             string sql = "SELECT TOP 1 [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql + "ORDER BY " + orderSql;
             
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryFirstOrDefaultAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryFirstOrDefaultAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public ExternNews FirstOrDefault(object param, string whereSql, string orderSql, IDbTransaction trans, IDbConnection conn)
@@ -372,23 +370,23 @@ namespace Rye.DataAccess.Model
 		
         public IEnumerable<ExternNews> GetList()
         {
-            string sql = "GetSelectAllSql()";
+            string sql = "SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) ORDER BY [Id] DESC";
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.Query<ExternNews>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.Query<ExternNews>(sql, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<ExternNews>> GetListAsync()
         {
             string sql = "SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) ORDER BY [Id] DESC";
             
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryAsync<ExternNews>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryAsync<ExternNews>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<ExternNews> GetList(IDbTransaction trans, IDbConnection conn)
         {
-            string sql = "GetSelectAllSql()";
+            string sql = "SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) ORDER BY [Id] DESC";
                 
             if (trans == null)
                 return conn.Query<ExternNews>(sql, commandType: CommandType.Text);
@@ -409,16 +407,16 @@ namespace Rye.DataAccess.Model
         {
             string sql = "SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) ORDER BY [Id] DESC";
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.Query<ExternNews>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.Query<ExternNews>(sql, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<ExternNews>> GetListByWriteDbAsync()
         {
             string sql = "SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) ORDER BY [Id] DESC";
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryAsync<ExternNews>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryAsync<ExternNews>(sql, commandType: CommandType.Text);
         }
 
         public IEnumerable<ExternNews> GetListByWriteDb(IDbTransaction trans, IDbConnection conn)
@@ -444,32 +442,32 @@ namespace Rye.DataAccess.Model
         {
             string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.Query<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.Query<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<ExternNews>> GetPageAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
             string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.QueryAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.QueryAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public IEnumerable<ExternNews> GetPageByWriteDb(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
             string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.Query<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.Query<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<IEnumerable<ExternNews>> GetPageByWriteDbAsync(object param, string whereSql, string orderSql, int pageIndex, int pageSize)
         {
             string sql = string.Format("SELECT [Id] Id,[SourceType] SourceType,[SourceId] SourceId,[IsPublish] IsPublish,[PublishTime] PublishTime,[BannerType] BannerType,[IsHot] IsHot,[IsRecommend] IsRecommend,[Sort] Sort,[RealReadNum] RealReadNum,[DefaultReadNum] DefaultReadNum,[RealCollectionNum] RealCollectionNum,[DefaultCollectionNum] DefaultCollectionNum,[Title] Title,[Summary] Summary,[LinkUrl] LinkUrl,[Tags] Tags,[CoverImg] CoverImg,[Html] Html,[BannerSort] BannerSort,[NewsType] NewsType,[secondaryType] SecondaryType,[resourceUrl] ResourceUrl,[ContractId] ContractId FROM [ExternNews] WITH(NOLOCK) WHERE {0} ORDER BY {1} OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;", whereSql, orderSql, (pageIndex - 1) * pageSize, pageSize);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.QueryAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.QueryAsync<ExternNews>(sql, param: param, commandType: CommandType.Text);
         }
 
         public IEnumerable<ExternNews> GetPage(object param, string whereSql, string orderSql, int pageIndex, int pageSize, IDbTransaction trans, IDbConnection conn)
@@ -502,8 +500,8 @@ namespace Rye.DataAccess.Model
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public bool ExistsByWriteDb(long id)
@@ -512,8 +510,8 @@ namespace Rye.DataAccess.Model
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsAsync(long id)
@@ -522,8 +520,8 @@ namespace Rye.DataAccess.Model
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsByWriteDbAsync(long id)
@@ -532,8 +530,8 @@ namespace Rye.DataAccess.Model
             var _params = new DynamicParameters();
 			_params.Add("@Id", value: id, direction: ParameterDirection.Input);
                 
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: _params, commandType: CommandType.Text) > 0;
         }
 
         public bool Exists(long id, IDbTransaction trans, IDbConnection conn)
@@ -563,29 +561,29 @@ namespace Rye.DataAccess.Model
         public bool Exists(object param, string whereSql)
         {
             string sql = "SELECT TOP 1 1 FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsAsync(object param, string whereSql)
         {
             string sql = "SELECT TOP 1 1 FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public bool ExistsByWriteDb(object param, string whereSql)
         {
             string sql = "SELECT TOP 1 1 FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public async Task<bool> ExistsByWriteDbAsync(object param, string whereSql)
         {
             string sql = "SELECT TOP 1 1 FROM [ExternNews] WITH(NOLOCK) WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text) > 0;
         }
 
         public bool Exists(object param, string whereSql, IDbTransaction trans, IDbConnection conn)
@@ -609,57 +607,57 @@ namespace Rye.DataAccess.Model
         public int Count()
         {
             string sql = "SELECT COUNT(1) FROM [ExternNews] WITH(NOLOCK) ";
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, commandType: CommandType.Text);
         }
 
         public async Task<int> CountAsync()
         {
             string sql = "SELECT COUNT(1) FROM [ExternNews] WITH(NOLOCK) ";
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
         }
 
         public int CountByWriteDb()
         {
             string sql = "SELECT COUNT(1) FROM [ExternNews] WITH(NOLOCK) ";
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, commandType: CommandType.Text);
         }
 
         public async Task<int> CountByWriteDbAsync()
         {
             string sql = "SELECT COUNT(1) FROM [ExternNews] WITH(NOLOCK) ";
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, commandType: CommandType.Text);
         }
 
         public int Count(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM [ExternNews] WITH(NOLOCK)  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public async Task<int> CountAsync(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM [ExternNews] WITH(NOLOCK)  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetReadOnlyConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetReadOnlyConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public int CountByWriteDb(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM [ExternNews] WITH(NOLOCK)  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return conn.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return conn.Connection.ExecuteScalar<int>(sql, param: param, commandType: CommandType.Text);
         }
         
         public async Task<int> CountByWriteDbAsync(object param, string whereSql)
         {
             string sql = "SELECT COUNT(1) FROM [ExternNews] WITH(NOLOCK)  WHERE 1=1 AND " + whereSql;
-            IDbConnection conn = ConnectionProvider.GetConnection();
-            return await conn.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
+            using Connector conn = ConnectionProvider.GetConnection();
+            return await conn.Connection.ExecuteScalarAsync<int>(sql, param: param, commandType: CommandType.Text);
         }
 
         public int Count(IDbTransaction trans, IDbConnection conn)

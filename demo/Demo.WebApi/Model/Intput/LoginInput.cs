@@ -8,9 +8,9 @@ namespace Demo.WebApi.Model.Intput
         public string Account { get; set; }
         [Required(ErrorMessage = "INVALID_PARAMS")]
         public string Password { get; set; }
-        [Required(ErrorMessage = "INVALID_PARAMS")]
-        public string VerifyCode { get; set; }
-        [Required(ErrorMessage = "INVALID_PARAMS")]
-        public string VerifyCodeId { get; set; }
+        //[Required(ErrorMessage = "INVALID_PARAMS")]
+        //public string VerifyCode { get; set; }
+        //[Required(ErrorMessage = "INVALID_PARAMS")]
+        //public string VerifyCodeId { get; set; }
     }
 }

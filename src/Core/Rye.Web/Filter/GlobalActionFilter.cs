@@ -23,7 +23,7 @@ namespace Rye.Web.Filter
         public void OnActionExecuted(ActionExecutedContext context)
         {
             //结束
-            context.HttpContext.Response.Headers["Access-Control-Allow-Origin"] = "*";
+            //context.HttpContext.Response.Headers["Access-Control-Allow-Origin"] = "*";
             string logMessage = string.Empty;
             #region 记录返回结果和响应时间
             if (context.Exception != null)

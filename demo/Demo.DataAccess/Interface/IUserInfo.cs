@@ -6,7 +6,7 @@ using Rye.DataAccess;
 
 namespace Demo.DataAccess
 {
-    [Injection(ServiceLifetime.Scoped, InjectionPolicy.Replace)]
+    [Injection(ServiceLifetime.Singleton, InjectionPolicy.Replace)]
 	public partial interface IUserInfo : IDataBaseOperate<UserInfo>
 	{
 		bool Delete(int id);        

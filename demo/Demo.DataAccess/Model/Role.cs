@@ -10,6 +10,10 @@ namespace Demo.DataAccess
 		/// </summary>
 		public int Id { get; set; }
 		/// <summary>
+		/// App Id
+		/// </summary>
+		public int AppId { get; set; }
+		/// <summary>
 		/// 角色名称
 		/// </summary>
 		public string Name { get; set; }
