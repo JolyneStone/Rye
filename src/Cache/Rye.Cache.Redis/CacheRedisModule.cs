@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using CSRedis;
+
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -19,17 +21,17 @@ namespace Rye.Cache.Redis
         public override ModuleLevel Level => ModuleLevel.FrameWork;
         public override uint Order => 1;
 
-        private Action<RedisCacheOptions> _action;
+        private readonly CSRedisClient _redisClient;
 
-        public CacheRedisModule(Action<RedisCacheOptions> action = null)
+        public CacheRedisModule(CSRedisClient redisClient)
         {
-            _action = action;
+            _redisClient = redisClient;
         }
 
         public override void ConfigueServices(IServiceCollection services)
         {
             services.RemoveAll<IDistributedCache>();
-            services.AddRyeCacheRedis(_action);
+            services.AddRyeCacheRedis(_redisClient);
         }
     }
 }

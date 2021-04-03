@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Demo.Library.Abstraction
 {
-    [Injection(ServiceLifetime.Singleton, InjectionPolicy.Replace)]
+    [Injection(ServiceLifetime.Scoped, InjectionPolicy.Replace)]
     public interface IUserPermissionService
     {
         Task<IEnumerable<PermissionTreeDto>> GetPermissionsTreeByRolesIdAsync(int[] rolesId);

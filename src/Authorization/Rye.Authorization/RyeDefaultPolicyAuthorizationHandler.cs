@@ -132,9 +132,11 @@ namespace Rye.Authorization.Abstraction
                 }
             }
 
-            var controller = httpContext.GetRouteValue("action")?.ToString();
+            var area = httpContext.GetRouteValue("area")?.ToString();
+            var controller = httpContext.GetRouteValue("controller")?.ToString();
             var action = httpContext.GetRouteValue("action")?.ToString();
-            var authCode = authCodeAttribute.AuthCode ?? $"{controller}.{action}";
+            var authCode = authCodeAttribute.AuthCode ??
+                (area != null ? $"{area}_{controller}.{action}" : $"{controller}.{action}");
             if (!permissionList.Any(d => string.Equals(d, authCode, System.StringComparison.InvariantCultureIgnoreCase)))
             {
                 SetHttpStatusCode(httpContext, HttpStatusCode.OK);

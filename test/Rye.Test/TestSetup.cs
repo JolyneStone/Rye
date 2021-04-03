@@ -10,6 +10,7 @@ using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Rye.AspectFlare.DynamicProxy;
 using Rye.EntityFrameworkCore.Options;
+using System.Linq;
 
 namespace Rye.Test
 {
@@ -32,7 +33,8 @@ namespace Rye.Test
                     services = services.UseDynamicProxyService();
                     services
                         .AddCoreModule()
-                        .AddCacheModule()
+                        .AddRedisCacheModule(options =>
+                            ConfigurationManager.Appsettings.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(options))
                         .ConfigureModule();
                 }).Build();
         }

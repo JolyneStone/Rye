@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Cache\Rye.Cache.Redis\Rye.Cache.Redis.csproj" />
     <ProjectReference Include="..\..\src\CodeGenerator\Rye.CodeGenerator\Rye.CodeGenerator.csproj" />
     <ProjectReference Include="..\..\src\Core\Rye\Rye.csproj" />
     <ProjectReference Include="..\..\src\Domain\Rye.DataAccess\Rye.DataAccess.csproj" />

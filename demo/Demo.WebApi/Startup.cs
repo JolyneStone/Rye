@@ -22,6 +22,8 @@ using Rye.Web;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
+using System.Linq;
+
 namespace Demo.WebApi
 {
     public class Startup
@@ -89,7 +91,8 @@ namespace Demo.WebApi
                 {
                     options.VerfiyCodeExpire = 5 * 60;
                 })
-                .AddRedisCacheModule()
+                .AddRedisCacheModule(options=>
+                    Configuration.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(options))
                 .AddMySqlModule<MyDbConnectionProvider>()
                 .AddMySqlEFCodeModule(builder =>
                 {
