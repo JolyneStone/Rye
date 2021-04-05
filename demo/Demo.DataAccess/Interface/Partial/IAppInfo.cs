@@ -1,4 +1,6 @@
-﻿namespace Demo.DataAccess
+﻿using System.Threading.Tasks;
+
+namespace Demo.DataAccess
 {
     public partial interface IAppInfo
     {
@@ -7,5 +9,9 @@
         AppInfo GetModelWithCache(string appKey);
 
         AppInfo GetModelWithCache(int appId);
+
+        Task<AppInfo> GetModelWithCacheAsync(string appKey);
+
+        Task<AppInfo> GetModelWithCacheAsync(int appId);
     }
 }

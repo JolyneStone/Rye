@@ -2,12 +2,22 @@
 
 using Demo.Core.Common;
 
-using Rye.Cache;
+using Rye.Cache.Store;
+using Rye.MySql;
+
+using System.Threading.Tasks;
 
 namespace Demo.DataAccess
 {
     public partial class DaoAppInfo
     {
+        private readonly ICacheStore _store;
+        public DaoAppInfo(MySqlConnectionProvider provider, ICacheStore store)
+        {
+            ConnectionProvider = provider;
+            _store = store;
+        }
+
         public AppInfo GetModel(string appKey)
         {
             var sql = $"select {GetColumns()} from AppInfo where appKey = @appKey";
@@ -22,27 +32,53 @@ namespace Demo.DataAccess
 
         public AppInfo GetModelWithCache(string appKey)
         {
-            var key = string.Format(MemoryCacheKeys.AppInfoByKey, appKey);
-            var appInfo = MemoryCacheManager.Get<AppInfo>(key);
+            var enrty = CacheEntrys.AppInfoByKey(appKey);
+            var appInfo = _store.Get<AppInfo>(enrty);
             if (appInfo != null)
                 return appInfo;
 
             appInfo = GetModel(appKey);
             if (appInfo != null)
-                MemoryCacheManager.Set(key, appInfo, MemoryCacheKeys.AppInfoByKey_TimeOut);
+                _store.Set(enrty, appInfo);
             return appInfo;
         }
 
         public AppInfo GetModelWithCache(int appId)
         {
-            var key = string.Format(MemoryCacheKeys.AppInfoById, appId);
-            var appInfo = MemoryCacheManager.Get<AppInfo>(key);
+            var enrty = CacheEntrys.AppInfoById(appId);
+            var appInfo = _store.Get<AppInfo>(enrty);
             if (appInfo != null)
                 return appInfo;
 
             appInfo = GetModel(appId);
             if (appInfo != null)
-                MemoryCacheManager.Set(key, appInfo, MemoryCacheKeys.AppInfoById_TimeOut);
+                _store.Set(enrty, appInfo);
+            return appInfo;
+        }
+
+        public async Task<AppInfo> GetModelWithCacheAsync(string appKey)
+        {
+            var enrty = CacheEntrys.AppInfoByKey(appKey);
+            var appInfo = await _store.GetAsync<AppInfo>(enrty);
+            if (appInfo != null)
+                return appInfo;
+
+            appInfo = GetModel(appKey);
+            if (appInfo != null)
+                await _store.SetAsync(enrty, appInfo);
+            return appInfo;
+        }
+
+        public async Task<AppInfo> GetModelWithCacheAsync(int appId)
+        {
+            var enrty = CacheEntrys.AppInfoById(appId);
+            var appInfo = await _store.GetAsync<AppInfo>(enrty);
+            if (appInfo != null)
+                return appInfo;
+
+            appInfo = GetModel(appId);
+            if (appInfo != null)
+                await _store.SetAsync(enrty, appInfo);
             return appInfo;
         }
     }

@@ -2,24 +2,25 @@
 
 using Rye.Business.Options;
 using Rye.Cache;
-using Rye.Cache.Internal;
+using Rye.Cache.Store;
 
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Rye.Business.Validate
 {
     public class VerifyCodeService: IVerifyCodeService
     {
         private const string Separator = "#$#";
-        private readonly ICacheService _cacheService;
+        private readonly ICacheStore _store;
         private readonly BusinessOptions _options;
 
-        public VerifyCodeService(ICacheService cacheService, IOptions<BusinessOptions> options)
+        public VerifyCodeService(ICacheStore store, IOptions<BusinessOptions> options)
         {
-            _cacheService = cacheService;
+            _store = store;
             _options = options.Value;
         }
 
@@ -30,7 +31,7 @@ namespace Rye.Business.Validate
         /// <param name="id">验证码编号</param>
         /// <param name="removeIfSuccess">验证成功时是否移除</param>
         /// <returns></returns>
-        public virtual bool CheckCode(string id, string code, bool removeIfSuccess = true)
+        public virtual async Task<bool> CheckCodeAsync(string id, string code, bool removeIfSuccess = true)
         {
             if (string.IsNullOrEmpty(code))
             {
@@ -38,11 +39,11 @@ namespace Rye.Business.Validate
             }
 
             var entry = CacheEntryCollection.GetVerifyCodeEntry(id);
-            var validCode = _cacheService.Get<string>(entry.CacheKey);
+            var validCode = _store.Get<string>(entry);
             bool flag = code.Equals(validCode, StringComparison.InvariantCultureIgnoreCase);
             if (removeIfSuccess && flag)
             {
-                _cacheService.Remove(entry.CacheKey);
+                await _store.RemoveAsync(entry.Key);
             }
 
             return flag;
@@ -51,11 +52,12 @@ namespace Rye.Business.Validate
         /// <summary>
         /// 设置验证码到缓存中
         /// </summary>
-        public virtual void SetCode(string code, out string id)
+        public virtual async Task<string> SetCodeAsync(string code)
         {
-            id = Guid.NewGuid().ToString("N");
+            var id = Guid.NewGuid().ToString("N");
             var entry = CacheEntryCollection.GetVerifyCodeEntry(id, _options.VerfiyCodeExpire);
-            _cacheService.Set(entry.CacheKey, code, entry.Options);
+            await _store.SetAsync(entry, code);
+            return id;
         }
 
         /// <summary>

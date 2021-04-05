@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Rye.Cache.Redis.Internal
 {
-    public class RedisConnectionBuilder
+    internal class RedisConnectionBuilder
     {
         public string BuildConnectionString(RedisOptions options)
         {
@@ -19,9 +19,9 @@ namespace Rye.Cache.Redis.Internal
                 sb.Append(",password=" + options.Password);
             }
 
-            sb.Append(",defaultdatabase=" + options.DefaultDatabase);
-            sb.Append(",poolsize=" + options.PoolSize);
-            sb.Append(",writebuffer=" + options.WriteBuffer);
+            sb.Append(",defaultDatabase=" + options.DefaultDatabase);
+            sb.Append(",poolsize=" + options.PoolSize); 
+            sb.Append(",writeBuffer=" + options.WriteBuffer);
             sb.Append(",prefix=" + options.Prefix);
             sb.Append(",ssl=" + (options.Ssl ? "true" : "false"));
             sb.Append(",connecttimeout=" + options.ConnectTimeout);

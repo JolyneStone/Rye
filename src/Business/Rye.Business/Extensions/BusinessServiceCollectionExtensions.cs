@@ -8,10 +8,6 @@ using Rye.Business.QRCode;
 using Rye.Business.Validate;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Rye
 {
@@ -42,11 +38,7 @@ namespace Rye
         /// <returns></returns>
         public static IServiceCollection AddRyeBusiness(this IServiceCollection serviceCollection, IConfigurationSection configurationSection)
         {
-            var congiration = serviceCollection.GetSingletonInstance<IConfiguration>();
-            serviceCollection.Configure<BusinessOptions>(options => configurationSection.Bind(options));
-            serviceCollection.TryAddSingleton<IVerifyCodeService, VerifyCodeService>();
-            serviceCollection.TryAddSingleton<IQRCodeService, QRCodeService>();
-            return serviceCollection;
+            return AddRyeBusiness(serviceCollection, options => configurationSection.Bind(options));
         }
 
         /// <summary>

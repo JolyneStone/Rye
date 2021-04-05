@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
 using Rye.Cache;
+using Rye.Cache.Store;
 using Rye.Module;
 
 namespace Rye
@@ -16,7 +18,8 @@ namespace Rye
         {
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();
-            services.TryAddSingleton<ICacheService, CacheService>();
+            services.TryAddSingleton<IMemoryStore, MemoryStore>();
+            services.TryAddSingleton<ICacheStore>(services => services.GetRequiredService<IMemoryStore>());
             return services;
         }
 

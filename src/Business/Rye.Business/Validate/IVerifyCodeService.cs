@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Threading.Tasks;
 
 namespace Rye.Business.Validate
 {
@@ -11,12 +12,12 @@ namespace Rye.Business.Validate
         /// <param name="code">要校验的验证码</param>
         /// <param name="removeIfSuccess">验证成功时是否移除</param>
         /// <returns></returns>
-        bool CheckCode(string id, string code, bool removeIfSuccess = true);
+        Task<bool> CheckCodeAsync(string id, string code, bool removeIfSuccess = true);
 
         /// <summary>
         /// 设置验证码到缓存中中
         /// </summary>
-        void SetCode(string code, out string id);
+        Task<string> SetCodeAsync(string code);
 
         /// <summary>
         /// 将图片序列化成字符串

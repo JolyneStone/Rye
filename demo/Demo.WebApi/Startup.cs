@@ -17,6 +17,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 using Rye;
+using Rye.Cache.Redis;
+using Rye.Cache.Redis.Options;
+using Rye.Cache.Redis.Store;
+using Rye.Cache.Store;
 using Rye.MySql;
 using Rye.Web;
 
@@ -91,7 +95,7 @@ namespace Demo.WebApi
                 {
                     options.VerfiyCodeExpire = 5 * 60;
                 })
-                .AddRedisCacheModule(options=>
+                .AddRedisCacheModule(options =>
                     Configuration.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(options))
                 .AddMySqlModule<MyDbConnectionProvider>()
                 .AddMySqlEFCodeModule(builder =>

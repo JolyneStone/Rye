@@ -1,28 +1,28 @@
 ﻿using Rye.Cache;
-using Rye.Cache.Internal;
+using Rye.Cache.Store;
 using Rye.Entities.Abstractions;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Rye.Language
 {
     public class LangService : ILangService
     {
         private readonly ILangDictionaryService _langDictionaryService;
+        private readonly ICacheStore _store;
 
-        public LangService(ILangDictionaryService langDictionaryService)
+        public LangService(ILangDictionaryService langDictionaryService, ICacheStore store)
         {
             _langDictionaryService = langDictionaryService;
+            _store = store;
         }
 
         private Dictionary<string, Dictionary<string, string>> GetEnableDictionary()
         {
-            var entry = MemoryCacheEntryCollection.GetLangDictionaryListEntry();
-            var dictionary = MemoryCacheManager.Get<Dictionary<string, Dictionary<string, string>>>(entry.CacheKey);
+            var entry = CacheEntryCollection.GetLangDictionaryListEntry();
+            var dictionary = _store.Get<Dictionary<string, Dictionary<string, string>>>(entry);
             if (dictionary == null)
             {
                 IEnumerable<(string lang, string dicKey, string dicValue)> _list = _langDictionaryService.GetEnableList();
@@ -33,7 +33,7 @@ namespace Rye.Language
                     {
                         dictionary.Add(item.Key, item.ToDictionary(d => d.lang, d => d.dicValue));
                     }
-                    MemoryCacheManager.Set(entry.CacheKey, dictionary, entry.Expire);
+                    _store.Set(entry, dictionary);
                     return dictionary;
                 }
             }

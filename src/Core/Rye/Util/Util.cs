@@ -96,7 +96,7 @@ namespace Rye.Util
             string chars = "0123456789ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
             string pwd;
             pwd = "";
-            Random randrom = new Random((int)DateTime.Now.Ticks);
+            Random randrom = new Random((int)DateTime.UtcNow.Ticks);
             for (int i = 0; i < size; i++)
             {
                 pwd += chars[randrom.Next(chars.Length)];
@@ -118,7 +118,7 @@ namespace Rye.Util
             while (true)
             {
                 pwd = "";
-                Random randrom = new Random((int)DateTime.Now.Ticks);
+                Random randrom = new Random((int)DateTime.UtcNow.Ticks);
                 for (int i = 0; i < length; i++)
                 {
                     pwd += chars[randrom.Next(chars.Length)];

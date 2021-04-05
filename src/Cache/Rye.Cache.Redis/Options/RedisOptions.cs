@@ -51,8 +51,16 @@
         /// </summary>
         public bool Ssl { get; set; }
         /// <summary>
-        /// 是否是只读的
+        /// 是否使用多级缓存
+        /// </summary>
+        public bool MultiCacheEnabled { get; set; }
+        /// <summary>
+        /// 是否只读
         /// </summary>
         public bool ReadOnly { get; set; }
+        /// <summary>
+        /// 哨兵节点
+        /// </summary>
+        public string[] Sentinels { get; set; }
     }
 }

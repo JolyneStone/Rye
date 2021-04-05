@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Demo.Core.Common;
+using Demo.Core.Common.Enums;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,6 +10,7 @@ using Rye.Security;
 using Rye.Web.Attribute;
 
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace Demo.WebApi.Controllers.v1
 {
@@ -19,7 +23,7 @@ namespace Demo.WebApi.Controllers.v1
         /// 获取验证码图片
         /// </summary>
         [HttpGet]
-        public string VerifyCode()
+        public async Task<ApiResult<string>> VerifyCode()
         {
             var verifyCodeService = HttpContext.RequestServices.GetService<IVerifyCodeService>();
             ValidateCoder coder = new ValidateCoder()
@@ -31,22 +35,22 @@ namespace Demo.WebApi.Controllers.v1
                 RandomPosition = true
             };
             Bitmap bitmap = coder.CreateImage(4, out string code);
-            verifyCodeService.SetCode(code, out string id);
-            return verifyCodeService.GetImageString(bitmap, id);
+            var id = await verifyCodeService.SetCodeAsync(code);
+            return Result<string>(CommonStatusCode.Success, verifyCodeService.GetImageString(bitmap, id));
         }
 
         [HttpPost]
-        public string Encrypt([FromForm] string param, [FromForm] int appId,
+        public async Task<ApiResult<string>> Encrypt([FromForm] string param, [FromForm] int appId,
             [FromServices] ISecurityService securityService)
         {
-            return securityService.Encrypt(appId, param);
+            return Result<string>(CommonStatusCode.Success, await securityService.EncryptAsync(appId, param));
         }
 
         [HttpPost]
-        public string Decrypt([FromForm] string param, [FromForm] int appId,
+        public async Task<ApiResult<string>> Decrypt([FromForm] string param, [FromForm] int appId,
                 [FromServices] ISecurityService securityService)
         {
-            return securityService.Decrypt(appId, param);
+            return Result<string>(CommonStatusCode.Success, await securityService.DecryptAsync(appId, param));
         }
 
         [Security(decryptRequestBody: true, encryptResponseBody: true)]

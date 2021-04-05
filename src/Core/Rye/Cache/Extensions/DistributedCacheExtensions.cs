@@ -8,7 +8,7 @@ namespace Rye
     /// <summary>
     /// 分布缓存扩展方法
     /// </summary>
-    public static class CacheExtensions
+    public static class DistributedCacheExtensions
     {
         /// <summary>
         /// 将对象存入缓存中

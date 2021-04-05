@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,8 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Rye.Authorization.Abstraction.Attributes;
 using Rye.Authorization.Entities;
 using Rye.Cache;
-using Rye.Cache.Internal;
-using Rye.DataAccess;
+using Rye.Cache.Store;
 using Rye.Entities.Abstractions;
 using Rye.Jwt;
 using Rye.Jwt.Options;
@@ -28,7 +24,6 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Rye.Authorization.Abstraction
@@ -120,15 +115,15 @@ namespace Rye.Authorization.Abstraction
                 return false;
             }
 
-            var cacheService = services.GetRequiredService<ICacheService>();
+            var store = services.GetRequiredService<ICacheStore>();
             var entry = CacheEntryCollection.GetPermissionEntry(userId);
-            IEnumerable<string> permissionList = await cacheService.GetAsync<IEnumerable<string>>(entry.CacheKey);
+            IEnumerable<string> permissionList = await store.GetAsync<IEnumerable<string>>(entry);
             if (permissionList == null || !permissionList.Any())
             {
                 permissionList = await secutiryPermissionService.GetPermissionCodeAsync(roleIds);
                 if (permissionList != null && permissionList.Any())
                 {
-                    await cacheService.SetAsync(entry.CacheKey, permissionList, entry.Options);
+                    await store.SetAsync(entry, permissionList);
                 }
             }
 

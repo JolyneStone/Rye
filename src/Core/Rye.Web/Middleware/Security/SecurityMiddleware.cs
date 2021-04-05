@@ -66,7 +66,7 @@ namespace Rye.Web.Middleware
             else
             {
                 var appInfoService = services.GetRequiredService<IAppInfoService>();
-                var appSecret = appInfoService.GetAppSecret(appKey.ToString());
+                var appSecret = await appInfoService.GetAppSecretAsync(appKey.ToString());
                 if (appSecret.IsNullOrEmpty())
                 {
                     responseTempBody = _provider.CreateParameterErrorResponse(new SecurityContext { HttpContext = context });

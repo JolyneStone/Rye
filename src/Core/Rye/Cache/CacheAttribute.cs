@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 
 using Rye.AspectFlare;
+using Rye.Cache.Store;
 using Rye.DependencyInjection;
 using Rye.Reflection;
 
@@ -11,14 +12,14 @@ using System.Text;
 namespace Rye.Cache
 {
     /// <summary>
-    /// 提供方法数据缓存功能，使用IDistributedCache
+    /// 提供方法数据缓存功能，使用MemoryStore
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class CacheAttribute : InterceptAttribute, ICallingInterceptor, ICalledInterceptor
     {
-        private static readonly Lazy<IDistributedCache> _cacheLazy = new Lazy<IDistributedCache>(() => SingleServiceLocator.GetService<IDistributedCache>());
+        private static readonly Lazy<IMemoryStore> _cacheLazy = new Lazy<IMemoryStore>(() => SingleServiceLocator.GetService<IMemoryStore>());
 
-        private static IDistributedCache Cache { get => _cacheLazy.Value; }
+        private static IMemoryStore Cache { get => _cacheLazy.Value; }
 
         public CacheAttribute()
         {
@@ -71,7 +72,7 @@ namespace Rye.Cache
                 CacheKey = callingInterceptorContext.Owner.GetType().FullName + "." + callingInterceptorContext.MethodName;
             }
             var key = GetKey(CacheKey, callingInterceptorContext.Parameters);
-            var result = Cache.GetString(key);
+            var result = Cache.Get<string>(key);
             if (result != null)
             {
                 callingInterceptorContext.HasResult = true;
@@ -91,16 +92,17 @@ namespace Rye.Cache
                 var result = calledInterceptorContext.Result ?? calledInterceptorContext.ReturnValue;
                 if (result != null)
                 {
-                    DistributedCacheEntryOptions options = new DistributedCacheEntryOptions();
+                    CacheOptionEntry entry = new CacheOptionEntry();
+                    entry.Key = key;
                     if (IsSliding)
                     {
-                        options.SetSlidingExpiration(TimeSpan.FromSeconds(CacheSeconds));
+                        entry.SetSlidingExpiration(TimeSpan.FromSeconds(CacheSeconds));
                     }
                     else
                     {
-                        options.SetAbsoluteExpiration(TimeSpan.FromSeconds(CacheSeconds));
+                        entry.SetAbsoluteExpiration(TimeSpan.FromSeconds(CacheSeconds));
                     }
-                    Cache.SetString(key, result.ToJsonString(), options);
+                    Cache.Set(entry, result.ToJsonString());
                 }
             }
         }

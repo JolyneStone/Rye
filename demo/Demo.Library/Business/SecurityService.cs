@@ -2,10 +2,12 @@
 using Demo.DataAccess;
 
 using Rye.Cache;
+using Rye.Cache.Store;
 using Rye.Security;
 
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Demo.Library.Business
 {
@@ -23,19 +25,28 @@ namespace Demo.Library.Business
             return Encoding.UTF8.GetString(Decrypt(appId, Convert.FromBase64String(value)));
         }
 
-        public byte[] Decrypt(int appId, byte[] bytes)
+        public async Task<string> DecryptAsync(int appId, string value)
         {
-            var cacheKey = string.Format(MemoryCacheKeys.AppInfoById, appId);
-            var appInfo = MemoryCacheManager.Get<AppInfo>(cacheKey);
+            return Encoding.UTF8.GetString(await DecryptAsync(appId, Convert.FromBase64String(value)));
+        }
+
+        public async Task<byte[]> DecryptAsync(int appId, byte[] bytes)
+        {
+            var appInfo = await _appInfoDataAccess.GetModelWithCacheAsync(appId);
             if (appInfo == null)
             {
-                appInfo = _appInfoDataAccess.GetModelWithCache(appId);
-                if (appInfo == null)
-                {
-                    throw new InvalidOperationException("Decryption failed");
-                }
+                throw new InvalidOperationException("Decryption failed");
+            }
 
-                MemoryCacheManager.Set(cacheKey, appInfo, MemoryCacheKeys.AppInfoById_TimeOut);
+            return AesManager.Decrypt(bytes, appInfo.AppKey, appInfo.AppSecret);
+        }
+
+        public byte[] Decrypt(int appId, byte[] bytes)
+        {
+            var appInfo = _appInfoDataAccess.GetModelWithCache(appId);
+            if (appInfo == null)
+            {
+                throw new InvalidOperationException("Decryption failed");
             }
 
             return AesManager.Decrypt(bytes, appInfo.AppKey, appInfo.AppSecret);
@@ -59,17 +70,26 @@ namespace Demo.Library.Business
 
         public byte[] Encrypt(int appId, byte[] bytes)
         {
-            var cacheKey = string.Format(MemoryCacheKeys.AppInfoById, appId);
-            var appInfo = MemoryCacheManager.Get<AppInfo>(cacheKey);
+            var appInfo = _appInfoDataAccess.GetModelWithCache(appId);
             if (appInfo == null)
             {
-                appInfo = _appInfoDataAccess.GetModelWithCache(appId);
-                if (appInfo == null)
-                {
-                    throw new InvalidOperationException("Decryption failed");
-                }
+                throw new InvalidOperationException("Decryption failed");
+            }
 
-                MemoryCacheManager.Set(cacheKey, appInfo, MemoryCacheKeys.AppInfoById_TimeOut);
+            return Encrypt(appInfo.AppKey, appInfo.AppSecret, bytes);
+        }
+
+        public async Task<string> EncryptAsync(int appId, string value)
+        {
+            return Convert.ToBase64String(await EncryptAsync(appId, Encoding.UTF8.GetBytes(value)));
+        }
+
+        public async Task<byte[]> EncryptAsync(int appId, byte[] bytes)
+        {
+            var appInfo = await _appInfoDataAccess.GetModelWithCacheAsync(appId);
+            if (appInfo == null)
+            {
+                throw new InvalidOperationException("Decryption failed");
             }
 
             return Encrypt(appInfo.AppKey, appInfo.AppSecret, bytes);

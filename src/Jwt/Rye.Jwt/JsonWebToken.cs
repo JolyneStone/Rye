@@ -32,8 +32,8 @@ namespace Rye.Jwt
         /// </summary>
         public bool IsAccessExpired()
         {
-            DateTime now = DateTime.Now;
-            long nowTick = now.ToUniversalTime().Ticks; //now.ToJsGetTime().ParseByLong();
+            var now = DateTimeOffset.UtcNow;
+            long nowTick = now.Ticks; //now.ToJsGetTime().ParseByLong();
             return AccessExpires > nowTick;
         }
 
@@ -42,8 +42,8 @@ namespace Rye.Jwt
         /// </summary>
         public bool IsRefreshExpired()
         {
-            DateTime now = DateTime.Now;
-            long nowTick = now.ToUniversalTime().Ticks; //now.ToJsGetTime().ParseByLong();
+            var now = DateTimeOffset.UtcNow;
+            long nowTick = now.Ticks; //now.ToJsGetTime().ParseByLong();
             return RefreshExpires > nowTick;
         }
     }

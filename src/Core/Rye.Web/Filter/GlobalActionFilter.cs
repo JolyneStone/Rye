@@ -16,7 +16,7 @@ namespace Rye.Web.Filter
             //开始
             if (!context.HttpContext.Items.ContainsKey(actionPerf))
             {
-                context.HttpContext.Items[actionPerf] = DateTime.Now.Ticks / 10000d;
+                context.HttpContext.Items[actionPerf] = DateTimeOffset.UtcNow.Ticks / 10000d;
             }
         }
 
@@ -66,7 +66,7 @@ namespace Rye.Web.Filter
             if (context.HttpContext.Items.ContainsKey(actionPerf))
             {
                 double begin = (double)context.HttpContext.Items[actionPerf];
-                elapsedMilliseconds = DateTime.Now.Ticks / 10000d - begin;
+                elapsedMilliseconds = DateTimeOffset.UtcNow.Ticks / 10000d - begin;
             }
             logMessage += $"{elapsedMilliseconds} ms";
 

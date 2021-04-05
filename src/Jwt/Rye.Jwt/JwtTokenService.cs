@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-using Rye.Cache.Internal;
-using Rye.Enums;
+using Rye.Cache;
+using Rye.Cache.Store;
 using Rye.Exceptions;
 using Rye.Jwt.Entities;
 using Rye.Jwt.Options;
@@ -12,13 +12,11 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using System.Text.Unicode;
 using System.Threading.Tasks;
 
@@ -28,11 +26,11 @@ namespace Rye.Jwt
     {
         private readonly JwtOptions _jwtOptions;
         private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
-        private readonly IDistributedCache _distributedCache;
-        public JwtTokenService(IOptions<JwtOptions> jwtOptions, IDistributedCache distributedCache)
+        private readonly ICacheStore _store;
+        public JwtTokenService(IOptions<JwtOptions> jwtOptions, ICacheStore store)
         {
             _jwtOptions = jwtOptions.Value;
-            _distributedCache = distributedCache;
+            _store = store;
         }
 
         /// <summary>
@@ -49,7 +47,7 @@ namespace Rye.Jwt
                 var userId = principal.Claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.UserId)).Value;
                 var tokenEntry = CacheEntryCollection.GetTokenEntry(jwtTokenType, clientType, userId, (int)_jwtOptions.AccessExpireMins * 60);
 
-                var cacheToken = await _distributedCache.GetStringAsync(tokenEntry.CacheKey);
+                var cacheToken = await _store.GetAsync<string>(tokenEntry);
                 if (cacheToken.IsNullOrEmpty() || cacheToken != token)
                 {
                     throw new RyeException("Token is error");
@@ -84,16 +82,16 @@ namespace Rye.Jwt
         public virtual async Task DeleteTokenAsync(string userId, string clientType)
         {
             var tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.AccessToken, clientType, userId);
-            await _distributedCache.RemoveAsync(tokenEntry.CacheKey);
+            await _store.RemoveAsync(tokenEntry.Key);
 
             tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.RefreshToken, clientType, userId);
-            await _distributedCache.RemoveAsync(tokenEntry.CacheKey);
+            await _store.RemoveAsync(tokenEntry.Key);
         }
 
         private async Task<JsonWebToken> GenerateTokenAsync(List<Claim> claims)
         {
-            claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, $"{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}"));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Exp, $"{new DateTimeOffset(DateTime.Now.AddMinutes(_jwtOptions.AccessExpireMins)).ToUnixTimeSeconds()}"));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, $"{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}"));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Exp, $"{DateTimeOffset.UtcNow.AddMinutes(_jwtOptions.AccessExpireMins).ToUnixTimeSeconds()}"));
 
             // AccessToken
             var (accessToken, accessExpires) = CreateTokenCore(claims, _jwtOptions, JwtTokenType.AccessToken);
@@ -107,10 +105,10 @@ namespace Rye.Jwt
                 var userId = claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.UserId)).Value;
 
                 var tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.AccessToken, clientType, userId, (int)_jwtOptions.AccessExpireMins * 60);
-                await _distributedCache.SetStringAsync(tokenEntry.CacheKey, accessToken, tokenEntry.Options);
+                await _store.SetAsync<string>(tokenEntry, accessToken);
 
                 tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.RefreshToken, clientType, userId, (int)_jwtOptions.AccessExpireMins * 60);
-                await _distributedCache.SetStringAsync(tokenEntry.CacheKey, accessToken, tokenEntry.Options);
+                await _store.SetAsync<string>(tokenEntry, accessToken);
             }
 
             return new JsonWebToken()

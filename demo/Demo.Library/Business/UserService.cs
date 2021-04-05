@@ -50,8 +50,8 @@ namespace Demo.Library.Business
                     Id = user.Id,
                     Nickname = user.Nickame,
                     Avatar = ConfigurationManager.GetSectionValue("Domain") + user.ProfilePicture,
-                    Phone = user.Phone.IsNullOrEmpty() ? "" : _securityService.Decrypt(appId, user.Phone),
-                    Email = user.Email.IsNullOrEmpty() ? "" : _securityService.Decrypt(appId, user.Email),
+                    Phone = user.Phone.IsNullOrEmpty() ? "" : await _securityService.DecryptAsync(appId, user.Phone),
+                    Email = user.Email.IsNullOrEmpty() ? "" : await _securityService.DecryptAsync(appId, user.Email),
                 };
         }
     }
