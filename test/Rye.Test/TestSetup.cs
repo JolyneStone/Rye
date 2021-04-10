@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Rye.AspectFlare.DynamicProxy;
 using Rye.EntityFrameworkCore.Options;
 using System.Linq;
+using Rye.Cache.Redis;
 
 namespace Rye.Test
 {

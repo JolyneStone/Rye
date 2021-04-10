@@ -1,31 +1,31 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace Rye.Threading
 {
     public sealed class LockObject
     {
-        private object _sync = new object();
-        private int _taken = 0;
+        private SemaphoreSlim _waiterLock = new SemaphoreSlim(0, 1);
+        private int _waiters = 0;
 
         public void Enter()
         {
-            if (Interlocked.Exchange(ref _taken, 1) == 0)
+            if (Interlocked.Increment(ref _waiters) == 1)
             {
                 return;
             }
 
-            Monitor.Enter(_sync);
-            Volatile.Write(ref _taken, 2);
+            _waiterLock.Wait();
         }
 
         public void Exit()
         {
-            if(_taken == 2)
+            if(Interlocked.Decrement(ref _waiters) == 0)
             {
-                Monitor.Exit(_sync);
+                return;
             }
 
-            Volatile.Write(ref _taken, 0);
+            _waiterLock.Release();
         }
     }
 }

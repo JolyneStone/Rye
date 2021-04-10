@@ -22,7 +22,6 @@
     <ProjectReference Include="..\..\src\Domain\Rye.DataAccess\Rye.DataAccess.csproj" />
     <ProjectReference Include="..\..\src\Domain\Rye.EntityFrameworkCore.MySql\Rye.EntityFrameworkCore.MySql.csproj" />
     <ProjectReference Include="..\..\src\Domain\Rye.MySql\Rye.MySql.csproj" />
-    <ProjectReference Include="..\..\src\EventBus\Rye.EventBus.Memory\Rye.EventBus.Memory.csproj" />
     <ProjectReference Include="..\..\src\Jwt\Rye.Jwt\Rye.Jwt.csproj" />
     <ProjectReference Include="..\Demo.Core\Demo.Core.csproj" />
     <ProjectReference Include="..\Demo.DataAccess.EFCore\Demo.DataAccess.EFCore.csproj" />

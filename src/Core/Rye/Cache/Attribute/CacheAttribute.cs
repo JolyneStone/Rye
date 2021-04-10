@@ -12,7 +12,7 @@ using System.Text;
 namespace Rye.Cache
 {
     /// <summary>
-    /// 提供方法数据缓存功能，使用MemoryStore
+    /// 提供方法数据缓存功能，使用IMemoryStore
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class CacheAttribute : InterceptAttribute, ICallingInterceptor, ICalledInterceptor

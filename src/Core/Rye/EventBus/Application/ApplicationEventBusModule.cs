@@ -3,12 +3,12 @@ using Rye.Enums;
 using Rye.Module;
 using System;
 
-namespace Rye.EventBus.Memory
+namespace Rye.EventBus.Application
 {
     /// <summary>
     /// 内存间事件总线模块，适用于单体应用
     /// </summary>
-    public class MemoryEventBusModule : IStartupModule
+    public class ApplicationEventBusModule : IStartupModule
     {
         public ModuleLevel Level => ModuleLevel.FrameWork;
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Rye.Threading;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
@@ -7,60 +9,65 @@ namespace Rye
 {
     public static class EnumExtensions
     {
-        private static readonly Dictionary<Enum, string> enumDescriptions = new Dictionary<Enum, string>();
-        private static readonly Dictionary<Enum, string> enumLangKey = new Dictionary<Enum, string>();
-        private static readonly object _lock = new object();
+        private static readonly Dictionary<Enum, string> _descriptionsDict = new Dictionary<Enum, string>();
+        private static readonly Dictionary<Enum, string> _langKeyDict = new Dictionary<Enum, string>();
+        private static readonly LockObject _descriptionLocker = new LockObject();
+        private static readonly LockObject _langKeyLocker = new LockObject();
         public static string GetDescription(this Enum @enum)
         {
+            if (_descriptionsDict.ContainsKey(@enum))
+            {
+                return _descriptionsDict[@enum];
+            }
+            _descriptionLocker.Enter();
             try
             {
-                if (enumDescriptions.ContainsKey(@enum))
+                string name = @enum.ToString();
+                var attribute = @enum.GetType().GetField(name).GetCustomAttribute<DescriptionAttribute>();
+                if (attribute != null)
                 {
-                    return enumDescriptions[@enum];
+                    name = attribute.Description;
                 }
-                lock (_lock)
-                {
-                    string name = @enum.ToString();
-                    var attribute = @enum.GetType().GetField(name).GetCustomAttribute<DescriptionAttribute>();
-                    if (attribute != null)
-                    {
-                        name = attribute.Description;
-                    }
-                    enumDescriptions[@enum] = name;
-                    return name;
-                }
+                _descriptionsDict[@enum] = name;
+                return name;
             }
             catch (Exception)
             {
                 return "枚举错误";
             }
+            finally
+            {
+                _descriptionLocker.Exit();
+            }
         }
 
         public static string GetLangKey(this Enum @enum)
         {
+
+            if (_langKeyDict.ContainsKey(@enum))
+            {
+                return _langKeyDict[@enum];
+            }
+            _langKeyLocker.Enter();
             try
             {
-                if (enumLangKey.ContainsKey(@enum))
+                string langKey = @enum.ToString();
+                var attribute = @enum.GetType().GetField(langKey).GetCustomAttribute<LangKeyAttribute>();
+                if (attribute != null)
                 {
-                    return enumLangKey[@enum];
+                    langKey = attribute.LangKey;
                 }
 
-                lock (_lock)
-                {
-                    string langKey = @enum.ToString();
-                    var attribute = @enum.GetType().GetField(langKey).GetCustomAttribute<LangKeyAttribute>();
-                    if (attribute != null)
-                    {
-                        langKey = attribute.LangKey;
-                    }
-
-                    enumLangKey[@enum] = langKey;
-                    return langKey;
-                }
+                _langKeyDict[@enum] = langKey;
+                return langKey;
             }
             catch (Exception)
             {
                 return "GetLangKey枚举错误";
+            }
+            finally
+            {
+                _langKeyLocker.Exit();
             }
         }
         public static int Value(this Enum item)

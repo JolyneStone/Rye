@@ -2,13 +2,12 @@
 
 using Rye.EventBus.Abstractions;
 
-using System;
 using System.Diagnostics;
 using System.Threading;
 
 using Xunit;
 
-namespace Rye.EventBus.Memory.Tests
+namespace Rye.EventBus.Application.Tests
 {
     public class MemoryEventBusTests
     {
@@ -20,30 +19,28 @@ namespace Rye.EventBus.Memory.Tests
             var services = serviceCollection.BuildServiceProvider();
 
             var eventBus = services.GetRequiredService<IEventBus>();
-            eventBus.AddHandlers<MemoryEventTest, MemoryEventHandlerTest>(
-                "MemoryEventTest",
+            eventBus.Subscribe<MemoryEventTest>(
                 new MemoryEventHandlerTest[] { new MemoryEventHandlerTest() { Id = 0 }, new MemoryEventHandlerTest() { Id = 1 } }
             );
 
-            eventBus.Subscribe();
             for (var i = 0; i < 10; i++)
             {
-                eventBus.Pushblish("MemoryEventTest", new MemoryEventTest { Id = i });
+                eventBus.Publish(new MemoryEventTest { Id = i });
                 Thread.Sleep(200);
             }
             eventBus.Dispose();
             Assert.True(true);
         }
 
-        public class MemoryEventTest : IEvent<MemoryEventTest>
+        public class MemoryEventTest : IEvent
         {
             public int Id { get; set; }
         }
 
-        public class MemoryEventHandlerTest : MemoryEventHandler<MemoryEventTest>
+        public class MemoryEventHandlerTest : ApplicationEventHandler<MemoryEventTest>
         {
             public int Id { get; set; }
-            public override void Handle(MemoryEventTest @event)
+            protected override void OnEvent(MemoryEventTest @event)
             {
                 Debug.WriteLine($"{Id}, event: {@event.Id}");
             }

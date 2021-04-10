@@ -67,12 +67,6 @@ namespace Rye.AspectFlare.DynamicProxy
                         context.CallerType = CallerType.Void;
                         fieldType = typeof(VoidCaller);
                     }
-                    else if (!meth.IsDefined(typeof(StateMachineAttribute)))
-                    {
-                        context.ReturnType = returnType;
-                        context.CallerType = CallerType.Return;
-                        fieldType = typeof(ReturnCaller<>).MakeGenericType(returnType);
-                    }
                     else if (returnType == typeof(Task))
                     {
                         context.ReturnType = null;
@@ -93,10 +87,22 @@ namespace Rye.AspectFlare.DynamicProxy
                             context.CallerType = CallerType.ValueTaskOfT;
                             fieldType = typeof(ValueTaskCaller<>).MakeGenericType(context.ReturnType);
                         }
+                        else if (!meth.IsDefined(typeof(StateMachineAttribute)))
+                        {
+                            context.ReturnType = returnType;
+                            context.CallerType = CallerType.Return;
+                            fieldType = typeof(ReturnCaller<>).MakeGenericType(returnType);
+                        }
                         else
                         {
                             throw new InvalidOperationException("function return value error!");
                         }
+                    }
+                    else if (!meth.IsDefined(typeof(StateMachineAttribute)))
+                    {
+                        context.ReturnType = returnType;
+                        context.CallerType = CallerType.Return;
+                        fieldType = typeof(ReturnCaller<>).MakeGenericType(returnType);
                     }
                     else
                     {

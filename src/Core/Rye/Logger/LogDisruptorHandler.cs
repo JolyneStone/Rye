@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Rye.Logger
 {
-    internal sealed class LogHandler : Disruptor.IEventHandler<LogEntry>
+    internal sealed class LogDisruptorHandler : Disruptor.IEventHandler<LogEntry>
     {
         public void OnEvent(LogEntry data, long sequence, bool endOfBatch)
         {

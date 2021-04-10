@@ -27,6 +27,10 @@ namespace Rye
         private static readonly JsonSerializerOptions _serializerOptions;
         public static string ToJsonString(this object obj, JsonSerializerOptions options = null)
         {
+            if (obj == null)
+                return null;
+            if (obj is string str)
+                return str;
             if (options == null)
             {
                 options = _serializerOptions;

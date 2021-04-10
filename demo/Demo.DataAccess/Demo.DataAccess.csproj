@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Cache\Rye.Cache.Redis\Rye.Cache.Redis.csproj" />
     <ProjectReference Include="..\..\src\Domain\Rye.Entities\Rye.Entities.csproj" />
     <ProjectReference Include="..\..\src\Domain\Rye.MySql\Rye.MySql.csproj" />
     <ProjectReference Include="..\Demo.Core\Demo.Core.csproj" />

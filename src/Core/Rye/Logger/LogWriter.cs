@@ -1,5 +1,6 @@
 ﻿using Disruptor;
 using Disruptor.Dsl;
+
 using System;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace Rye.Logger
         internal LogWriter()
         {
             _disruptor = new Disruptor<LogEntry>(() => new LogEntry(), RingBufferSize, TaskScheduler.Default);
-            _disruptor.HandleEventsWith(new LogHandler());
+            _disruptor.HandleEventsWith(new LogDisruptorHandler());
             _ringBuffer = _disruptor.Start();
         }
 
@@ -23,17 +24,10 @@ namespace Rye.Logger
             if (string.IsNullOrEmpty(fileName))
                 throw new ArgumentNullException(nameof(fileName));
             long sequence = _ringBuffer.Next();
-            try
-            {
-                var entry = _ringBuffer[sequence];
-                entry.FileName = fileName;
-                entry.Message = logMessage;
-                _ringBuffer.Publish(sequence);
-            }
-            finally
-            {
-                _ringBuffer.Publish(sequence);
-            }
+            var entry = _ringBuffer[sequence];
+            entry.FileName = fileName;
+            entry.Message = logMessage;
+            _ringBuffer.Publish(sequence);
         }
 
         public void Dispose()
