@@ -1,10 +1,11 @@
-﻿using Rye.EventBus.Abstractions;
+﻿using Rye.EventBus;
+using Rye.EventBus.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Rye.EventBus
+namespace Rye
 {
     public static class EventBusExtensions
     {

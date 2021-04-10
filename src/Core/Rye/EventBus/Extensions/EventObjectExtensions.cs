@@ -9,7 +9,9 @@ namespace Rye.EventBus
     public static class EventObjectExtensions
     {
         private static readonly Dictionary<Type, string> _eventRouteDict = new Dictionary<Type, string>();
-        private static readonly LockObject _locker = new LockObject();
+        private static readonly Dictionary<Type, Type> _eventTypeDict = new Dictionary<Type, Type>();
+        private static readonly LockObject _routeLocker = new LockObject();
+        private static readonly LockObject _typeLocker = new LockObject();
 
         /// <summary>
         /// 获取事件路由
@@ -33,7 +35,7 @@ namespace Rye.EventBus
             {
                 return _eventRouteDict[type];
             }
-            _locker.Enter();
+            _routeLocker.Enter();
             try
             {
                 string route;
@@ -51,13 +53,39 @@ namespace Rye.EventBus
                 _eventRouteDict[type] = route;
                 return route;
             }
-            catch (Exception)
+            finally
             {
-                return "枚举错误";
+                _routeLocker.Exit();
+            }
+        }
+
+        /// <summary>
+        /// 获取处理的事件类型
+        /// </summary>
+        /// <param name="handler"></param>
+        /// <returns></returns>
+        public static Type GetEventType(this IEventHandler handler)
+        {
+            if (handler == null)
+                return null;
+
+            var type = handler.GetType();
+            if (_eventTypeDict.ContainsKey(type))
+            {
+                return _eventTypeDict[type];
+            }
+            _typeLocker.Enter();
+            try
+            {
+                Type eventType = null;
+                var attribute = type.GetCustomAttribute<EventTypeAttribute>(true);
+                eventType = attribute?.EventType;
+                _eventTypeDict[type] = eventType;
+                return eventType;
             }
             finally
             {
-                _locker.Exit();
+                _typeLocker.Exit();
             }
         }
     }

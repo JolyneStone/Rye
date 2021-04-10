@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Rye.Cache.Store
 {
-    public interface ICacheStore
+    public interface ICacheStore: IDisposable
     {
         /// <summary>
         /// 是否只读

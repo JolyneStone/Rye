@@ -1,29 +1,34 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+
+using Rye.Cache.Redis;
 using Rye.Enums;
+using Rye.EventBus.Redis.Extensions;
+using Rye.EventBus.Redis.Options;
 using Rye.Module;
+
 using System;
 
-namespace Rye.EventBus.Application
+namespace Rye.EventBus.Redis
 {
     /// <summary>
-    /// 适用于单体应用的事件总线模块，适用于单体应用
+    /// 适用于Redis的事件总线模块
     /// </summary>
-    public class ApplicationEventBusModule : IStartupModule
+    public class RedisEventBusModule : IStartupModule
     {
         public ModuleLevel Level => ModuleLevel.FrameWork;
 
         public uint Order => 2;
 
-        private readonly int _bufferSize;
+        private readonly Action<RedisEventBusOptions> _action;
 
-        public ApplicationEventBusModule(int bufferSize)
+        public RedisEventBusModule(Action<RedisEventBusOptions> action)
         {
-            _bufferSize = bufferSize;
+            _action = action;
         }
 
         public void ConfigueServices(IServiceCollection services)
         {
-            services.AddApplicationEventBus(_bufferSize);
+            services.AddRedisEventBus(_action);
         }
 
         public void Configure(IServiceProvider serviceProvider)

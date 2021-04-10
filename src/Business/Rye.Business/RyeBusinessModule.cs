@@ -22,7 +22,7 @@ namespace Rye.Business
 
         public override void ConfigueServices(IServiceCollection services)
         {
-            services.AddRyeBusiness(_action);
+            services.AddBusiness(_action);
         }
     }
 }

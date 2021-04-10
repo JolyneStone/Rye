@@ -33,11 +33,11 @@ namespace Rye.Jwt
         {
             if (_action != null)
             {
-                services.AddRyeJwt(_action);
+                services.AddJwt(_action);
             }
             else
             {
-                services.AddRyeJwt();
+                services.AddJwt();
             }
         }
 

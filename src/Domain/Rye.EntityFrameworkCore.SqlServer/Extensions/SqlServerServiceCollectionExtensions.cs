@@ -10,11 +10,11 @@ namespace Rye
     public static class SqlServerServiceCollectionExtensions
     {
         /// <summary>
-        /// 添加Rye框架对Sql Server数据库的支持
+        /// 添加EF Core框架对Sql Server数据库的支持
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddRyeSqlServer(this IServiceCollection services)
+        public static IServiceCollection AddSqlServerEFCore(this IServiceCollection services)
         {
             services.AddEFCoreDatabase();
             services.RemoveAll<IDbContextOptionsBuilderUser>();
@@ -23,11 +23,11 @@ namespace Rye
         }
 
         /// <summary>
-        /// 添加Rye框架对Sql Server数据库的支持
+        /// 添加EF Core框架对Sql Server数据库的支持
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSqlServerEFCodeModule(this IServiceCollection services, Action<RyeDbContextOptionsBuilder> action)
+        public static IServiceCollection AddSqlServerEFCoreModule(this IServiceCollection services, Action<RyeDbContextOptionsBuilder> action)
         {
             var module = new SqlServerEFCoreModule(action);
             return services.AddModule<SqlServerEFCoreModule>(module);

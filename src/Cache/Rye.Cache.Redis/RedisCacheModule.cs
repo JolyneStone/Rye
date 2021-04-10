@@ -16,14 +16,14 @@ namespace Rye.Cache.Redis
     /// </summary>
     /// <returns></returns>
     [DependsOnModules(typeof(CacheModule))]
-    public class CacheRedisModule : StartupModule
+    public class RedisCacheModule : StartupModule
     {
         public override ModuleLevel Level => ModuleLevel.FrameWork;
         public override uint Order => 1;
 
         private readonly Action<RedisOptions> _action;
 
-        public CacheRedisModule(Action<RedisOptions> action)
+        public RedisCacheModule(Action<RedisOptions> action)
         {
             _action = action;
         }
@@ -31,7 +31,7 @@ namespace Rye.Cache.Redis
         public override void ConfigueServices(IServiceCollection services)
         {
             services.RemoveAll<IDistributedCache>();
-            services.AddRyeCacheRedis(_action);
+            services.AddRedisCache(_action);
         }
     }
 }

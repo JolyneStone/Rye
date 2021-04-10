@@ -26,7 +26,7 @@ namespace Rye.EntityFrameworkCore.SqlServer
         public override void ConfigueServices(IServiceCollection services)
         {
             base.ConfigueServices(services);
-            services.AddRyeSqlServer();
+            services.AddSqlServerEFCore();
         }
 
         public override void Configure(IServiceProvider serviceProvider)

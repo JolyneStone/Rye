@@ -1,14 +1,10 @@
 ﻿using Rye.Cache.Redis.Options;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Rye.Cache.Redis.Internal
+namespace Rye.Cache.Redis.Builder
 {
-    internal class RedisConnectionBuilder
+    public class RedisConnectionBuilder
     {
         public string BuildConnectionString(RedisOptions options)
         {

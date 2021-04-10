@@ -45,11 +45,11 @@ namespace Rye
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static IServiceCollection AddRyeJwt(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddJwt(this IServiceCollection serviceCollection)
         {
             //serviceCollection.TryAddSingleton<IConfigureOptions<JwtOptions>, JwtOptionsSetup>();
             serviceCollection.Configure<JwtOptions>(ConfigurationManager.Appsettings.GetSection("Framework:Jwt"));
-            return AddRyeJwtCore(serviceCollection);
+            return AddJwtCore(serviceCollection);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Rye
         /// <param name="serviceCollection"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static IServiceCollection AddRyeJwt(this IServiceCollection serviceCollection, Action<JwtOptions> action)
+        public static IServiceCollection AddJwt(this IServiceCollection serviceCollection, Action<JwtOptions> action)
         {
             if (action != null)
             {
@@ -68,10 +68,10 @@ namespace Rye
             {
                 serviceCollection.Configure<JwtOptions>(ConfigurationManager.Appsettings.GetSection("Framework:Jwt"));
             }
-            return AddRyeJwtCore(serviceCollection);
+            return AddJwtCore(serviceCollection);
         }
 
-        private static IServiceCollection AddRyeJwtCore(IServiceCollection serviceCollection)
+        private static IServiceCollection AddJwtCore(IServiceCollection serviceCollection)
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // 移除微软传统的声明映射方式，使用JWT映射方式
             using (var serviceProvider = serviceCollection.BuildServiceProvider())

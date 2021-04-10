@@ -43,6 +43,7 @@
     <ProjectReference Include="..\..\src\Domain\Rye.EntityFrameworkCore\Rye.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Domain\Rye.MySql\Rye.MySql.csproj" />
     <ProjectReference Include="..\..\src\Domain\Rye.SqlServer\Rye.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\EventBus\Rye.EventBus.Redis\Rye.EventBus.Redis.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,17 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+using Rye.Cache.Redis;
 using Rye.Configuration;
-using Rye.DependencyInjection;
-using Rye.Logger;
+
 using System;
 using System.IO;
-using Rye;
-using Xunit;
-using Microsoft.Extensions.DependencyInjection;
-using Rye.AspectFlare.DynamicProxy;
-using Rye.EntityFrameworkCore.Options;
 using System.Linq;
-using Rye.Cache.Redis;
 
 namespace Rye.Test
 {
@@ -21,7 +17,7 @@ namespace Rye.Test
         public static void ConfigService()
         {
             var devSetting = ConfigurationManager.Appsettings.GetSection("ASPNETCORE_ENVIRONMENT").Value == "Development" ? ".Development" : "";
-            Host.CreateDefaultBuilder()
+            var host = Host.CreateDefaultBuilder()
                 .ConfigureHostConfiguration(configure =>
                 {
                     configure.SetBasePath(Directory.GetCurrentDirectory())
@@ -38,6 +34,8 @@ namespace Rye.Test
                             ConfigurationManager.Appsettings.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(options))
                         .ConfigureModule();
                 }).Build();
+
+            ServiceProvider = host.Services;
         }
     }
 }

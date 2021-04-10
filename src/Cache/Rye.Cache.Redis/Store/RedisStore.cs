@@ -1,5 +1,6 @@
 ﻿using CSRedis;
 
+using Rye.Cache.Redis.Builder;
 using Rye.Cache.Redis.Internal;
 using Rye.Cache.Redis.Options;
 using Rye.Cache.Store;
@@ -7,6 +8,8 @@ using Rye.Cache.Store;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
+using static CSRedis.CSRedisClient;
 
 namespace Rye.Cache.Redis.Store
 {
@@ -16,9 +19,10 @@ namespace Rye.Cache.Redis.Store
         private readonly IMemoryStore _memoryStore;
         private readonly bool _readOnly;
         private readonly bool _multiCacheEnabled;
-        private readonly string CLIENT_ID = Guid.NewGuid().ToString("N");
+        //private readonly string CLIENT_ID = Guid.NewGuid().ToString("N");
         private static readonly string SERVICE_ID = Guid.NewGuid().ToString("N");
         private static readonly string TOPIC_NAME = "Rye_Cache_Sub";
+        private readonly SubscribeObject _subscribeObject;
         public RedisStore(RedisOptions options)
         {
             _redisClient = new CSRedisClient(new RedisConnectionBuilder().BuildConnectionString(options), options.Sentinels, options.ReadOnly);
@@ -40,21 +44,22 @@ namespace Rye.Cache.Redis.Store
             _multiCacheEnabled = options.MultiCacheEnabled;
             if (_memoryStore != null)
             {
-                _redisClient.SubscribeListBroadcast(TOPIC_NAME, CLIENT_ID, (msg) =>
-                {
-                    if (string.IsNullOrEmpty(msg))
-                    {
-                        return;
-                    }
+                _subscribeObject = _redisClient.Subscribe((TOPIC_NAME, (msg) =>
+                 {
+                     if (msg == null || string.IsNullOrEmpty(msg.Body))
+                     {
+                         return;
+                     }
 
-                    var message = msg.ToObject<CacheMessage>();
-                    if (message == null)
-                    {
-                        return;
-                    }
+                     var message = msg.Body.ToObject<CacheMessage>();
+                     if (message == null)
+                     {
+                         return;
+                     }
 
-                    OnMessage(message);
-                });
+                     OnMessage(message);
+                 }
+                ));
             }
         }
 
@@ -90,11 +95,11 @@ namespace Rye.Cache.Redis.Store
             if (_memoryStore == null && keys == null)
                 return;
 
-            _redisClient.LPush(TOPIC_NAME, new CacheMessage
+            _redisClient.Publish(TOPIC_NAME, new CacheMessage
             {
                 ServiceId = SERVICE_ID,
                 Keys = keys
-            });
+            }.ToJsonString());
         }
 
         /// <summary>
@@ -107,11 +112,11 @@ namespace Rye.Cache.Redis.Store
             if (_memoryStore == null && keys == null)
                 return;
 
-            await _redisClient.LPushAsync(TOPIC_NAME, new CacheMessage
+            await _redisClient.PublishAsync(TOPIC_NAME, new CacheMessage
             {
                 ServiceId = SERVICE_ID,
                 Keys = keys
-            });
+            }.ToJsonString());
         }
 
         /// <summary>
@@ -127,11 +132,11 @@ namespace Rye.Cache.Redis.Store
                 return;
 
             _memoryStore.Set(key, data, cacheSeconds);
-            _redisClient.LPush(TOPIC_NAME, new CacheMessage
+            _redisClient.Publish(TOPIC_NAME, new CacheMessage
             {
                 ServiceId = SERVICE_ID,
                 Keys = new string[] { key }
-            });
+            }.ToJsonString());
         }
 
         /// <summary>
@@ -146,11 +151,11 @@ namespace Rye.Cache.Redis.Store
                 return;
 
             _memoryStore.Set(entry, data);
-            _redisClient.LPush(TOPIC_NAME, new CacheMessage
+            _redisClient.Publish(TOPIC_NAME, new CacheMessage
             {
                 ServiceId = SERVICE_ID,
                 Keys = new string[] { entry.Key }
-            });
+            }.ToJsonString());
         }
 
         /// <summary>
@@ -167,11 +172,11 @@ namespace Rye.Cache.Redis.Store
                 return;
 
             _memoryStore.Set(key, data, cacheSeconds);
-            await _redisClient.LPushAsync(TOPIC_NAME, new CacheMessage
+            await _redisClient.PublishAsync(TOPIC_NAME, new CacheMessage
             {
                 ServiceId = SERVICE_ID,
                 Keys = new string[] { key }
-            });
+            }.ToJsonString());
         }
 
         /// <summary>
@@ -187,11 +192,11 @@ namespace Rye.Cache.Redis.Store
                 return;
 
             _memoryStore.Set(entry, data);
-            await _redisClient.LPushAsync(TOPIC_NAME, new CacheMessage
+            await _redisClient.PublishAsync(TOPIC_NAME, new CacheMessage
             {
                 ServiceId = SERVICE_ID,
                 Keys = new string[] { entry.Key }
-            });
+            }.ToJsonString());
         }
 
         /// <summary>
@@ -204,11 +209,11 @@ namespace Rye.Cache.Redis.Store
                 return;
 
             _memoryStore.Remove(key);
-            _redisClient.LPush(TOPIC_NAME, new CacheMessage
+            _redisClient.Publish(TOPIC_NAME, new CacheMessage
             {
                 ServiceId = SERVICE_ID,
                 Keys = new string[] { key }
-            });
+            }.ToJsonString());
         }
 
         /// <summary>
@@ -221,11 +226,11 @@ namespace Rye.Cache.Redis.Store
                 return;
 
             _memoryStore.Remove(entry);
-            _redisClient.LPush(TOPIC_NAME, new CacheMessage
+            _redisClient.Publish(TOPIC_NAME, new CacheMessage
             {
                 ServiceId = SERVICE_ID,
                 Keys = new string[] { entry.Key }
-            });
+            }.ToJsonString());
         }
 
         /// <summary>
@@ -239,11 +244,11 @@ namespace Rye.Cache.Redis.Store
                 return;
 
             _memoryStore.Remove(key);
-            await _redisClient.LPushAsync(TOPIC_NAME, new CacheMessage
+            await _redisClient.PublishAsync(TOPIC_NAME, new CacheMessage
             {
                 ServiceId = SERVICE_ID,
                 Keys = new string[] { key }
-            });
+            }.ToJsonString());
         }
 
         /// <summary>
@@ -257,11 +262,11 @@ namespace Rye.Cache.Redis.Store
                 return;
 
             _memoryStore.Remove(entry);
-            await _redisClient.LPushAsync(TOPIC_NAME, new CacheMessage
+            await _redisClient.PublishAsync(TOPIC_NAME, new CacheMessage
             {
                 ServiceId = SERVICE_ID,
                 Keys = new string[] { entry.Key }
-            });
+            }.ToJsonString());
         }
 
         #endregion
@@ -344,7 +349,7 @@ namespace Rye.Cache.Redis.Store
             data = _redisClient.Get<T>(key);
             if (!Equals(data, default))
             {
-                UpdateAndPublish(key, data,cacheSeconds);
+                UpdateAndPublish(key, data, cacheSeconds);
                 return data;
             }
 
@@ -624,6 +629,27 @@ namespace Rye.Cache.Redis.Store
             Check.NotNullOrEmpty(entry.Key, nameof(entry.Key));
             await _redisClient.SetAsync(entry.Key, data, entry.ConvertToTimeSpanRelativeToNow());
             await UpdateAndPublishAsync(entry, data);
+        }
+
+        private bool disposedValue;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _subscribeObject?.Dispose();
+                    _redisClient?.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            System.GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿using Rye.EntityFrameworkCore.MySql;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
 using Rye.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+using Rye.EntityFrameworkCore.MySql;
+
 using System;
 
 namespace Rye
@@ -10,11 +11,11 @@ namespace Rye
     public static class MySqlServiceCollectionExtensions
     {
         /// <summary>
-        /// 添加Rye框架对MySql数据库的支持
+        /// 添加EF Core框架对MySql数据库的支持
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddRyeMySql(this IServiceCollection services)
+        public static IServiceCollection AddMySqlEFCore(this IServiceCollection services)
         {
             services.AddEFCoreDatabase();
             services.RemoveAll<IDbContextOptionsBuilderUser>();
@@ -23,11 +24,11 @@ namespace Rye
         }
 
         /// <summary>
-        /// 添加Rye框架对MySql数据库的支持
+        /// 添加EF Core框架对MySql数据库的支持
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddMySqlEFCodeModule(this IServiceCollection services, Action<RyeDbContextOptionsBuilder> action)
+        public static IServiceCollection AddMySqlEFCoreModule(this IServiceCollection services, Action<RyeDbContextOptionsBuilder> action)
         {
             var module = new MySqlEFCoreModule(action);
             return services.AddModule<MySqlEFCoreModule>(module);

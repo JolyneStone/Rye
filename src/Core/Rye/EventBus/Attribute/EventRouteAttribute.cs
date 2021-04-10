@@ -3,7 +3,7 @@
 namespace Rye.EventBus
 {
     /// <summary>
-    /// 事件路由特性
+    /// 定义事件路由的特性
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true, Inherited = true)]
     public class EventRouteAttribute: Attribute

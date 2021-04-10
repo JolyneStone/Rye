@@ -13,7 +13,7 @@ namespace Rye
 {
     public static class BusinessServiceCollectionExtensions
     {
-        public static IServiceCollection AddRyeBusiness(this IServiceCollection serviceCollection, Action<BusinessOptions> action = null)
+        public static IServiceCollection AddBusiness(this IServiceCollection serviceCollection, Action<BusinessOptions> action = null)
         {
             if (action == null)
             {
@@ -36,9 +36,9 @@ namespace Rye
         /// <param name="serviceCollection"></param>
         /// <param name="configurationSection">配置Redis</param>
         /// <returns></returns>
-        public static IServiceCollection AddRyeBusiness(this IServiceCollection serviceCollection, IConfigurationSection configurationSection)
+        public static IServiceCollection AddBusiness(this IServiceCollection serviceCollection, IConfigurationSection configurationSection)
         {
-            return AddRyeBusiness(serviceCollection, options => configurationSection.Bind(options));
+            return AddBusiness(serviceCollection, options => configurationSection.Bind(options));
         }
 
         /// <summary>

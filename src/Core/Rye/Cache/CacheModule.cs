@@ -16,7 +16,7 @@ namespace Rye.Cache
 
         public override void ConfigueServices(IServiceCollection services)
         {
-            services.AddRyeCacheMemory();
+            services.AddCacheMemory();
         }
     }
 }

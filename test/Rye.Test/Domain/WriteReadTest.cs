@@ -26,7 +26,7 @@ namespace Rye.Test.Domain
                 .AddSingleton<IConfiguration>(config)
                 .AddRye()
                 .AddDbConnections()
-                .AddRyeSqlServer()
+                .AddSqlServerEFCore()
                 .AddSingleton<DbContextOptionsBuilderOptions<TestDbContext>>(new DbContextOptionsBuilderOptions<TestDbContext>(new DbContextOptionsBuilder<TestDbContext>(), null));
 
             _serviceProvider = services.BuildServiceProvider();

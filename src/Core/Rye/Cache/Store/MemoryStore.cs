@@ -180,5 +180,10 @@ namespace Rye.Cache.Store
             _cache.Remove(entry.Key);
             return Task.CompletedTask;
         }
+
+        public void Dispose()
+        {
+            _cache?.Dispose();
+        }
     }
 }

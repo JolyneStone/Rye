@@ -98,7 +98,7 @@ namespace Demo.WebApi
                 .AddRedisCacheModule(options =>
                     Configuration.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(options))
                 .AddMySqlModule<MyDbConnectionProvider>()
-                .AddMySqlEFCodeModule(builder =>
+                .AddMySqlEFCoreModule(builder =>
                 {
                     builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye.GetDescription());
                     builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye_Read.GetDescription());

@@ -14,7 +14,7 @@ namespace Rye
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddRyeCacheMemory(this IServiceCollection services)
+        public static IServiceCollection AddCacheMemory(this IServiceCollection services)
         {
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();

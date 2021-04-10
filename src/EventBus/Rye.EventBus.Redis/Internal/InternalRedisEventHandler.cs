@@ -5,12 +5,13 @@ using Rye.Threading;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Rye.EventBus.Application.Internal
+namespace Rye.EventBus.Redis.Internal
 {
-    internal class InternalDisruptorHandler : Disruptor.IEventHandler<EventWrapper>
+    internal class InternalRedisEventHandler
     {
         private readonly Dictionary<string, List<IEventHandler>> _handler = new Dictionary<string, List<IEventHandler>>();
         private readonly LockObject _locker = new LockObject();
@@ -41,9 +42,9 @@ namespace Rye.EventBus.Application.Internal
             }
         }
 
-        public async void OnEvent(EventWrapper data, long sequence, bool endOfBatch)
+        internal async Task OnEvent(EventWrapper data)
         {
-            if (data == null && data.EventRoute == null && data.Event == null)
+            if (data == null || data.Route == null || data.Event == null)
                 return;
 
             if (!_canRead)
@@ -66,17 +67,32 @@ namespace Rye.EventBus.Application.Internal
 
         private async Task OnEventCoreAsync(EventWrapper data)
         {
-            if (_handler.TryGetValue(data.EventRoute, out var list))
+            var eventRoute = data.Route;
+            var eventTypeDict = new Dictionary<Type, IEvent>();
+
+            IEvent @event;
+            Type eventType;
+            if (_handler.TryGetValue(eventRoute, out var list))
             {
                 foreach (var handle in list)
                 {
                     try
                     {
-                        await handle.OnEvent(data.Event);
+                        eventType = handle.GetEventType();
+                        if (!eventTypeDict.ContainsKey(eventType))
+                        {
+                            @event = data.Event.ToObject(eventType) as IEvent;
+                            eventTypeDict.Add(eventType, @event);
+                        }
+                        else
+                        {
+                            @event = eventTypeDict[eventType];
+                        }
+                        await handle.OnEvent(@event);
                     }
                     catch (Exception ex)
                     {
-                        LogRecord.Error(nameof(InternalDisruptorHandler), $"eventRoute: {data.EventRoute}, event: {data.Event.ToJsonString()} exception: {ex.ToString()}");
+                        LogRecord.Error(nameof(InternalRedisEventHandler), $"eventRoute: {eventRoute}, exception: {ex.ToString()}");
                     }
                 }
             }

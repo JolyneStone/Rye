@@ -1,7 +1,9 @@
-﻿namespace Rye.EventBus.Abstractions
+﻿using System.Threading.Tasks;
+
+namespace Rye.EventBus.Abstractions
 {
     public interface IEventHandler
     {
-        void OnEvent(IEvent @event);
+        Task OnEvent(IEvent @event);
     }
 }

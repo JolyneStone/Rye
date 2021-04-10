@@ -46,7 +46,7 @@ namespace Rye
         /// <returns></returns>
         public static object ToObject(this string value, JsonSerializerOptions options = null)
         {
-            if (options != null)
+            if (options == null)
             {
                 options = _serializerOptions;
             }
@@ -63,7 +63,7 @@ namespace Rye
         /// <returns></returns>
         public static T ToObject<T>(this string value, JsonSerializerOptions options = null)
         {
-            if (options != null)
+            if (options == null)
             {
                 options = _serializerOptions;
             }
@@ -80,16 +80,17 @@ namespace Rye
         /// <returns></returns>
         public static object ToObject(this string value, Type type, JsonSerializerOptions options = null)
         {
-            if (options != null)
+            if (options == null)
             {
                 options = _serializerOptions;
             }
 
-            return typeof(JsonSerializer).GetMethod("Deserialize",
-                1, 
-                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static, null,
-                new Type[] { typeof(string), typeof(JsonSerializerOptions) },
-                null).Invoke(null, new object[] { value, options });
+            return JsonSerializer.Deserialize(value, type, options);
+            //return typeof(JsonSerializer).GetMethod("Deserialize",
+            //    1, 
+            //    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static, null,
+            //    new Type[] { typeof(string), typeof(JsonSerializerOptions) },
+            //    null).Invoke(null, new object[] { value, options });
         }
     }
 }

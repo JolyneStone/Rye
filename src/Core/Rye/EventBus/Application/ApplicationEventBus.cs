@@ -2,29 +2,28 @@
 using Rye.EventBus.Application.Internal;
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Rye.EventBus.Application
 {
-    public class ApplicationEventBus : IEventBus
+    public class ApplicationEventBus : IApplicationEventBus
     {
         private readonly int _ringBufferSize;
-        private Disruptor.Dsl.Disruptor<EventWarpper> _disruptor;
-        private Disruptor.RingBuffer<EventWarpper> _ringBuffer;
+        private Disruptor.Dsl.Disruptor<EventWrapper> _disruptor;
+        private Disruptor.RingBuffer<EventWrapper> _ringBuffer;
         private InternalDisruptorHandler _handler;
-        public ApplicationEventBus() : this(1024)
-        {
-        }
 
         public ApplicationEventBus(int bufferSize)
         {
             _ringBufferSize = bufferSize;
             _handler = new InternalDisruptorHandler();
-            _disruptor = new Disruptor.Dsl.Disruptor<EventWarpper>(() => new EventWarpper(), _ringBufferSize, TaskScheduler.Default);
+            _disruptor = new Disruptor.Dsl.Disruptor<EventWrapper>(
+                eventFactory: () => new EventWrapper(), 
+                ringBufferSize: _ringBufferSize, 
+                taskScheduler: TaskScheduler.Default, 
+                producerType: Disruptor.Dsl.ProducerType.Single,
+                waitStrategy: new Disruptor.YieldingWaitStrategy());
             _disruptor.HandleEventsWith(_handler);
             _ringBuffer = _disruptor.Start();
         }

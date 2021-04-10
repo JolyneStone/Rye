@@ -26,7 +26,7 @@ namespace Rye.EntityFrameworkCore.MySql
         public override void ConfigueServices(IServiceCollection services)
         {
             base.ConfigueServices(services);
-            services.AddRyeMySql();
+            services.AddMySqlEFCore();
         }
 
         public override void Configure(IServiceProvider serviceProvider)

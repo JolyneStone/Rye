@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +22,21 @@ namespace Rye.Configuration
                 .Build();
         }
 
+        public static bool TyeGetConfiguration(string jsonFile, out IConfiguration configuration, bool optional = true, bool reloadOnChange = true)
+        {
+            string currentDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            if (!File.Exists(Path.Combine(currentDirectory, jsonFile)))
+            {
+                configuration = null;
+                return false;
+            }
+            configuration = new ConfigurationBuilder()
+                .SetBasePath(currentDirectory)
+                .AddJsonFile(jsonFile, optional: optional, reloadOnChange: reloadOnChange)
+                .Build();
+            return true;
+        }
+
         private static IConfiguration appsettings;
         public static IConfiguration Appsettings
         {
@@ -33,11 +49,10 @@ namespace Rye.Configuration
                     string env = appsettings.GetSection("ASPNETCORE_ENVIRONMENT").Value;
                     if (!string.IsNullOrEmpty(env))
                     {
-                        appsettings = GetConfiguration($"appsettings.{env}.json");
-                    }
-                    else
-                    {
-                        appsettings = GetConfiguration("appsettings.json");
+                        if (TyeGetConfiguration($"appsettings.{env}.json", out var newConfig))
+                        {
+                            appsettings = newConfig;
+                        }
                     }
                 }
                 return appsettings;
