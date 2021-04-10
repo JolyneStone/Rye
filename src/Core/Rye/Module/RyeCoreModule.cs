@@ -31,7 +31,7 @@ namespace Rye.Module
 
         public override void Configure(IServiceProvider serviceProvider)
         {
-            SingleServiceLocator.SetServiceCollection(Services);
+            SingleServiceLocator.ConfigService(serviceProvider);
         }
     }
 }

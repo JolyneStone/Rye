@@ -1,14 +1,16 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
+using Rye.AspectFlare.DynamicProxy;
 using Rye.EventBus.Abstractions;
+using Rye.EventBus.Redis;
 using Rye.EventBus.Redis.Options;
 
 using System;
 
-namespace Rye.EventBus.Redis.Extensions
+namespace Rye.EventBus
 {
-    public static class RedisEventBusExtensions
+    public static class RedisEventBusServiceCollectionExtensions
     {
         /// <summary>
         /// 添加适用于Redis的事件总线
@@ -21,11 +23,12 @@ namespace Rye.EventBus.Redis.Extensions
             var options = new RedisEventBusOptions();
             action(options);
 
-            serviceCollection.TryAddSingleton<IRedisEventBus>(_ => new RedisEventBus(options));
-            serviceCollection.TryAddSingleton<IRedisEventPublisher>(service => service.GetService<IRedisEventBus>());
-            serviceCollection.TryAddSingleton<IRedisEventSubscriber>(service => service.GetService<IRedisEventBus>());
-            serviceCollection.RemoveAll<IEventBus>();
-            serviceCollection.TryAddSingleton<IEventBus>(sevice => sevice.GetService<IRedisEventBus>());
+            serviceCollection.AddEventBus<IRedisEventBus>(service => new RedisEventBus(options, service));
+            serviceCollection.AddEventPublisher<IRedisEventPublisher>(service => service.GetService<IRedisEventBus>());
+            serviceCollection.AddEventSubscriber<IRedisEventSubscriber>(service => service.GetService<IRedisEventBus>());
+            serviceCollection.AddEventBus<IEventBus>(sevice => sevice.GetService<IRedisEventBus>());
+            serviceCollection.AddEventPublisher<IEventPublisher>(sevice => sevice.GetService<IRedisEventBus>());
+            serviceCollection.AddEventSubscriber<IEventSubscriber>(sevice => sevice.GetService<IRedisEventBus>());
 
             return serviceCollection;
         }

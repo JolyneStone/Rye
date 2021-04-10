@@ -22,8 +22,8 @@ namespace Rye.Test.AOP
               .AddScoped<ITest, TestClass>()
               .AddDistributedMemoryCache();
 
-            SingleServiceLocator.SetServiceCollection(serviceCollection);
              var services = serviceCollection.BuildServiceProvider();
+            SingleServiceLocator.ConfigService(services);
 
             var test1 = services.GetRequiredService<ITest>();
             var str = await test1.Output(1);

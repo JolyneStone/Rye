@@ -114,17 +114,6 @@ namespace Rye
         }
 
         /// <summary>
-        /// 添加SingleServiceLocator支持，建议将此方法放在最后调用
-        /// </summary>
-        /// <param name="serviceCollection"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddSignleServiceLocator(this IServiceCollection serviceCollection)
-        {
-            SingleServiceLocator.SetServiceCollection(serviceCollection);
-            return serviceCollection;
-        }
-
-        /// <summary>
         /// 获取配置信息
         /// </summary>
         public static IConfiguration GetConfiguration(this IServiceCollection serviceCollection)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
 using Rye.EventBus.Abstractions;
+using Rye.Test;
 using Rye.Test.EventBus;
 
 using System.Threading.Tasks;
@@ -14,14 +15,16 @@ namespace Rye.EventBus.Application.Tests
         [Fact()]
         public async Task PushblishTest()
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddApplicationEventBusModule()
-                .ConfigureModule();
-            var services = serviceCollection.BuildServiceProvider();
+            var services = TestSetup.ConfigService(serviceCollection =>
+            {
+                serviceCollection
+                    .AddApplicationEventBusModule()
+                    .ConfigureModule();
+            });
 
             var eventBus = services.GetRequiredService<IEventBus>();
             eventBus.Subscribe<TestEvent>(
-                new TestEventHandler[] { new TestEventHandler() { Id = 0 }, new TestEventHandler() { Id = 1 } }
+                new TestApplicationEventHandler[] { new TestApplicationEventHandler() { Id = 0 }, new TestApplicationEventHandler() { Id = 1 } }
             );
 
             for (var i = 0; i < 10; i++)

@@ -142,7 +142,6 @@ namespace Rye
             AddCoreModule(serviceCollection);
             InjectModules(serviceCollection);
 
-            SingleServiceLocator.SetServiceCollection(serviceCollection);
             return serviceCollection;
         }
 

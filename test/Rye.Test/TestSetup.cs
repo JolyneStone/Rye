@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 
 using Rye.Cache.Redis;
 using Rye.Configuration;
+using Rye.DependencyInjection;
 
 using System;
 using System.IO;
@@ -13,8 +14,7 @@ namespace Rye.Test
 {
     public class TestSetup
     {
-        public static IServiceProvider ServiceProvider { get; set; }
-        public static void ConfigService()
+        public static IServiceProvider ConfigService(Action<IServiceCollection> configAction)
         {
             var devSetting = ConfigurationManager.Appsettings.GetSection("ASPNETCORE_ENVIRONMENT").Value == "Development" ? ".Development" : "";
             var host = Host.CreateDefaultBuilder()
@@ -27,15 +27,11 @@ namespace Rye.Test
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    services = services.UseDynamicProxyService();
-                    services
-                        .AddCoreModule()
-                        .AddRedisCacheModule(options =>
-                            ConfigurationManager.Appsettings.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(options))
-                        .ConfigureModule();
+                    configAction(services);
                 }).Build();
 
-            ServiceProvider = host.Services;
+            SingleServiceLocator.ConfigService(host.Services);
+            return host.Services;
         }
     }
 }

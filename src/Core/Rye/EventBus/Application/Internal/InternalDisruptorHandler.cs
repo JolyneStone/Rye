@@ -15,6 +15,16 @@ namespace Rye.EventBus.Application.Internal
         private readonly Dictionary<string, List<IEventHandler>> _handler = new Dictionary<string, List<IEventHandler>>();
         private readonly LockObject _locker = new LockObject();
         private volatile bool _canRead = true;
+        private readonly ApplicationEventBus _applicationEventBus;
+        private readonly IServiceProvider _serviceProvider;
+
+        public InternalDisruptorHandler(
+            ApplicationEventBus applicationEventBus,
+            IServiceProvider serviceProvider)
+        {
+            _applicationEventBus = applicationEventBus;
+            _serviceProvider = serviceProvider;
+        }
 
         internal void AddHandlers(string eventRoute, IEnumerable<IEventHandler> handlers)
         {
@@ -68,11 +78,17 @@ namespace Rye.EventBus.Application.Internal
         {
             if (_handler.TryGetValue(data.EventRoute, out var list))
             {
+                var applicationEventContext = new ApplicationEventContext()
+                {
+                    EventBus = _applicationEventBus,
+                    ServiceProvider = _serviceProvider,
+                    EventRoute = data.EventRoute
+                };
                 foreach (var handle in list)
                 {
                     try
                     {
-                        await handle.OnEvent(data.Event);
+                        await handle.OnEvent(data.Event, applicationEventContext);
                     }
                     catch (Exception ex)
                     {

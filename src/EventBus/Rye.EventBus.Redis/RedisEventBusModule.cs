@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-using Rye.Cache.Redis;
 using Rye.Enums;
-using Rye.EventBus.Redis.Extensions;
 using Rye.EventBus.Redis.Options;
 using Rye.Module;
 

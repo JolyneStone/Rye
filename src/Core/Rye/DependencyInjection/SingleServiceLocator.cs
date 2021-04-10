@@ -10,7 +10,7 @@ namespace Rye.DependencyInjection
     /// </summary>
     public class SingleServiceLocator
     {
-        private static readonly object ObjLock = new object();
+        private static readonly object _lock = new object();
 
         private static IServiceProvider _serviceProvider;
         /// <summary>
@@ -22,7 +22,7 @@ namespace Rye.DependencyInjection
             {
                 if (_serviceProvider == null)
                 {
-                    lock (ObjLock)
+                    lock (_lock)
                     {
                         if (_serviceProvider == null)
                         {
@@ -44,7 +44,7 @@ namespace Rye.DependencyInjection
             {
                 if (Instance.Services == null)
                 {
-                    lock (ObjLock)
+                    lock (_lock)
                     {
                         if (Instance.Services == null)
                         {
@@ -62,17 +62,35 @@ namespace Rye.DependencyInjection
         /// 注：会覆盖掉原来注入的对象，建议项目只调用一次，之后需要动态注入可使用 ConfigService 方法
         /// </summary>
         /// <param name="services"></param>
-        public static void SetServiceCollection(IServiceCollection services)
+        public static void ConfigService(IServiceCollection services)
         {
             if (services == null)
             {
                 return;
             }
 
-            lock (ObjLock)
+            lock (_lock)
             {
                 Instance.SetServiceCollection(services);
                 ServiceProvider = Instance.Build();
+            }
+        }
+
+        /// <summary>
+        /// 设置 ServiceProvider 对象，
+        /// 注：会覆盖掉原来注入的对象，建议项目只调用一次，之后需要动态注入可使用 ConfigService 方法
+        /// </summary>
+        /// <param name="services"></param>
+        public static void ConfigService(IServiceProvider serviceProvider)
+        {
+            if (serviceProvider == null)
+            {
+                return;
+            }
+
+            lock (_lock)
+            {
+                ServiceProvider = serviceProvider;
             }
         }
 

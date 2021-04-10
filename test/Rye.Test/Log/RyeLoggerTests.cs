@@ -16,7 +16,7 @@ namespace Rye.Logger.Tests
     {
         public RyeLoggerTests()
         {
-            TestSetup.ConfigService();
+            TestSetup.ConfigService(serviceCollection=>serviceCollection.AddRye().ConfigureModule());
         }
 
         [Fact()]

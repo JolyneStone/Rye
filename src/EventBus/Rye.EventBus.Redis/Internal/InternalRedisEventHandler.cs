@@ -16,6 +16,16 @@ namespace Rye.EventBus.Redis.Internal
         private readonly Dictionary<string, List<IEventHandler>> _handler = new Dictionary<string, List<IEventHandler>>();
         private readonly LockObject _locker = new LockObject();
         private volatile bool _canRead = true;
+        private readonly RedisEventBus _redisEventBus;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly string _key;
+
+        public InternalRedisEventHandler(string key, RedisEventBus redisEventBus, IServiceProvider serviceProvider)
+        {
+            _key = key;
+            _redisEventBus = redisEventBus;
+            _serviceProvider = serviceProvider;
+        }
 
         internal void AddHandlers(string eventRoute, IEnumerable<IEventHandler> handlers)
         {
@@ -74,6 +84,13 @@ namespace Rye.EventBus.Redis.Internal
             Type eventType;
             if (_handler.TryGetValue(eventRoute, out var list))
             {
+                var redisEventContext = new RedisEventContext
+                {
+                    Key = _key,
+                    EventBus = _redisEventBus,
+                    ServiceProvider = _serviceProvider,
+                    EventRoute = eventRoute,
+                };
                 foreach (var handle in list)
                 {
                     try
@@ -88,7 +105,7 @@ namespace Rye.EventBus.Redis.Internal
                         {
                             @event = eventTypeDict[eventType];
                         }
-                        await handle.OnEvent(@event);
+                        await handle.OnEvent(@event, redisEventContext);
                     }
                     catch (Exception ex)
                     {

@@ -6,18 +6,19 @@ namespace Rye.EventBus
 {
     public abstract class EventHandler : IEventHandler
     {
-        public abstract Task OnEvent(IEvent @event);
+        public abstract Task OnEvent(IEvent @event, EventContext eventContext);
     }
 
-    public abstract class EventHandler<TEvent> : IEventHandler
+    public abstract class EventHandler<TEvent, TContext> : IEventHandler
         where TEvent: IEvent
+        where TContext: EventContext
     {
-        public async Task OnEvent(IEvent @event)
+        public async Task OnEvent(IEvent @event, EventContext eventContext)
         {
             if (@event != null && @event is TEvent e)
-                await OnEvent(e);
+                await OnEvent(e, eventContext as TContext);
         }
 
-        protected abstract Task OnEvent(TEvent @event);
+        protected abstract Task OnEvent(TEvent @event, TContext eventContext);
     }
 }

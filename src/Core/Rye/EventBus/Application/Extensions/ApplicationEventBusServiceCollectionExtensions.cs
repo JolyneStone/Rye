@@ -6,7 +6,7 @@ using Rye.EventBus.Application;
 
 using System;
 
-namespace Rye
+namespace Rye.EventBus
 {
     public static class ApplicationEventBusServiceCollectionExtensions
     {
@@ -38,21 +38,16 @@ namespace Rye
         /// <param name="servicesCollection"></param>
         /// <param name="bufferSize">设置缓存区大小</param>
         /// <returns></returns>
-        public static IServiceCollection AddApplicationEventBus(this IServiceCollection servicesCollection, int bufferSize)
+        public static IServiceCollection AddApplicationEventBus(this IServiceCollection serviceCollection, int bufferSize)
         {
-            if (servicesCollection is null)
-            {
-                throw new ArgumentNullException(nameof(servicesCollection));
-            }
+            serviceCollection.AddEventBus<IApplicationEventBus>(service => new ApplicationEventBus(bufferSize, service));
+            serviceCollection.AddEventPublisher<IApplicationEventPublisher>(service => service.GetService<IApplicationEventBus>());
+            serviceCollection.AddEventSubscriber<IApplicationEventSubscriber>(service => service.GetService<IApplicationEventBus>());
+            serviceCollection.AddEventBus<IEventBus>(sevice => sevice.GetService<IApplicationEventBus>());
+            serviceCollection.AddEventPublisher<IEventPublisher>(sevice => sevice.GetService<IApplicationEventBus>());
+            serviceCollection.AddEventSubscriber<IEventSubscriber>(sevice => sevice.GetService<IApplicationEventBus>());
 
-            servicesCollection.TryAddSingleton<IApplicationEventBus>(_ => new ApplicationEventBus(bufferSize));
-            servicesCollection.TryAddSingleton<IApplicationEventPublisher>(service => service.GetService<IApplicationEventBus>());
-            servicesCollection.TryAddSingleton<IApplicationEventSubscriber>(service => service.GetService<IApplicationEventBus>());
-            servicesCollection.TryAddSingleton<IEventBus>(service => service.GetService<IApplicationEventBus>());
-            servicesCollection.TryAddSingleton<IEventPublisher>(service => service.GetService<IEventBus>());
-            servicesCollection.TryAddSingleton<IEventSubscriber>(service => service.GetService<IEventBus>());
-
-            return servicesCollection;
+            return serviceCollection;
         }
 
         /// <summary>

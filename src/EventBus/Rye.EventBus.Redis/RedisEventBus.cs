@@ -17,14 +17,14 @@ namespace Rye.EventBus.Redis
     public class RedisEventBus : IRedisEventBus
     {
         private readonly CSRedisClient _redisClient;
-        private readonly InternalRedisEventHandler _handler = new InternalRedisEventHandler();
+        private readonly InternalRedisEventHandler _handler;
         private readonly string _key;
         private readonly SubscribeObject _subscribeObject;
 
-        public RedisEventBus(RedisEventBusOptions options)
+        public RedisEventBus(RedisEventBusOptions options, IServiceProvider serviceProvider)
         {
             Check.NotNull(options, nameof(options));
-            Check.NotNullOrEmpty(options.ClientId, nameof(options.ClientId));
+            //Check.NotNullOrEmpty(options.ClientId, nameof(options.ClientId));
             if (options.RedisClient != null)
             {
                 _redisClient = options.RedisClient;
@@ -41,8 +41,10 @@ namespace Rye.EventBus.Redis
                 _redisClient = RedisHelper.Instance;
             }
 
-            var clientId = options.ClientId;
+
             _key = string.IsNullOrEmpty(options.Key) ? "RyeEventBus" : options.Key;
+            //var clientId = options.ClientId;
+            _handler = new InternalRedisEventHandler(_key, this, serviceProvider);
             _subscribeObject = _redisClient.Subscribe((_key, msg => RedisSubscribe(msg.Body)));
         }
 

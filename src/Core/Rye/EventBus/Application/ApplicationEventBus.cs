@@ -14,10 +14,10 @@ namespace Rye.EventBus.Application
         private Disruptor.RingBuffer<EventWrapper> _ringBuffer;
         private InternalDisruptorHandler _handler;
 
-        public ApplicationEventBus(int bufferSize)
+        public ApplicationEventBus(int bufferSize, IServiceProvider serviceProvider)
         {
             _ringBufferSize = bufferSize;
-            _handler = new InternalDisruptorHandler();
+            _handler = new InternalDisruptorHandler(this, serviceProvider);
             _disruptor = new Disruptor.Dsl.Disruptor<EventWrapper>(
                 eventFactory: () => new EventWrapper(), 
                 ringBufferSize: _ringBufferSize, 
