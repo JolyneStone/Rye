@@ -207,6 +207,7 @@ namespace Rye.EventBus.RabbitMQ
                 properties.DeliveryMode = 2; // persistent
                 properties.Headers["retry-count"] = retryCount;
 
+                channel.ConfirmSelect(); // 开启发布确认
                 try
                 {
                     var context = new RabbitMQEventPublishContext
