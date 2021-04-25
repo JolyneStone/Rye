@@ -8,7 +8,7 @@ using Microsoft.Extensions.Primitives;
 
 using Rye;
 using Rye.Entities.Abstractions;
-using Rye.Language;
+using Rye.Business.Language;
 using Rye.Security;
 using Rye.Web.Attribute;
 using Rye.Web.Options;

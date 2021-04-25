@@ -29,7 +29,7 @@ namespace Rye.EventBus.Application.Tests
 
             for (var i = 0; i < 10; i++)
             {
-                eventBus.Publish(new TestEvent { Id = i });
+                await eventBus.PublishAsync(new TestEvent { Id = i });
                 await Task.Delay(200);
             }
 

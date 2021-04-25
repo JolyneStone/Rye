@@ -1,4 +1,4 @@
-﻿using Rye.Language;
+﻿using Rye.Business.Language;
 
 using System.ComponentModel.DataAnnotations;
 

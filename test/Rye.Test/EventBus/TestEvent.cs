@@ -1,15 +1,16 @@
 ﻿using Rye.EventBus.Abstractions;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Rye.Util;
 
 namespace Rye.Test.EventBus
 {
     public class TestEvent : IEvent
     {
+        public TestEvent()
+        {
+            EventId = IdGenerator.Instance.NextId();
+        }
+
+        public long EventId { get; set; }
         public int Id { get; set; }
     }
 }

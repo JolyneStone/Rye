@@ -41,9 +41,7 @@ namespace Rye.AspectFlare.DynamicProxy
                     return (T)result.Result;
                 }
 
-#pragma warning disable CA2200 // 再次引发以保留堆栈详细信息
-                throw ex;
-#pragma warning restore CA2200 // 再次引发以保留堆栈详细信息
+                throw;
             }
         }
     }

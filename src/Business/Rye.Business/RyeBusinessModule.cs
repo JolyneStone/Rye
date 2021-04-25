@@ -10,8 +10,8 @@ namespace Rye.Business
 {
     public class RyeBusinessModule : StartupModule
     {
-        public override ModuleLevel Level => ModuleLevel.Buiness;
-        public override uint Order => 1;
+        public override ModuleLevel Level => ModuleLevel.FrameWork;
+        public override uint Order => 3;
 
         private Action<BusinessOptions> _action;
 

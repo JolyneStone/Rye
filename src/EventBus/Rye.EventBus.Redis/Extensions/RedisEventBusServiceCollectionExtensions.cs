@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using Rye.AspectFlare.DynamicProxy;
 using Rye.EventBus.Abstractions;
 using Rye.EventBus.Redis;
 using Rye.EventBus.Redis.Options;
@@ -43,6 +41,17 @@ namespace Rye.EventBus
         {
             var module = new RedisEventBusModule(action);
             return serviceCollection.AddModule(module);
+        }
+
+        /// <summary>
+        /// 订阅Redis EventBus
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <param name="subscriberAction"></param>
+        /// <returns></returns>
+        public static IServiceCollection SubscriberRedisEventBus(this IServiceCollection serviceCollection, Action<IServiceProvider, IRedisEventBus> subscriberAction)
+        {
+            return serviceCollection.Subscriber<IRedisEventBus>(subscriberAction);
         }
     }
 }

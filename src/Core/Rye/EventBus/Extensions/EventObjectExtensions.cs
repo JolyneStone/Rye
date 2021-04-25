@@ -1,5 +1,5 @@
 ﻿using Rye.EventBus.Abstractions;
-using Rye.Threading;
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -10,8 +10,8 @@ namespace Rye.EventBus
     {
         private static readonly Dictionary<Type, string> _eventRouteDict = new Dictionary<Type, string>();
         private static readonly Dictionary<Type, Type> _eventTypeDict = new Dictionary<Type, Type>();
-        private static readonly LockObject _routeLocker = new LockObject();
-        private static readonly LockObject _typeLocker = new LockObject();
+        private static readonly object _routeLocker = new object();
+        private static readonly object _typeLocker = new object();
 
         /// <summary>
         /// 获取事件路由
@@ -35,28 +35,24 @@ namespace Rye.EventBus
             {
                 return _eventRouteDict[type];
             }
-            _routeLocker.Enter();
-            try
+
+            string route;
+            var attribute = type.GetCustomAttribute<EventRouteAttribute>(true);
+            if (attribute != null)
             {
-                string route;
-                var attribute = type.GetCustomAttribute<EventRouteAttribute>(true);
-                if (attribute != null)
-                {
-                    route = attribute.Route;
-                }
-                else
-                {
-                    route = type.Name;
-                    if (route.EndsWith("Event", StringComparison.InvariantCultureIgnoreCase))
-                        route = route.Substring(0, route.Length - 5);
-                }
+                route = attribute.Route;
+            }
+            else
+            {
+                route = type.Name;
+                if (route.EndsWith("Event", StringComparison.InvariantCultureIgnoreCase))
+                    route = route.Substring(0, route.Length - 5);
+            }
+            lock (_routeLocker)
+            {
                 _eventRouteDict[type] = route;
-                return route;
             }
-            finally
-            {
-                _routeLocker.Exit();
-            }
+            return route;
         }
 
         /// <summary>
@@ -74,19 +70,14 @@ namespace Rye.EventBus
             {
                 return _eventTypeDict[type];
             }
-            _typeLocker.Enter();
-            try
+
+            var attribute = type.GetCustomAttribute<EventTypeAttribute>(true);
+            Type eventType = attribute?.EventType;
+            lock (_typeLocker)
             {
-                Type eventType = null;
-                var attribute = type.GetCustomAttribute<EventTypeAttribute>(true);
-                eventType = attribute?.EventType;
                 _eventTypeDict[type] = eventType;
-                return eventType;
             }
-            finally
-            {
-                _typeLocker.Exit();
-            }
+            return eventType;
         }
     }
 }

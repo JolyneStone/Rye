@@ -5,21 +5,33 @@ using Rye.Cache.Redis.Options;
 using Rye.EventBus.Abstractions;
 using Rye.EventBus.Redis.Internal;
 using Rye.EventBus.Redis.Options;
+using Rye.Util;
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using static CSRedis.CSRedisClient;
-
 namespace Rye.EventBus.Redis
 {
     public class RedisEventBus : IRedisEventBus
     {
+        private readonly string _key;
+        private readonly IServiceProvider _serviceProvider;
         private readonly CSRedisClient _redisClient;
         private readonly InternalRedisEventHandler _handler;
-        private readonly string _key;
-        private readonly SubscribeObject _subscribeObject;
+        //private readonly SubscribeListBroadcastObject _subscribeObject;
+
+        public event Func<IEvent, RedisEventContext, Task> OnProducing;
+
+        public event Func<IEvent, RedisEventContext, Task> OnProduced;
+
+        public event Func<IEvent, RedisEventErrorContext, Task> OnProductError;
+
+        public event Func<IEvent, RedisEventContext, Task> OnConsuming;
+
+        public event Func<IEvent, RedisEventContext, Task> OnConsumed;
+
+        public event Func<IEvent, RedisEventErrorContext, Task> OnConsumeError;
 
         public RedisEventBus(RedisEventBusOptions options, IServiceProvider serviceProvider)
         {
@@ -41,11 +53,87 @@ namespace Rye.EventBus.Redis
                 _redisClient = RedisHelper.Instance;
             }
 
-
+            _serviceProvider = serviceProvider;
             _key = string.IsNullOrEmpty(options.Key) ? "RyeEventBus" : options.Key;
-            //var clientId = options.ClientId;
-            _handler = new InternalRedisEventHandler(_key, this, serviceProvider);
-            _subscribeObject = _redisClient.Subscribe((_key, msg => RedisSubscribe(msg.Body)));
+            var clientId = options.ClientId;
+            _handler = new InternalRedisEventHandler();
+            _handler.OnConsumeEvent += OnConsumeEvent;
+
+            if (options.OnProducing != null)
+                OnProducing = options.OnProducing;
+            if (options.OnProduced != null)
+                OnProduced = options.OnProduced;
+            if (options.OnProductError != null)
+                OnProductError = options.OnProductError;
+            if (options.OnConsuming != null)
+                OnConsuming = options.OnConsuming;
+            if (options.OnConsumed != null)
+                OnConsumed = options.OnConsumed;
+            if (options.OnConsumeError != null)
+                OnConsumeError = options.OnConsumeError;
+
+            _redisClient.SubscribeListBroadcast(_key, clientId, RedisSubscribe);
+        }
+
+        private async Task OnConsumeEvent(EventWrapper wrapper, List<IEventHandler> handlers)
+        {
+            IEvent firstEvent = null;
+            try
+            {
+                var context = new RedisEventContext
+                {
+                    Key = _key,
+                    EventBus = this,
+                    ServiceProvider = _serviceProvider,
+                    RouteKey = wrapper.Route,
+                };
+                Type eventType;
+             
+                var eventTypeDict = new Dictionary<Type, IEvent>();
+                for (var i = 0; i < handlers.Count; i++)
+                {
+                    eventType = handlers[0].GetEventType();
+                    IEvent @event;
+                    if (!eventTypeDict.ContainsKey(eventType))
+                    {
+                        @event = wrapper.Event.ToObject(eventType) as IEvent;
+                        eventTypeDict.Add(eventType, @event);
+                    }
+                    else
+                    {
+                        @event = eventTypeDict[eventType];
+                    }
+
+                    if (i == 0)
+                    {
+                        firstEvent = @event;
+                        if (OnConsuming != null)
+                            await OnConsuming(firstEvent, context);
+                    }
+
+                    await handlers[i].OnEvent(@event, context);
+                }
+
+                if(OnConsumed!=null && firstEvent != null)
+                {
+                    await OnConsumed(firstEvent, context);
+                }
+            }
+            catch(Exception ex)
+            {
+                if (OnConsumeError == null || firstEvent == null)
+                    throw;
+
+                var context = new RedisEventErrorContext
+                {
+                    EventBus = this,
+                    ServiceProvider = _serviceProvider,
+                    RouteKey = wrapper.Route,
+                    RetryCount = wrapper.RetryCount,
+                    Exception = ex
+                };
+                await OnConsumeError(firstEvent, context);
+            }
         }
 
         private async void RedisSubscribe(string message)
@@ -56,28 +144,64 @@ namespace Rye.EventBus.Redis
             await _handler.OnEvent(message.ToObject<EventWrapper>());
         }
 
-        public void Publish(string eventRoute, IEvent @event)
-        {
-            Check.NotNull(eventRoute, nameof(eventRoute));
-            Check.NotNull(@event, nameof(@event));
-
-            _redisClient.Publish(_key, new EventWrapper
-            {
-                Route = eventRoute,
-                Event = @event.ToJsonString()
-            }.ToJsonString());
-        }
-
         public Task PublishAsync(string eventRoute, IEvent @event)
         {
             Check.NotNull(eventRoute, nameof(eventRoute));
             Check.NotNull(@event, nameof(@event));
 
-            return _redisClient.PublishAsync(_key, new EventWrapper
+            if (@event.EventId == 0)
             {
-                Route = eventRoute,
-                Event = @event.ToJsonString()
-            }.ToJsonString());
+                @event.EventId = IdGenerator.Instance.NextId();
+            }
+
+            return PublishAsync(eventRoute, @event, 0);
+        }
+
+        public Task RetryEvent(IEvent @event, EventContext context)
+        {
+            return PublishAsync(context.RouteKey, @event, context.RetryCount + 1);
+        }
+
+        private async Task PublishAsync(string route, IEvent @event, int retryCount = 0)
+        {
+            try
+            {
+                var context = new RedisEventContext
+                {
+                    ServiceProvider = _serviceProvider,
+                    EventBus = this,
+                    RouteKey = route,
+                    RetryCount = retryCount
+                };
+
+                if (OnProducing != null)
+                    await OnProducing(@event, context);
+
+                await _redisClient.LPushAsync(_key, new EventWrapper
+                {
+                    Route = route,
+                    Event = @event.ToJsonString(),
+                    RetryCount = retryCount
+                });
+
+                if (OnProduced != null)
+                    await OnProduced(@event, context);
+            }
+            catch (Exception ex)
+            {
+                if (OnProductError == null)
+                    throw;
+
+                var context = new RedisEventErrorContext
+                {
+                    ServiceProvider = _serviceProvider,
+                    EventBus = this,
+                    RouteKey = route,
+                    RetryCount = retryCount,
+                    Exception = ex
+                };
+                await OnProductError(@event, context);
+            }
         }
 
         public void Subscribe(string eventRoute, IEnumerable<IEventHandler> handlers)
@@ -97,7 +221,7 @@ namespace Rye.EventBus.Redis
             {
                 if (disposing)
                 {
-                    _subscribeObject?.Dispose();
+                    //_subscribeObject?.Dispose(); // 继续订阅，待下次启动后可以读取未处理的消息
                     _redisClient?.Dispose();
                 }
 
@@ -108,7 +232,7 @@ namespace Rye.EventBus.Redis
         public void Dispose()
         {
             Dispose(disposing: true);
-            System.GC.SuppressFinalize(this);
+            GC.SuppressFinalize(this);
         }
 
         #endregion

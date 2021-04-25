@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using Rye.DataAccess;
 using Rye.Entities.Abstractions;
 using Rye.MySql.Service;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rye.Language
+namespace Rye.Business.Language
 {
     /// <summary>
     /// 多语言服务

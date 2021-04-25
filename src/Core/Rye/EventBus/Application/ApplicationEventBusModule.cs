@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rye.Enums;
+using Rye.EventBus.Application.Options;
 using Rye.Module;
 using System;
 
@@ -14,16 +15,16 @@ namespace Rye.EventBus.Application
 
         public uint Order => 2;
 
-        private readonly int _bufferSize;
+        private readonly Action<ApplicationEventBusOptions> _action;
 
-        public ApplicationEventBusModule(int bufferSize)
+        public ApplicationEventBusModule(Action<ApplicationEventBusOptions> action)
         {
-            _bufferSize = bufferSize;
+            _action = action;
         }
 
         public void ConfigueServices(IServiceCollection services)
         {
-            services.AddApplicationEventBus(_bufferSize);
+            services.AddApplicationEventBus(_action);
         }
 
         public void Configure(IServiceProvider serviceProvider)

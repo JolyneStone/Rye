@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Rye.DependencyInjection;
-using Rye.Language;
 using Rye.Logger;
 using Rye.Options;
 using Rye.Reflection;
@@ -71,7 +70,6 @@ namespace Rye
             //}
             //serviceCollection.TryAddSingleton<IConfigureOptions<RyeOptions>, RyeOptionsSetup>();
             serviceCollection.TryAddSingleton<ISearcher<Assembly>, AssemblySeracher>();
-            serviceCollection.TryAddSingleton<ILangService, LangService>();
             using (var services = serviceCollection.BuildServiceProvider())
             {
                 using (var scope = services.CreateScope())

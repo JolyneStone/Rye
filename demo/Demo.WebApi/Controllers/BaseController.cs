@@ -4,7 +4,7 @@ using Demo.WebApi.Attribute;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-using Rye.Language;
+using Rye.Business.Language;
 
 using System;
 

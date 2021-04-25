@@ -3,7 +3,6 @@
 using Rye.Configuration;
 using Rye.DataAccess.Options;
 using Rye.DataAccess.Pool;
-using Rye.Threading;
 
 using System.Collections.Generic;
 using System.Data;
@@ -13,7 +12,7 @@ namespace Rye.DataAccess
 {
     public abstract class ConnectionProvider : IConnectionProvider
     {
-        private readonly LockObject _locker = new LockObject();
+        private readonly object _locker = new object();
         //private readonly Dictionary<string, IDbConnection> _connnectionPools = new Dictionary<string, IDbConnection>();
         private readonly Dictionary<string, ConnectionPool> _connectionPools = new Dictionary<string, ConnectionPool>();
         private readonly DbConnectionMapOptions _options;
@@ -94,15 +93,13 @@ namespace Rye.DataAccess
                     return null;
                 }
 
-                try
+                lock (_locker)
                 {
-                    _locker.Enter();
-                    pool = new ConnectionPool(new ConnectionPoolPolicy(this, connectionString), option.MaxPool);
-                    _connectionPools.Add(connectionString, pool);
-                }
-                finally
-                {
-                    _locker.Exit();
+                    if (!_connectionPools.TryGetValue(connectionString, out pool))
+                    {
+                        pool = new ConnectionPool(new ConnectionPoolPolicy(this, connectionString), option.MaxPool);
+                        _connectionPools[connectionString] = pool;
+                    }
                 }
             }
 

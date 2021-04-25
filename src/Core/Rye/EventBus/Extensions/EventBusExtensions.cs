@@ -36,14 +36,6 @@ namespace Rye
             subscriber.Subscribe(typeof(TEvent).GetEventRoute(), handlers);
         }
 
-        public static void Publish(this IEventPublisher publisher, IEvent @event)
-        {
-            Check.NotNull(publisher, nameof(publisher));
-            Check.NotNull(@event, nameof(@event));
-
-            publisher.Publish(@event.GetEventRoute(), @event);
-        }
-
         public static Task PublishAsync(this IEventPublisher publisher, IEvent @event)
         {
             Check.NotNull(publisher, nameof(publisher));

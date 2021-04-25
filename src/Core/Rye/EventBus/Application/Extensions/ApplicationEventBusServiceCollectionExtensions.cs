@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using Rye.EventBus.Abstractions;
 using Rye.EventBus.Application;
+using Rye.EventBus.Application.Options;
+using Rye.EventBus.Application.Policy;
 
 using System;
 
@@ -14,33 +15,27 @@ namespace Rye.EventBus
         /// 增加针对单体应用的事件总线模块的支持
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="bufferSize">设置缓存区大小</param>
+        /// <param name="action">配置模块</param>
         /// <returns></returns>
-        public static IServiceCollection AddApplicationEventBusModule(this IServiceCollection servicesCollection, int bufferSize)
+        public static IServiceCollection AddApplicationEventBusModule(this IServiceCollection servicesCollection, Action<ApplicationEventBusOptions> action = null)
         {
-            var module = new ApplicationEventBusModule(bufferSize);
+            var module = new ApplicationEventBusModule(action);
             return servicesCollection.AddModule<ApplicationEventBusModule>(module);
         }
 
         /// <summary>
         /// 增加针对单体应用的事件总线模块的支持
         /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddApplicationEventBusModule(this IServiceCollection servicesCollection)
-        {
-            return AddApplicationEventBusModule(servicesCollection, 1024);
-        }
-
-        /// <summary>
-        /// 增加针对单体应用的事件总线模块的支持
-        /// </summary>
         /// <param name="servicesCollection"></param>
-        /// <param name="bufferSize">设置缓存区大小</param>
+        /// <param name="action">配置事件总线</param>
         /// <returns></returns>
-        public static IServiceCollection AddApplicationEventBus(this IServiceCollection serviceCollection, int bufferSize)
+        public static IServiceCollection AddApplicationEventBus(this IServiceCollection serviceCollection, Action<ApplicationEventBusOptions> action = null)
         {
-            serviceCollection.AddEventBus<IApplicationEventBus>(service => new ApplicationEventBus(bufferSize, service));
+            var options = new ApplicationEventBusOptions();
+            //options.ProducerRetryPolicy = ApplicationEventBusRetryPolicy.ProducerRetryPolicy();
+            //options.ConsumerRetryPolicy = ApplicationEventBusRetryPolicy.ConsumerRetryPolicy();
+            action?.Invoke(options);
+            serviceCollection.AddEventBus<IApplicationEventBus>(service => new ApplicationEventBus(options, service));
             serviceCollection.AddEventPublisher<IApplicationEventPublisher>(service => service.GetService<IApplicationEventBus>());
             serviceCollection.AddEventSubscriber<IApplicationEventSubscriber>(service => service.GetService<IApplicationEventBus>());
             serviceCollection.AddEventBus<IEventBus>(sevice => sevice.GetService<IApplicationEventBus>());
@@ -51,13 +46,14 @@ namespace Rye.EventBus
         }
 
         /// <summary>
-        /// 增加针对单体应用的事件总线模块的支持
+        /// 订阅Application EventBus
         /// </summary>
-        /// <param name="servicesCollection"></param>
+        /// <param name="serviceCollection"></param>
+        /// <param name="subscriberAction"></param>
         /// <returns></returns>
-        public static IServiceCollection AddApplicationEventBus(this IServiceCollection servicesCollection)
+        public static IServiceCollection SubscriberApplicationEventBus(this IServiceCollection serviceCollection, Action<IServiceProvider, IApplicationEventBus> subscriberAction)
         {
-            return AddApplicationEventBus(servicesCollection, 1024);
+            return serviceCollection.Subscriber<IApplicationEventBus>(subscriberAction);
         }
     }
 }

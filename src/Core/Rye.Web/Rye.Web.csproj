@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Business\Rye.Business\Rye.Business.csproj" />
     <ProjectReference Include="..\..\Domain\Rye.Entities\Rye.Entities.csproj" />
     <ProjectReference Include="..\Rye\Rye.csproj" />
   </ItemGroup>

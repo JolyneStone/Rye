@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 
-using Rye.Language;
+using Rye.Business.Language;
 using Rye.Web.Filter;
 
 using System.Linq;

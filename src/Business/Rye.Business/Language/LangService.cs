@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rye.Language
+namespace Rye.Business.Language
 {
     public class LangService : ILangService
     {

@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Rye\Rye.csproj" />
     <ProjectReference Include="..\Rye.DataAccess\Rye.DataAccess.csproj" />
+    <ProjectReference Include="..\Rye.Entities\Rye.Entities.csproj" />
   </ItemGroup>
 
 </Project>

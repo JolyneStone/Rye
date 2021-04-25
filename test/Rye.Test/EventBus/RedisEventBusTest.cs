@@ -5,6 +5,7 @@ using Rye.Configuration;
 using Rye.EventBus;
 using Rye.EventBus.Redis;
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,8 +24,9 @@ namespace Rye.Test.EventBus
                     options.RedisOptions = redisOptions =>
                         ConfigurationManager.Appsettings.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(redisOptions);
                     options.Key = "RyeEventBus";
+                    options.ClientId = "1";
                 });
-            serviceCollection.SubscriberEvent<IRedisEventBus>((_, bus) =>
+            serviceCollection.SubscriberRedisEventBus((_, bus) =>
             {
                 bus.Subscribe<TestEvent>(new TestRedisEventHandler { Id = 1 });
                 bus.Subscribe<TestEvent>(new TestRedisEventHandler { Id = 2 });
@@ -38,7 +40,7 @@ namespace Rye.Test.EventBus
 
             for (var i = 0; i < 10; i++)
             {
-                eventBus.Publish(new TestEvent { Id = i });
+                await eventBus.PublishAsync(new TestEvent { Id = i });
                 await Task.Delay(200);
             }
 

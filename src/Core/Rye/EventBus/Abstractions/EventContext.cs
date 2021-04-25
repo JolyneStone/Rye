@@ -6,6 +6,7 @@ namespace Rye.EventBus.Abstractions
     {
         public IEventBus EventBus { get; init; }
         public IServiceProvider ServiceProvider { get; init; }
-        public string EventRoute { get; init; }
+        public string RouteKey { get; init; }
+        public int RetryCount { get; set; }
     }
 }

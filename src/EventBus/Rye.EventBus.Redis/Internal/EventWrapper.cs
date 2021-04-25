@@ -6,5 +6,6 @@ namespace Rye.EventBus.Redis.Internal
     {
         public string Route { get; set; }
         public string Event { get; set; }
+        public int RetryCount { get; set; }
     }
 }

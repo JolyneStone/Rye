@@ -1,5 +1,4 @@
-﻿using Rye.Threading;
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,15 +10,14 @@ namespace Rye
     {
         private static readonly Dictionary<Enum, string> _descriptionsDict = new Dictionary<Enum, string>();
         private static readonly Dictionary<Enum, string> _langKeyDict = new Dictionary<Enum, string>();
-        private static readonly LockObject _descriptionLocker = new LockObject();
-        private static readonly LockObject _langKeyLocker = new LockObject();
+        private static readonly object _descriptionLocker = new object();
+        private static readonly object _langKeyLocker = new object();
         public static string GetDescription(this Enum @enum)
         {
             if (_descriptionsDict.ContainsKey(@enum))
             {
                 return _descriptionsDict[@enum];
             }
-            _descriptionLocker.Enter();
             try
             {
                 string name = @enum.ToString();
@@ -28,16 +26,15 @@ namespace Rye
                 {
                     name = attribute.Description;
                 }
-                _descriptionsDict[@enum] = name;
+                lock (_descriptionLocker)
+                {
+                    _descriptionsDict[@enum] = name;
+                }
                 return name;
             }
             catch (Exception)
             {
                 return "枚举错误";
-            }
-            finally
-            {
-                _descriptionLocker.Exit();
             }
         }
 
@@ -48,7 +45,6 @@ namespace Rye
             {
                 return _langKeyDict[@enum];
             }
-            _langKeyLocker.Enter();
             try
             {
                 string langKey = @enum.ToString();
@@ -58,16 +54,15 @@ namespace Rye
                     langKey = attribute.LangKey;
                 }
 
-                _langKeyDict[@enum] = langKey;
+                lock (_langKeyLocker)
+                {
+                    _langKeyDict[@enum] = langKey;
+                }
                 return langKey;
             }
             catch (Exception)
             {
                 return "GetLangKey枚举错误";
-            }
-            finally
-            {
-                _langKeyLocker.Exit();
             }
         }
         public static int Value(this Enum item)

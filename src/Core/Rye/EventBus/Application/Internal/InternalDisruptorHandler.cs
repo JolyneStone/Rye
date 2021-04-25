@@ -1,11 +1,10 @@
-﻿using Rye.EventBus.Abstractions;
-using Rye.Logger;
-using Rye.Threading;
+﻿using Nito.AsyncEx;
+
+using Rye.EventBus.Abstractions;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Rye.EventBus.Application.Internal
@@ -13,59 +12,45 @@ namespace Rye.EventBus.Application.Internal
     internal class InternalDisruptorHandler : Disruptor.IEventHandler<EventWrapper>
     {
         private readonly Dictionary<string, List<IEventHandler>> _handler = new Dictionary<string, List<IEventHandler>>();
-        private readonly LockObject _locker = new LockObject();
+        private readonly AsyncLock _locker = new AsyncLock();
         private volatile bool _canRead = true;
-        private readonly ApplicationEventBus _applicationEventBus;
-        private readonly IServiceProvider _serviceProvider;
-
-        public InternalDisruptorHandler(
-            ApplicationEventBus applicationEventBus,
-            IServiceProvider serviceProvider)
-        {
-            _applicationEventBus = applicationEventBus;
-            _serviceProvider = serviceProvider;
-        }
 
         internal void AddHandlers(string eventRoute, IEnumerable<IEventHandler> handlers)
         {
             Check.NotNull(eventRoute, nameof(eventRoute));
             Check.NotNull(handlers, nameof(handlers));
 
-            _locker.Enter();
-            _canRead = false;
-            try
+            using (_locker.Lock())
             {
-                if (_handler.TryGetValue(eventRoute, out var list))
+                _canRead = false;
+                try
                 {
-                    list.AddRange(handlers);
+                    if (_handler.TryGetValue(eventRoute, out var list))
+                    {
+                        list.AddRange(handlers);
+                    }
+                    else
+                    {
+                        _handler.Add(eventRoute, handlers.ToList());
+                    }
                 }
-                else
+                finally
                 {
-                    _handler.Add(eventRoute, handlers.ToList());
+                    _canRead = true;
                 }
-            }
-            finally
-            {
-                _canRead = true;
-                _locker.Exit();
             }
         }
 
         public async void OnEvent(EventWrapper data, long sequence, bool endOfBatch)
         {
-            if (data == null && data.EventRoute == null && data.Event == null)
+            if (data == null && data.Route == null && data.Event == null)
                 return;
 
             if (!_canRead)
             {
-                _locker.Enter();
-                try
+                using (await _locker.LockAsync())
                 {
                     await OnEventCoreAsync(data);
-                }
-                finally
-                {
-                    _locker.Exit();
                 }
             }
             else
@@ -74,28 +59,32 @@ namespace Rye.EventBus.Application.Internal
             }
         }
 
-        private async Task OnEventCoreAsync(EventWrapper data)
+        private async Task OnEventCoreAsync(EventWrapper wrapper)
         {
-            if (_handler.TryGetValue(data.EventRoute, out var list))
+            if (_handler.TryGetValue(wrapper.Route, out var list))
             {
-                var applicationEventContext = new ApplicationEventContext()
-                {
-                    EventBus = _applicationEventBus,
-                    ServiceProvider = _serviceProvider,
-                    EventRoute = data.EventRoute
-                };
-                foreach (var handle in list)
-                {
-                    try
-                    {
-                        await handle.OnEvent(data.Event, applicationEventContext);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogRecord.Error(nameof(InternalDisruptorHandler), $"eventRoute: {data.EventRoute}, event: {data.Event.ToJsonString()} exception: {ex.ToString()}");
-                    }
-                }
+                //var applicationEventContext = new ApplicationEventContext()
+                //{
+                //    EventBus = _applicationEventBus,
+                //    ServiceProvider = _serviceProvider,
+                //    EventRoute = data.EventRoute
+                //};
+                //foreach (var handle in list)
+                //{
+                //    try
+                //    {
+                //        await handle.OnEvent(data.Event, applicationEventContext);
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        LogRecord.Error(nameof(InternalDisruptorHandler), $"eventRoute: {data.EventRoute}, event: {data.Event.ToJsonString()} exception: {ex.ToString()}");
+                //    }
+                //}
+                if (OnConsumeEvent != null)
+                    await OnConsumeEvent(wrapper, list);
             }
         }
+
+        public event Func<EventWrapper, List<IEventHandler>, Task> OnConsumeEvent;
     }
 }

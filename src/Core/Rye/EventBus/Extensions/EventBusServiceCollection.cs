@@ -125,7 +125,7 @@ namespace Rye.EventBus
         /// <param name="serviceCollection"></param>
         /// <param name="subscriberAction"></param>
         /// <returns></returns>
-        public static IServiceCollection SubscriberEvent<TEventBus>(this IServiceCollection serviceCollection, Action<IServiceProvider, TEventBus> subscriberAction)
+        public static IServiceCollection Subscriber<TEventBus>(this IServiceCollection serviceCollection, Action<IServiceProvider, TEventBus> subscriberAction)
             where TEventBus: class, IEventBus
         {
             Check.NotNull(serviceCollection, nameof(serviceCollection));
