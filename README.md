@@ -1,6 +1,6 @@
 # Rye Framework
 
-## <a id="01"/>Rye框架简介
+## Rye框架简介
 
 Rye是基于.NET 5开发的一个快速开发框架，对AOP、依赖注入、日志、缓存、EF Core、身份认证、消息队列、代码生成器等模块进行了封装，使.NET 5能够更方便的应用到实际项目开发中。
 
@@ -23,7 +23,7 @@ Rye是基于.NET 5开发的一个快速开发框架，对AOP、依赖注入、�
 * Rye.EventBus.RabbitMQ【RabbitMQ事件总线】：基于RabbitMQ的事件总线功能
 * Rye.Business【业务功能组件】：提供二维码、验证码、多语言等业务相关功能的封装实现
 
-## <a id="02"/>Rye功能特性
+## Rye功能特性
 
 ### 1. 模块化的组件设计
 
@@ -48,7 +48,7 @@ Rye是基于.NET 5开发的一个快速开发框架，对AOP、依赖注入、�
 * Redis事件总线，使用BLPOP + LPUSH（非争抢）实现
 * RabbitMQ事件总线，使用topic模式实现
 
-## <a id="03"/> 快速启动
+## 快速启动
 
 * 模块式风格
 ```csharp
