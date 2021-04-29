@@ -23,6 +23,6 @@ namespace Rye.Module
         /// 配置模块服务
         /// </summary>
         /// <param name="serviceProvider"></param>
-        void Configure(IServiceProvider serviceProvider);
+        void Use(IServiceProvider serviceProvider);
     }
 }

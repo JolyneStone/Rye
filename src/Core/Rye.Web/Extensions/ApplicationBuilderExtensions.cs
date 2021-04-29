@@ -26,7 +26,7 @@ namespace Rye.Web
                 if (module is AspNetCoreModule aspModule)
                     aspModule.Configure(app);
                 else
-                    module.Configure(app.ApplicationServices);
+                    module.Use(app.ApplicationServices);
             }
 
             return app;

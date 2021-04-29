@@ -29,7 +29,7 @@ namespace Rye.EntityFrameworkCore.SqlServer
             services.AddSqlServerEFCore();
         }
 
-        public override void Configure(IServiceProvider serviceProvider)
+        public override void Use(IServiceProvider serviceProvider)
         {
         }
     }

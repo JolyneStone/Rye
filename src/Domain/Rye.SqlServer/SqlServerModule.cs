@@ -42,7 +42,7 @@ namespace Rye.SqlServer
             }
         }
 
-        public void Configure(IServiceProvider serviceProvider)
+        public void Use(IServiceProvider serviceProvider)
         {
         }
     }

@@ -81,32 +81,47 @@ namespace Demo.WebApi
 
             services = services.UseDynamicProxyService();
             services.AddMySqlPersmission<int>();
-            services
-                .AddCoreModule(options =>
-                {
-                    options.AutoInjection = true;
-                })
-                .AddWebModule(options =>
-                {
-                    options.GlobalActionFilter.Enabled = true;
-                    options.GlobalExceptionFilter.Enabled = true;
-                })
-                .AddBusinessModule(options =>
-                {
-                    options.VerfiyCodeExpire = 5 * 60;
-                })
-                .AddRedisCacheModule(options =>
-                    Configuration.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(options))
-                .AddMySqlModule<MyDbConnectionProvider>()
-                .AddMySqlEFCoreModule(builder =>
-                {
-                    builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye.GetDescription());
-                    builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye_Read.GetDescription());
-                })
-                .AddJwtModule()
-                .AddAuthorizationModule<int>()
-                .AddModule<DemoModule>()
-                .ConfigureModule();
+            services.AddCoreModule(options =>
+                    {
+                        options.AutoInjection = true;
+                    })
+                    .AddWebModule(options =>
+                    {
+                        options.GlobalActionFilter.Enabled = true;
+                        options.GlobalExceptionFilter.Enabled = true;
+                    })
+                    .AddBusinessModule(options =>
+                    {
+                        options.VerfiyCodeExpire = 5 * 60;
+                    })
+                    .AddRedisCacheModule(options =>
+                        Configuration.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(options))
+                    .AddMySqlModule<MyDbConnectionProvider>()
+                    .AddMySqlEFCoreModule(builder =>
+                    {
+                        builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye.GetDescription());
+                        builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye_Read.GetDescription());
+                    })
+                    .AddJwtModule()
+                    .AddAuthorizationModule<int>()
+                    .AddModule<DemoModule>()
+                    .ConfigureModule();
+
+
+            services = services.UseDynamicProxyService();
+            services.AddRye()
+                    .AddWebRye()
+                    .AddRedisCache(options =>
+                        Configuration.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(options))
+                    .AddMySqlDbConnectionProvider<MyDbConnectionProvider>()
+                    .AddDbBuillderOptions(builder =>
+                    {
+                        builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye.GetDescription());
+                        builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye_Read.GetDescription());
+                    })
+                    .AddMySqlEFCore()
+                    .AddJwt()
+                    .AddRyeAuthorization<int>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
@@ -138,12 +153,6 @@ namespace Demo.WebApi
             app.UseApiVersioning();
 
             app.UseModule();
-
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
         }
 
         public class ErrorResponseProvider : IErrorResponseProvider

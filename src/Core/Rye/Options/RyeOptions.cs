@@ -21,7 +21,7 @@ namespace Rye.Options
                 UseRyeLog = true
             };
             AssemblyPatterns = new string[0];
-            AutoInjection = false;
+            AutoInjection = true;
         }
 
         //public DatabaseType DefaultDatabaseType { get; set; }

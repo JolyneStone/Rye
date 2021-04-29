@@ -26,7 +26,7 @@ namespace Rye
 
             foreach (var module in modules.OrderBy(d => d, new ModuleComparer()))
             {
-                module.Configure(serviceProvider);
+                module.Use(serviceProvider);
             }
 
             return serviceProvider;

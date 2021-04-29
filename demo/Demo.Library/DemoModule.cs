@@ -19,7 +19,7 @@ namespace Demo.Library
             services.AddSecuritySupport<SecurityService>();
         }
 
-        public override void Configure(IServiceProvider serviceProvider)
+        public override void Use(IServiceProvider serviceProvider)
         {
         }
     }

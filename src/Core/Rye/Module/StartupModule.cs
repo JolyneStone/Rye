@@ -11,7 +11,7 @@ namespace Rye.Module
     {
         public virtual ModuleLevel Level => ModuleLevel.Buiness;
         public virtual uint Order => 0;
-        public virtual void Configure(IServiceProvider serviceProvider)
+        public virtual void Use(IServiceProvider serviceProvider)
         {
             return;
         }

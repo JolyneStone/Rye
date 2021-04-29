@@ -27,7 +27,7 @@ namespace Rye.EventBus.Application
             services.AddApplicationEventBus(_action);
         }
 
-        public void Configure(IServiceProvider serviceProvider)
+        public void Use(IServiceProvider serviceProvider)
         {
         }
     }

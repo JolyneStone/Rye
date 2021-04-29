@@ -7,7 +7,7 @@ namespace Rye.Web.Module
     {
         public virtual void Configure(IApplicationBuilder app)
         {
-            base.Configure(app.ApplicationServices);
+            base.Use(app.ApplicationServices);
         }
     }
 }

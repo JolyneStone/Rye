@@ -29,7 +29,7 @@ namespace Rye.EventBus.Redis
             services.AddRedisEventBus(_action);
         }
 
-        public void Configure(IServiceProvider serviceProvider)
+        public void Use(IServiceProvider serviceProvider)
         {
         }
     }

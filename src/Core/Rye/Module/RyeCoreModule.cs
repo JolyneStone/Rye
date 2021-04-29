@@ -29,7 +29,7 @@ namespace Rye.Module
             services.AddRye(_action);
         }
 
-        public override void Configure(IServiceProvider serviceProvider)
+        public override void Use(IServiceProvider serviceProvider)
         {
             SingleServiceLocator.ConfigService(serviceProvider);
         }

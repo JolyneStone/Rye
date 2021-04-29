@@ -29,7 +29,7 @@ namespace Rye.EntityFrameworkCore.MySql
             services.AddMySqlEFCore();
         }
 
-        public override void Configure(IServiceProvider serviceProvider)
+        public override void Use(IServiceProvider serviceProvider)
         {
         }
     }

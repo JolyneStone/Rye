@@ -29,7 +29,7 @@ namespace Rye.EventBus.RabbitMQ
             services.AddRabbitMQEventBus(_action);
         }
 
-        public void Configure(IServiceProvider serviceProvider)
+        public void Use(IServiceProvider serviceProvider)
         {
         }
     }
