@@ -73,7 +73,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rye.Business", "src\Busines
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rye.EventBus.Redis", "src\EventBus\Rye.EventBus.Redis\Rye.EventBus.Redis.csproj", "{5AE46EF7-905D-4F45-AB20-0200B3D06949}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rye.EventBus.RabbitMQ", "src\EventBus\Rye.EventBus.RabbitMQ\Rye.EventBus.RabbitMQ.csproj", "{AE8BEF7B-1FBE-4A4A-88F8-AFAAFE000682}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rye.EventBus.RabbitMQ", "src\EventBus\Rye.EventBus.RabbitMQ\Rye.EventBus.RabbitMQ.csproj", "{AE8BEF7B-1FBE-4A4A-88F8-AFAAFE000682}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rye.EventBus.CAP", "src\EventBus\Rye.EventBus.CAP\Rye.EventBus.CAP.csproj", "{4FD8AD6C-15B8-4670-B3D6-87FE167FC230}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -181,6 +183,10 @@ Global
 		{AE8BEF7B-1FBE-4A4A-88F8-AFAAFE000682}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE8BEF7B-1FBE-4A4A-88F8-AFAAFE000682}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE8BEF7B-1FBE-4A4A-88F8-AFAAFE000682}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FD8AD6C-15B8-4670-B3D6-87FE167FC230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FD8AD6C-15B8-4670-B3D6-87FE167FC230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FD8AD6C-15B8-4670-B3D6-87FE167FC230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FD8AD6C-15B8-4670-B3D6-87FE167FC230}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -219,6 +225,7 @@ Global
 		{F97AB0AA-C2AD-4E7E-9501-CA5A77ADE67A} = {A402E2D6-825B-49D3-B9C7-AEDA88F8808D}
 		{5AE46EF7-905D-4F45-AB20-0200B3D06949} = {879C179B-47B9-4DB5-A346-FDFCFC348D18}
 		{AE8BEF7B-1FBE-4A4A-88F8-AFAAFE000682} = {879C179B-47B9-4DB5-A346-FDFCFC348D18}
+		{4FD8AD6C-15B8-4670-B3D6-87FE167FC230} = {879C179B-47B9-4DB5-A346-FDFCFC348D18}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C43E25F-90B8-4370-9470-A77C131B5EB6}

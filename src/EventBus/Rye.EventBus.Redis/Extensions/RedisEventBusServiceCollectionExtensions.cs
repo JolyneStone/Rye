@@ -20,8 +20,8 @@ namespace Rye.EventBus
         {
             var options = new RedisEventBusOptions();
             action(options);
-
-            serviceCollection.AddEventBus<IRedisEventBus>(service => new RedisEventBus(options, service));
+            
+            serviceCollection.AddEventBus<IRedisEventBus>(service => new RedisEventBus(options, service.GetRequiredService<IServiceScopeFactory>()));
             serviceCollection.AddEventPublisher<IRedisEventPublisher>(service => service.GetService<IRedisEventBus>());
             serviceCollection.AddEventSubscriber<IRedisEventSubscriber>(service => service.GetService<IRedisEventBus>());
             serviceCollection.AddEventBus<IEventBus>(sevice => sevice.GetService<IRedisEventBus>());

@@ -192,6 +192,9 @@ namespace Rye.Authorization.Abstraction
 
         private static async Task WriteResponseAsync(HttpContext context, object value)
         {
+            // 以JSON格式返回数据
+            context.Response.Headers["Content-type"] = "application/json";
+
             // 保持原来的流
             var originalBody = context.Response.Body;
             await originalBody.FlushAsync();

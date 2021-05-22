@@ -1,4 +1,6 @@
-﻿using Polly;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+using Polly;
 using Polly.Retry;
 
 using RabbitMQ.Client;
@@ -30,7 +32,7 @@ namespace Rye.EventBus.RabbitMQ
 
         private IModel _consumerChannel;
 
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScope _serviceScope;
 
         private readonly InternalRabbitMQEventHandler _handler;
         private readonly int _retryCount = 3;
@@ -49,12 +51,12 @@ namespace Rye.EventBus.RabbitMQ
 
         public IRabbitMQPersistentConnection Connection => _connection;
 
-        public RabbitMQEventBus(RabbitMQEventBusOptions options, IServiceProvider serviceProvider)
+        public RabbitMQEventBus(RabbitMQEventBusOptions options, IServiceScopeFactory scopeFactory)
         {
             Check.NotNull(options, nameof(options));
             Check.NotNull(options.ConnectionFactory, nameof(options.ConnectionFactory));
 
-            _serviceProvider = serviceProvider;
+            _serviceScope = scopeFactory.CreateScope();
             _exchange = string.IsNullOrEmpty(options.Exchange) ? "RyeEventBus" : options.Exchange;
             _queue = string.IsNullOrEmpty(options.Queue) ? "RyeQueue" : options.Queue;
             _handler = new InternalRabbitMQEventHandler();
@@ -135,7 +137,7 @@ namespace Rye.EventBus.RabbitMQ
                 {
                     var context = new RabbitMQEventPublishContext
                     {
-                        ServiceProvider = _serviceProvider,
+                        ServiceProvider = _serviceScope.ServiceProvider,
                         EventBus = this,
                         RouteKey = routeKey,
                         RetryCount = retryCount,
@@ -168,7 +170,7 @@ namespace Rye.EventBus.RabbitMQ
 
                     var errorContext = new RabbitMQEventPublishErrorContext
                     {
-                        ServiceProvider = _serviceProvider,
+                        ServiceProvider = _serviceScope.ServiceProvider,
                         EventBus = this,
                         RouteKey = routeKey,
                         RetryCount = retryCount,
@@ -212,7 +214,7 @@ namespace Rye.EventBus.RabbitMQ
                 {
                     var context = new RabbitMQEventPublishContext
                     {
-                        ServiceProvider = _serviceProvider,
+                        ServiceProvider = _serviceScope.ServiceProvider,
                         EventBus = this,
                         RouteKey = routeKey,
                         RetryCount = retryCount,
@@ -246,7 +248,7 @@ namespace Rye.EventBus.RabbitMQ
 
                     var errorContext = new RabbitMQEventPublishErrorContext
                     {
-                        ServiceProvider = _serviceProvider,
+                        ServiceProvider = _serviceScope.ServiceProvider,
                         EventBus = this,
                         RouteKey = routeKey,
                         RetryCount = retryCount,
@@ -298,7 +300,7 @@ namespace Rye.EventBus.RabbitMQ
             try
             {
                 var retryCount = 0;
-                if(eventArgs.BasicProperties.Headers.TryGetValue("retry-count", out var str) && str!=null)
+                if (eventArgs.BasicProperties.Headers.TryGetValue("retry-count", out var str) && str != null)
                 {
                     retryCount = str.ParseByInt();
                 }
@@ -330,7 +332,7 @@ namespace Rye.EventBus.RabbitMQ
                 var context = new RabbitMQEventSubscribeContext
                 {
                     EventBus = this,
-                    ServiceProvider = _serviceProvider,
+                    ServiceProvider = _serviceScope.ServiceProvider,
                     Exchange = _exchange,
                     Queue = _queue,
                     RouteKey = eventArgs.RoutingKey,
@@ -392,7 +394,7 @@ namespace Rye.EventBus.RabbitMQ
                     Exchange = eventArgs.Exchange,
                     Queue = _queue,
                     RouteKey = eventArgs.RoutingKey,
-                    ServiceProvider = _serviceProvider,
+                    ServiceProvider = _serviceScope.ServiceProvider,
                     Exception = ex,
                     Ack = false,
                 };
@@ -409,18 +411,26 @@ namespace Rye.EventBus.RabbitMQ
             }
         }
 
+        private bool disposedValue;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _serviceScope?.Dispose();
+                    _consumerChannel?.Dispose();
+                    _connection?.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
         public void Dispose()
         {
-            if (_consumerChannel != null)
-            {
-                _consumerChannel.Dispose();
-                _consumerChannel = null;
-            }
-            if (_connection != null && _connection.IsConnected)
-            {
-                _connection.Dispose();
-                _connection = null;
-            }
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

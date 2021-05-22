@@ -35,9 +35,9 @@ namespace Rye.EventBus.RabbitMQ.Options
 
         public Func<IEvent, RabbitMQEventPublishErrorContext, Task> OnProductError { get; set; }
 
-        public Func<IEvent, RabbitMQEventPublishContext, Task> OnConsuming { get; set; }
+        public Func<IEvent, RabbitMQEventSubscribeContext, Task> OnConsuming { get; set; }
 
-        public Func<IEvent, RabbitMQEventPublishContext, Task> OnConsumed { get; set; }
+        public Func<IEvent, RabbitMQEventSubscribeContext, Task> OnConsumed { get; set; }
 
         public Func<IEvent, RabbitMQEventSubscribeErrorContext, Task> OnConsumeError { get; set; }
     }

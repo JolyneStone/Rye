@@ -99,7 +99,7 @@ namespace Rye
                             OnAuthenticationFailed = context =>
                             {
                             //Token expired
-                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                            if (context.Exception is SecurityTokenExpiredException)
                                 {
                                     context.Response.Headers.Add("Token-Expired", "true");
                                 }

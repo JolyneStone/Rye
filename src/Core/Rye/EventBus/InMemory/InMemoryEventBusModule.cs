@@ -1,32 +1,31 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-
 using Rye.Enums;
-using Rye.EventBus.RabbitMQ.Options;
+using Rye.EventBus.InMemory.Options;
 using Rye.Module;
-
 using System;
 
-namespace Rye.EventBus.RabbitMQ
+namespace Rye.EventBus.InMemory
 {
     /// <summary>
-    /// 适用于Rabbit MQ的事件总线
+    /// 适用于内存的事件总线模块
     /// </summary>
-    public class RabbitMQEventBusModule : StartupModule
+    public class InMemoryEventBusModule : StartupModule
     {
         public override ModuleLevel Level => ModuleLevel.FrameWork;
 
         public override uint Order => 2;
 
-        private readonly Action<RabbitMQEventBusOptions> _action;
+        private readonly Action<InMemoryEventBusOptions> _action;
 
-        public RabbitMQEventBusModule(Action<RabbitMQEventBusOptions> action)
+        public InMemoryEventBusModule(Action<InMemoryEventBusOptions> action)
         {
             _action = action;
         }
 
         public override void ConfigueServices(IServiceCollection services)
         {
-            services.AddRabbitMQEventBus(_action);
+            services.AddInMemoryEventBus(_action);
         }
+
     }
 }

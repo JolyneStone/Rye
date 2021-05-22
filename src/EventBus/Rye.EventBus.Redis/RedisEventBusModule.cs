@@ -11,11 +11,11 @@ namespace Rye.EventBus.Redis
     /// <summary>
     /// 适用于Redis的事件总线模块
     /// </summary>
-    public class RedisEventBusModule : IStartupModule
+    public class RedisEventBusModule : StartupModule
     {
-        public ModuleLevel Level => ModuleLevel.FrameWork;
+        public override ModuleLevel Level => ModuleLevel.FrameWork;
 
-        public uint Order => 2;
+        public override uint Order => 2;
 
         private readonly Action<RedisEventBusOptions> _action;
 
@@ -24,13 +24,9 @@ namespace Rye.EventBus.Redis
             _action = action;
         }
 
-        public void ConfigueServices(IServiceCollection services)
+        public override void ConfigueServices(IServiceCollection services)
         {
             services.AddRedisEventBus(_action);
-        }
-
-        public void Use(IServiceProvider serviceProvider)
-        {
         }
     }
 }

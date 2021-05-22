@@ -12,7 +12,7 @@ namespace Rye.EntityFrameworkCore.SqlServer
     /// Sql Server 数据库EF Core模块
     /// </summary>
     [DependsOnModules(typeof(EFCoreModule))]
-    public class SqlServerEFCoreModule : EFCoreModule, IStartupModule
+    public class SqlServerEFCoreModule : EFCoreModule
     {
         //public ModuleLevel Level => ModuleLevel.FrameWork;
 

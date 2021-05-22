@@ -12,8 +12,11 @@ namespace Rye.EventBus.RabbitMQ
 
     }
 
-    public class RabbitMQEventSubscribeContext: RabbitMQEventPublishContext
+    public class RabbitMQEventSubscribeContext: EventContext
     {
+        public string Exchange { get; set; }
+        public string Queue { get; set; }
+        public IBasicProperties BasicProperties { get; set; }
         public bool Ack { get; set; }
     }
 }

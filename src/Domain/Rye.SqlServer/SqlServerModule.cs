@@ -10,11 +10,11 @@ namespace Rye.SqlServer
     /// 提供对Sql Server数据库访问的功能模块
     /// </summary>
     [DependsOnModules(typeof(DataAccessModule))]
-    public class SqlServerModule : IStartupModule
+    public class SqlServerModule : StartupModule
     {
-        public ModuleLevel Level => ModuleLevel.FrameWork;
+        public override ModuleLevel Level => ModuleLevel.FrameWork;
 
-        public uint Order => 3;
+        public override uint Order => 3;
 
         public SqlServerModule(Type providerType)
         {
@@ -30,7 +30,7 @@ namespace Rye.SqlServer
         private Func<IServiceProvider, object> _providerFunc;
 
 
-        public void ConfigueServices(IServiceCollection services)
+        public override void ConfigueServices(IServiceCollection services)
         {
             if (_providerFunc != null)
             {
@@ -40,10 +40,6 @@ namespace Rye.SqlServer
             {
                 services.AddSqlServerDbConnectionProvider(_providerType);
             }
-        }
-
-        public void Use(IServiceProvider serviceProvider)
-        {
         }
     }
 }

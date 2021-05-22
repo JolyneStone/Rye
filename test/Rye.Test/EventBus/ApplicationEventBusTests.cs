@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 using Xunit;
 
-namespace Rye.EventBus.Application.Tests
+namespace Rye.EventBus.InMemory.Tests
 {
     public class ApplicationEventBusTests
     {
@@ -18,7 +18,7 @@ namespace Rye.EventBus.Application.Tests
             var services = TestSetup.ConfigService(serviceCollection =>
             {
                 serviceCollection
-                    .AddApplicationEventBusModule()
+                    .AddInMemoryEventBusModule()
                     .ConfigureModule();
             });
 

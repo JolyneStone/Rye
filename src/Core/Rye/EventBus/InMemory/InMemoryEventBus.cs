@@ -1,6 +1,8 @@
-﻿using Rye.EventBus.Abstractions;
-using Rye.EventBus.Application.Internal;
-using Rye.EventBus.Application.Options;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+using Rye.EventBus.Abstractions;
+using Rye.EventBus.InMemory.Internal;
+using Rye.EventBus.InMemory.Options;
 using Rye.Logger;
 using Rye.Util;
 
@@ -8,30 +10,30 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Rye.EventBus.Application
+namespace Rye.EventBus.InMemory
 {
-    public class ApplicationEventBus : IApplicationEventBus
+    public class InMemoryEventBus : IMemoryEventBus
     {
         private Disruptor.Dsl.Disruptor<EventWrapper> _disruptor;
         private Disruptor.RingBuffer<EventWrapper> _ringBuffer;
         private InternalDisruptorHandler _handler;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScope _serviceScope;
 
-        public event Func<IEvent, ApplicationEventContext, Task> OnProducing;
+        public event Func<IEvent, InMemoryEventContext, Task> OnProducing;
 
-        public event Func<IEvent, ApplicationEventContext, Task> OnProduced;
+        public event Func<IEvent, InMemoryEventContext, Task> OnProduced;
 
-        public event Func<IEvent, ApplicationEventErrorContext, Task> OnProductError;
+        public event Func<IEvent, InMemoryEventErrorContext, Task> OnProductError;
 
-        public event Func<IEvent, ApplicationEventContext, Task> OnConsuming;
+        public event Func<IEvent, InMemoryEventContext, Task> OnConsuming;
 
-        public event Func<IEvent, ApplicationEventContext, Task> OnConsumed;
+        public event Func<IEvent, InMemoryEventContext, Task> OnConsumed;
 
-        public event Func<IEvent, ApplicationEventErrorContext, Task> OnConsumeError;
+        public event Func<IEvent, InMemoryEventErrorContext, Task> OnConsumeError;
 
-        public ApplicationEventBus(ApplicationEventBusOptions options, IServiceProvider serviceProvider)
+        public InMemoryEventBus(InMemoryEventBusOptions options, IServiceScopeFactory scopeFactory)
         {
-            _serviceProvider = serviceProvider;
+            _serviceScope = scopeFactory.CreateScope();
             _handler = new InternalDisruptorHandler();
             _handler.OnConsumeEvent += OnConsumeEvent;
 
@@ -63,10 +65,10 @@ namespace Rye.EventBus.Application
             var @event = wrapper.Event;
             try
             {
-                var context = new ApplicationEventContext()
+                var context = new InMemoryEventContext()
                 {
                     EventBus = this,
-                    ServiceProvider = _serviceProvider,
+                    ServiceProvider = _serviceScope.ServiceProvider,
                     RouteKey = wrapper.Route,
                     RetryCount = wrapper.RetryCount
                 };
@@ -87,10 +89,10 @@ namespace Rye.EventBus.Application
                 if (OnConsumeError == null)
                     throw;
 
-                var context = new ApplicationEventErrorContext
+                var context = new InMemoryEventErrorContext
                 {
                     EventBus = this,
-                    ServiceProvider = _serviceProvider,
+                    ServiceProvider = _serviceScope.ServiceProvider,
                     RouteKey = wrapper.Route,
                     RetryCount = wrapper.RetryCount,
                     Exception = ex
@@ -116,9 +118,9 @@ namespace Rye.EventBus.Application
         {
             try
             {
-                var context = new ApplicationEventContext
+                var context = new InMemoryEventContext
                 {
-                    ServiceProvider = _serviceProvider,
+                    ServiceProvider = _serviceScope.ServiceProvider,
                     EventBus = this,
                     RouteKey = eventRoute,
                     RetryCount = retryCount
@@ -142,9 +144,9 @@ namespace Rye.EventBus.Application
                 if (OnProductError == null)
                     throw;
 
-                var context = new ApplicationEventErrorContext
+                var context = new InMemoryEventErrorContext
                 {
-                    ServiceProvider = _serviceProvider,
+                    ServiceProvider = _serviceScope.ServiceProvider,
                     EventBus = this,
                     RouteKey = eventRoute,
                     RetryCount = retryCount,
@@ -181,14 +183,17 @@ namespace Rye.EventBus.Application
                     {
                         _handler = null;
                     }
-
-                    GC.SuppressFinalize(this);
+                    _serviceScope.Dispose();
                 }
 
                 disposedValue = true;
             }
         }
-        public void Dispose() => Dispose(true);
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
         #endregion
     }
 }

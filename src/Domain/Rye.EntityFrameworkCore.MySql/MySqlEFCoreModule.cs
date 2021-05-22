@@ -12,7 +12,7 @@ namespace Rye.EntityFrameworkCore.MySql
     /// MySql 数据库EF Core模块
     /// </summary>
     //[DependsOnModules(typeof(EFCoreModule))]
-    public class MySqlEFCoreModule : EFCoreModule, IStartupModule
+    public class MySqlEFCoreModule : EFCoreModule
     {
         //public ModuleLevel Level => ModuleLevel.FrameWork;
 
@@ -27,10 +27,6 @@ namespace Rye.EntityFrameworkCore.MySql
         {
             base.ConfigueServices(services);
             services.AddMySqlEFCore();
-        }
-
-        public override void Use(IServiceProvider serviceProvider)
-        {
         }
     }
 }

@@ -8,7 +8,7 @@
 
 //using System;
 
-//namespace Rye.EventBus.Application.Policy
+//namespace Rye.EventBus.InMemory.Policy
 //{
 //    public static class RedisEventBusRetryPolicy
 //    {

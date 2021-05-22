@@ -1,14 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 using Rye.DataAccess;
-using Rye.EntityFrameworkCore.Options;
 using Rye.Enums;
 using Rye.Module;
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Rye.EntityFrameworkCore
 {

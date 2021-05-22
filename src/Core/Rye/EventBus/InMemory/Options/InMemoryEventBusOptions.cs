@@ -5,26 +5,26 @@ using Rye.EventBus.Abstractions;
 using System;
 using System.Threading.Tasks;
 
-namespace Rye.EventBus.Application.Options
+namespace Rye.EventBus.InMemory.Options
 {
-    public class ApplicationEventBusOptions
+    public class InMemoryEventBusOptions
     {
         /// <summary>
         /// 缓存区大小
         /// </summary>
         public int BufferSize { get; set; } = 1024;
 
-        public Func<IEvent, ApplicationEventContext, Task> OnProducing { get; set; }
+        public Func<IEvent, InMemoryEventContext, Task> OnProducing { get; set; }
 
-        public Func<IEvent, ApplicationEventContext, Task> OnProduced { get; set; }
+        public Func<IEvent, InMemoryEventContext, Task> OnProduced { get; set; }
 
-        public Func<IEvent, ApplicationEventErrorContext, Task> OnProductError { get; set; }
+        public Func<IEvent, InMemoryEventErrorContext, Task> OnProductError { get; set; }
 
-        public Func<IEvent, ApplicationEventContext, Task> OnConsuming { get; set; }
+        public Func<IEvent, InMemoryEventContext, Task> OnConsuming { get; set; }
 
-        public Func<IEvent, ApplicationEventContext, Task> OnConsumed { get; set; }
+        public Func<IEvent, InMemoryEventContext, Task> OnConsumed { get; set; }
 
-        public Func<IEvent, ApplicationEventErrorContext, Task> OnConsumeError { get; set; }
+        public Func<IEvent, InMemoryEventErrorContext, Task> OnConsumeError { get; set; }
 
         ///// <summary>
         ///// 异步发布事件的重试策略

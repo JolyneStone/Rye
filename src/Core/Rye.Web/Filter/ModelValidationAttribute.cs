@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+
 using Rye.Logger;
 using Rye.Web.Options;
 using Rye.Web.ResponseProvider.ModeValidationAttr;
+
 using System;
 using System.Linq;
 using System.Net;
@@ -44,7 +46,8 @@ namespace Rye.Web.Filter
                 }
             }
 
-            LogRecord.Info(logName, $"ActionArguments:{actionContext.ActionArguments.ToJsonString()}");
+            if (actionContext.ActionArguments != null)
+                LogRecord.Info(logName, $"ActionArguments:{actionContext.ActionArguments.ToJsonString()}");
         }
 
         protected virtual string GetErrorMessage(HttpContext httpContext, ModelErrorCollection errors)

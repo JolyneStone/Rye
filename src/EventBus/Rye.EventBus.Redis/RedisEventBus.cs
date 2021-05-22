@@ -1,5 +1,7 @@
 ﻿using CSRedis;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using Rye.Cache.Redis.Builder;
 using Rye.Cache.Redis.Options;
 using Rye.EventBus.Abstractions;
@@ -16,7 +18,7 @@ namespace Rye.EventBus.Redis
     public class RedisEventBus : IRedisEventBus
     {
         private readonly string _key;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScope _serviceScope;
         private readonly CSRedisClient _redisClient;
         private readonly InternalRedisEventHandler _handler;
         //private readonly SubscribeListBroadcastObject _subscribeObject;
@@ -33,7 +35,7 @@ namespace Rye.EventBus.Redis
 
         public event Func<IEvent, RedisEventErrorContext, Task> OnConsumeError;
 
-        public RedisEventBus(RedisEventBusOptions options, IServiceProvider serviceProvider)
+        public RedisEventBus(RedisEventBusOptions options, IServiceScopeFactory scopeFactory)
         {
             Check.NotNull(options, nameof(options));
             //Check.NotNullOrEmpty(options.ClientId, nameof(options.ClientId));
@@ -53,7 +55,7 @@ namespace Rye.EventBus.Redis
                 _redisClient = RedisHelper.Instance;
             }
 
-            _serviceProvider = serviceProvider;
+            _serviceScope = scopeFactory.CreateScope();
             _key = string.IsNullOrEmpty(options.Key) ? "RyeEventBus" : options.Key;
             var clientId = options.ClientId;
             _handler = new InternalRedisEventHandler();
@@ -84,7 +86,7 @@ namespace Rye.EventBus.Redis
                 {
                     Key = _key,
                     EventBus = this,
-                    ServiceProvider = _serviceProvider,
+                    ServiceProvider = _serviceScope.ServiceProvider,
                     RouteKey = wrapper.Route,
                 };
                 Type eventType;
@@ -127,7 +129,7 @@ namespace Rye.EventBus.Redis
                 var context = new RedisEventErrorContext
                 {
                     EventBus = this,
-                    ServiceProvider = _serviceProvider,
+                    ServiceProvider = _serviceScope.ServiceProvider,
                     RouteKey = wrapper.Route,
                     RetryCount = wrapper.RetryCount,
                     Exception = ex
@@ -168,7 +170,7 @@ namespace Rye.EventBus.Redis
             {
                 var context = new RedisEventContext
                 {
-                    ServiceProvider = _serviceProvider,
+                    ServiceProvider = _serviceScope.ServiceProvider,
                     EventBus = this,
                     RouteKey = route,
                     RetryCount = retryCount
@@ -194,7 +196,7 @@ namespace Rye.EventBus.Redis
 
                 var context = new RedisEventErrorContext
                 {
-                    ServiceProvider = _serviceProvider,
+                    ServiceProvider = _serviceScope.ServiceProvider,
                     EventBus = this,
                     RouteKey = route,
                     RetryCount = retryCount,
@@ -221,6 +223,7 @@ namespace Rye.EventBus.Redis
             {
                 if (disposing)
                 {
+                    _serviceScope.Dispose();
                     //_subscribeObject?.Dispose(); // 继续订阅，待下次启动后可以读取未处理的消息
                     _redisClient?.Dispose();
                 }
