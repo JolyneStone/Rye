@@ -86,11 +86,6 @@ namespace Rye
             }
 
             return JsonSerializer.Deserialize(value, type, options);
-            //return typeof(JsonSerializer).GetMethod("Deserialize",
-            //    1, 
-            //    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static, null,
-            //    new Type[] { typeof(string), typeof(JsonSerializerOptions) },
-            //    null).Invoke(null, new object[] { value, options });
         }
     }
 }

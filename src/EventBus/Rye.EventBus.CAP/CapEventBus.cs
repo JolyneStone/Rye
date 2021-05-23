@@ -1,7 +1,5 @@
 ﻿using DotNetCore.CAP;
 
-using Microsoft.Extensions.DependencyInjection;
-
 using Rye.EventBus.Abstractions;
 using Rye.Util;
 
@@ -14,12 +12,9 @@ namespace Rye.EventBus.CAP
     public class CapEventBus : ICapEventBus
     {
         private readonly ICapPublisher _capPublisher;
-        private readonly IServiceScope _serviceScope;
-        public CapEventBus(ICapPublisher capPublisher,
-            IServiceScopeFactory scopeFactory)
+        public CapEventBus(ICapPublisher capPublisher)
         {
             _capPublisher = capPublisher;
-            _serviceScope = scopeFactory.CreateScope();
         }
 
         public Task PublishAsync(string eventRoute, IEvent @event)
@@ -82,7 +77,6 @@ namespace Rye.EventBus.CAP
 
         public void Dispose()
         {
-            _serviceScope?.Dispose();
         }
     }
 }

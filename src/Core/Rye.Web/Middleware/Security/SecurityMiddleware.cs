@@ -6,20 +6,16 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
-using Rye;
-using Rye.Entities.Abstractions;
 using Rye.Business.Language;
+using Rye.Entities.Abstractions;
 using Rye.Security;
-using Rye.Web.Attribute;
 using Rye.Web.Options;
 using Rye.Web.ResponseProvider.Security;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Rye.Web.Middleware

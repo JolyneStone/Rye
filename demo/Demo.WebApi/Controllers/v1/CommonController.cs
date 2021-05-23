@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Rye.Business.Validate;
 using Rye.Security;
-using Rye.Web.Attribute;
+using Rye.Web;
 
 using System.Drawing;
 using System.Threading.Tasks;

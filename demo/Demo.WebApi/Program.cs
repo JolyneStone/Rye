@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
+using Rye;
+
 namespace Demo.WebApi
 {
     public class Program
@@ -14,7 +16,9 @@ namespace Demo.WebApi
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.ConfigureApp()
+                        .UseStartup<Startup>();
+                        //.UseSerilogDefault(); // 添加Serilog 日志支持
                 });
     }
 }

@@ -8,6 +8,7 @@ using Rye.Reflection;
 using System;
 using System.ComponentModel;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Rye.Cache
 {
@@ -17,7 +18,7 @@ namespace Rye.Cache
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class CacheAttribute : InterceptAttribute, ICallingInterceptor, ICalledInterceptor
     {
-        private static readonly Lazy<IMemoryStore> _cacheLazy = new Lazy<IMemoryStore>(() => SingleServiceLocator.GetService<IMemoryStore>());
+        private static readonly Lazy<IMemoryStore> _cacheLazy = new Lazy<IMemoryStore>(() => App.ApplicationServices.GetService<IMemoryStore>());
 
         private static IMemoryStore Cache { get => _cacheLazy.Value; }
 
@@ -80,7 +81,7 @@ namespace Rye.Cache
                     TypeDescriptor.GetConverter(callingInterceptorContext.ReturnType).ConvertFromInvariantString(result) :
                     (callingInterceptorContext.ReturnType == typeof(string) ?
                     result :
-                    result.ToObject());
+                    result.ToObject(callingInterceptorContext.ReturnType));
             }
         }
 

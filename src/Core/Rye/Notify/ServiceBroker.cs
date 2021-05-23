@@ -1,4 +1,6 @@
-﻿using Rye.Logger;
+﻿using Microsoft.Extensions.Logging;
+
+using Rye.Logger;
 
 using System;
 using System.Collections.Concurrent;
@@ -13,13 +15,16 @@ namespace Rye.Notify
 {
     public class ServiceBroker<TNotification> : IServiceBroker<TNotification> where TNotification : INotification
     {
+        private readonly ILogger<ServiceBroker<INotification>> _logger;
+
         static ServiceBroker()
         {
             ServicePointManager.DefaultConnectionLimit = 100;
             ServicePointManager.Expect100Continue = false;
         }
 
-        public ServiceBroker(IServiceConnectionFactory<TNotification> connectionFactory)
+        public ServiceBroker(IServiceConnectionFactory<TNotification> connectionFactory,
+            ILogger<ServiceBroker<INotification>> logger)
         {
             ServiceConnectionFactory = connectionFactory;
 
@@ -29,6 +34,8 @@ namespace Rye.Notify
 
             _notifications = new BlockingCollection<TNotification>();
             ScaleSize = 1;
+
+            _logger = logger;
         }
 
         public event NotificationSuccessDelegate<TNotification> OnNotificationSucceeded;
@@ -85,11 +92,11 @@ namespace Rye.Notify
                 var all = (from sw in _workers
                            select sw.WorkerTask).ToArray();
 
-                LogRecord.Info("ServiceBroker", "Stopping: Waiting on Tasks");
+                _logger.LogInformation("Stopping: Waiting on Tasks");
 
                 Task.WaitAll(all);
 
-                LogRecord.Info("ServiceBroker", "Stopping: Done Waiting on Tasks");
+                _logger.LogInformation("Stopping: Done Waiting on Tasks");
 
                 _workers.Clear();
             }
@@ -118,12 +125,12 @@ namespace Rye.Notify
                 // Scale up
                 while (_workers.Count < ScaleSize)
                 {
-                    var worker = new ServiceWorker<TNotification>(this, ServiceConnectionFactory.Create());
+                    var worker = new ServiceWorker<TNotification>(this, ServiceConnectionFactory.Create(), _logger);
                     _workers.Add(worker);
                     worker.Start();
                 }
 
-                LogRecord.Debug("ServiceBroker", "Scaled Changed to: " + _workers.Count);
+                _logger.LogDebug("ServiceBroker", "Scaled Changed to: " + _workers.Count);
             }
         }
 
@@ -144,12 +151,18 @@ namespace Rye.Notify
 
     public class ServiceWorker<TNotification> where TNotification : INotification
     {
-        public ServiceWorker(IServiceBroker<TNotification> broker, IServiceConnection<TNotification> connection)
+        private readonly ILogger _logger;
+
+        public ServiceWorker(IServiceBroker<TNotification> broker,
+            IServiceConnection<TNotification> connection,
+            ILogger logger)
         {
             Broker = broker;
             Connection = connection;
 
             CancelTokenSource = new CancellationTokenSource();
+
+            _logger = logger;
         }
 
         public IServiceBroker<TNotification> Broker { get; private set; }
@@ -196,38 +209,36 @@ namespace Rye.Notify
                         try
                         {
 
-                            LogRecord.Info("ServiceBroker", string.Format("Waiting on all tasks {0}", toSend.Count()));
+                            _logger.LogInformation(string.Format("Waiting on all tasks {0}", toSend.Count()));
 
                             await Task.WhenAll(toSend).ConfigureAwait(false);
 
-                            LogRecord.Info("ServiceBroker", "All Tasks Finished");
+                            _logger.LogInformation("All Tasks Finished");
 
                         }
                         catch (Exception ex)
                         {
-                            LogRecord.Error("ServiceBroker", string.Format("Waiting on all tasks Failed: {0}", ex));
+                            _logger.LogError(string.Format("Waiting on all tasks Failed: {0}", ex));
                         }
-                        LogRecord.Info("ServiceBroker", "Passed WhenAll");
                     }
                     catch (Exception ex)
                     {
-                        LogRecord.Error("ServiceBroker", string.Format("Broker.Take: {0}", ex));
+                        _logger.LogError(string.Format("Broker.Take: {0}", ex));
                     }
                 }
 
                 if (CancelTokenSource.IsCancellationRequested)
-                    LogRecord.Info("ServiceBroker", "Cancellation was requested");
+                    _logger.LogInformation("Cancellation was requested");
                 if (Broker.IsCompleted)
-                    LogRecord.Info("ServiceBroker", "Broker IsCompleted");
+                    _logger.LogInformation("Broker IsCompleted");
 
-                LogRecord.Debug("ServiceBroker", "Broker Task Ended");
             }, CancelTokenSource.Token, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach, TaskScheduler.Default).Unwrap();
 
             WorkerTask.ContinueWith(t =>
             {
                 var ex = t.Exception;
                 if (ex != null)
-                    LogRecord.Error("ServiceBroker", string.Format("ServiceWorker.WorkerTask Error: {0}", ex));
+                    _logger.LogError(string.Format("ServiceWorker.WorkerTask Error: {0}", ex));
             }, TaskContinuationOptions.OnlyOnFaulted);
         }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 using Rye.EventBus.Abstractions;
 using Rye.EventBus.RabbitMQ.Options;
@@ -20,7 +21,10 @@ namespace Rye.EventBus.RabbitMQ
             var options = new RabbitMQEventBusOptions();
             action(options);
 
-            serviceCollection.AddEventBus<IRabbitMQEventBus>(service => new RabbitMQEventBus(options, service.GetRequiredService<IServiceScopeFactory>()));
+            serviceCollection.AddEventBus<IRabbitMQEventBus>(service => new RabbitMQEventBus(
+                options, 
+                service.GetRequiredService<IServiceScopeFactory>(),
+                service.GetRequiredService<ILogger<RabbitMQEventBus>>()));
             serviceCollection.AddEventPublisher<IRabbitMQEventPublisher>(service => service.GetService<IRabbitMQEventBus>());
             serviceCollection.AddEventSubscriber<IRabbitMQEventSubscriber>(service => service.GetService<IRabbitMQEventBus>());
             serviceCollection.AddEventBus<IEventBus>(sevice => sevice.GetService<IRabbitMQEventBus>());

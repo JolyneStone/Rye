@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Rye.Logger;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
 using System;
 
 namespace Rye.Web.Filter
@@ -70,12 +72,16 @@ namespace Rye.Web.Filter
             }
             logMessage += $"{elapsedMilliseconds} ms";
 
+            var logName = context.HttpContext.Request.Path.Value.Trim('/').Replace("/", "_") + "_rsp";
+            var logger = context.HttpContext.RequestServices
+                .GetService<ILoggerFactory>()
+                .CreateLogger(logName);
             //var action = context.RouteData.Values["action"];
-            LogRecord.Info(context.HttpContext.Request.Path.Value.Trim('/').Replace("/", "_") + "_rsp", "Response:" + logMessage);
+            logger.LogInformation("Response:" + logMessage);
 
             if (elapsedMilliseconds >= 100d)
             {
-                LogRecord.Warn("slow", $"{context.ActionDescriptor.DisplayName}:{elapsedMilliseconds} ms");
+                logger.LogInformation($"slow: {context.ActionDescriptor.DisplayName}:{elapsedMilliseconds} ms");
             }
             #endregion
         }

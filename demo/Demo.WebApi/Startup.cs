@@ -18,9 +18,6 @@ using Microsoft.Extensions.Options;
 
 using Rye;
 using Rye.Cache.Redis;
-using Rye.Cache.Redis.Options;
-using Rye.Cache.Redis.Store;
-using Rye.Cache.Store;
 using Rye.MySql;
 using Rye.Web;
 
@@ -126,6 +123,7 @@ namespace Demo.WebApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
+            App.ConfigureServiceLocator(app.ApplicationServices);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

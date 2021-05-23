@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Rye.Authorization.Abstraction.Attributes
+namespace Rye.Authorization
 {
     /// <summary>
     /// 限制登录用户访问

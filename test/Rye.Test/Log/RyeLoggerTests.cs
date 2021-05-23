@@ -22,7 +22,7 @@ namespace Rye.Logger.Tests
         [Fact()]
         public void LogTest()
         {
-            var loggerFactory = SingleServiceLocator.GetService<ILoggerFactory>();
+            var loggerFactory = App.GetService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<RyeLoggerTests>();
             logger.LogDebug("test");
             logger.LogInformation("test");

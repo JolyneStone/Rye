@@ -1,136 +1,136 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//using Microsoft.Extensions.DependencyInjection;
+//using System;
+//using System.Collections.Generic;
+//using System.Text;
 
-namespace Rye.DependencyInjection
-{
-    /// <summary>
-    /// 全局单例服务类
-    /// </summary>
-    public class SingleServiceLocator
-    {
-        private static readonly object _lock = new object();
+//namespace Rye.DependencyInjection
+//{
+//    /// <summary>
+//    /// 全局单例服务类
+//    /// </summary>
+//    public class SingleServiceLocator
+//    {
+//        private static readonly object _lock = new object();
 
-        private static IServiceProvider _serviceProvider;
-        /// <summary>
-        /// 
-        /// </summary>
-        public static IServiceProvider ServiceProvider
-        {
-            get
-            {
-                if (_serviceProvider == null)
-                {
-                    lock (_lock)
-                    {
-                        if (_serviceProvider == null)
-                        {
-                            _serviceProvider = Instance.Build();
-                        }
-                    }
-                }
-                return _serviceProvider;
-            }
-            set => _serviceProvider = value;
-        }
+//        private static IServiceProvider _serviceProvider;
+//        /// <summary>
+//        /// 
+//        /// </summary>
+//        public static IServiceProvider ServiceProvider
+//        {
+//            get
+//            {
+//                if (_serviceProvider == null)
+//                {
+//                    lock (_lock)
+//                    {
+//                        if (_serviceProvider == null)
+//                        {
+//                            _serviceProvider = Instance.Build();
+//                        }
+//                    }
+//                }
+//                return _serviceProvider;
+//            }
+//            set => _serviceProvider = value;
+//        }
 
-        private static readonly ServiceLocator Instance = new ServiceLocator();
+//        private static readonly ServiceLocator Instance = new ServiceLocator();
 
-        // Methods
-        public static void ConfigService(Action<IServiceCollection> configFunc)
-        {
-            if (configFunc != null)
-            {
-                if (Instance.Services == null)
-                {
-                    lock (_lock)
-                    {
-                        if (Instance.Services == null)
-                        {
-                            Instance.Services = new ServiceCollection();
-                        }
-                    }
-                }
-                Instance.ConfigureServices(configFunc);
-                ServiceProvider = Instance.Build();
-            }
-        }
+//        // Methods
+//        public static void ConfigService(Action<IServiceCollection> configFunc)
+//        {
+//            if (configFunc != null)
+//            {
+//                if (Instance.Services == null)
+//                {
+//                    lock (_lock)
+//                    {
+//                        if (Instance.Services == null)
+//                        {
+//                            Instance.Services = new ServiceCollection();
+//                        }
+//                    }
+//                }
+//                Instance.ConfigureServices(configFunc);
+//                ServiceProvider = Instance.Build();
+//            }
+//        }
 
-        /// <summary>
-        /// 设置 ServiceCollection 对象，
-        /// 注：会覆盖掉原来注入的对象，建议项目只调用一次，之后需要动态注入可使用 ConfigService 方法
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigService(IServiceCollection services)
-        {
-            if (services == null)
-            {
-                return;
-            }
+//        /// <summary>
+//        /// 设置 ServiceCollection 对象，
+//        /// 注：会覆盖掉原来注入的对象，建议项目只调用一次，之后需要动态注入可使用 ConfigService 方法
+//        /// </summary>
+//        /// <param name="services"></param>
+//        public static void ConfigService(IServiceCollection services)
+//        {
+//            if (services == null)
+//            {
+//                return;
+//            }
 
-            lock (_lock)
-            {
-                Instance.SetServiceCollection(services);
-                ServiceProvider = Instance.Build();
-            }
-        }
+//            lock (_lock)
+//            {
+//                Instance.SetServiceCollection(services);
+//                ServiceProvider = Instance.Build();
+//            }
+//        }
 
-        /// <summary>
-        /// 设置 ServiceProvider 对象，
-        /// 注：会覆盖掉原来注入的对象，建议项目只调用一次，之后需要动态注入可使用 ConfigService 方法
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigService(IServiceProvider serviceProvider)
-        {
-            if (serviceProvider == null)
-            {
-                return;
-            }
+//        /// <summary>
+//        /// 设置 ServiceProvider 对象，
+//        /// 注：会覆盖掉原来注入的对象，建议项目只调用一次，之后需要动态注入可使用 ConfigService 方法
+//        /// </summary>
+//        /// <param name="services"></param>
+//        public static void ConfigService(IServiceProvider serviceProvider)
+//        {
+//            if (serviceProvider == null)
+//            {
+//                return;
+//            }
 
-            lock (_lock)
-            {
-                ServiceProvider = serviceProvider;
-            }
-        }
+//            lock (_lock)
+//            {
+//                ServiceProvider = serviceProvider;
+//            }
+//        }
 
-        /// <summary>
-        /// 获取服务，服务未注入会抛异常
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="isRequired">是否必须。为true时，没注入会抛异常； 为false时，没注入返回null</param>
-        /// <returns></returns>
-        public static T GetService<T>(bool isRequired = false)
-        {
-            if (isRequired)
-            {
-                return ServiceProvider.GetRequiredService<T>();
-            }
-            else
-            {
-                return ServiceProvider.GetService<T>();
-            }
-        }
+//        /// <summary>
+//        /// 获取服务，服务未注入会抛异常
+//        /// </summary>
+//        /// <typeparam name="T"></typeparam>
+//        /// <param name="isRequired">是否必须。为true时，没注入会抛异常； 为false时，没注入返回null</param>
+//        /// <returns></returns>
+//        public static T GetService<T>(bool isRequired = false)
+//        {
+//            if (isRequired)
+//            {
+//                return ServiceProvider.GetRequiredService<T>();
+//            }
+//            else
+//            {
+//                return ServiceProvider.GetService<T>();
+//            }
+//        }
 
-        internal class ServiceLocator
-        {
-            public IServiceCollection Services { get; set; }
+//        internal class ServiceLocator
+//        {
+//            public IServiceCollection Services { get; set; }
 
-            public IServiceProvider Build()
-            {
-                return Services.BuildServiceProvider();
-            }
+//            public IServiceProvider Build()
+//            {
+//                return Services.BuildServiceProvider();
+//            }
 
-            public void ConfigureServices(Action<IServiceCollection> configFun)
-            {
-                configFun?.Invoke(Services);
-            }
+//            public void ConfigureServices(Action<IServiceCollection> configFun)
+//            {
+//                configFun?.Invoke(Services);
+//            }
 
-            public void SetServiceCollection(IServiceCollection serviceCollection)
-            {
-                Services = serviceCollection;
-            }
+//            public void SetServiceCollection(IServiceCollection serviceCollection)
+//            {
+//                Services = serviceCollection;
+//            }
 
-        }
-    }
-}
+//        }
+//    }
+//}

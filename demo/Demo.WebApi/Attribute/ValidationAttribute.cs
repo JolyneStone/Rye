@@ -1,16 +1,14 @@
-﻿using Demo.Core.Common;
-using Demo.DataAccess;
-
+﻿
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 
 using Rye.Business.Language;
-using Rye.Web.Filter;
+using Rye.Web;
 
 using System.Linq;
 
-namespace Demo.WebApi.Attribute
+namespace Demo.WebApi
 {
     public class ValidationAttribute : ModelValidationAttribute
     {

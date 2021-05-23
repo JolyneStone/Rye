@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-using Rye.Authorization.Abstraction.Attributes;
 using Rye.Authorization.Entities;
 using Rye.Cache;
 using Rye.Cache.Store;

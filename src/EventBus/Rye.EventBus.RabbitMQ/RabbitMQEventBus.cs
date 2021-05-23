@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 using Polly;
 using Polly.Retry;
@@ -32,10 +33,12 @@ namespace Rye.EventBus.RabbitMQ
 
         private IModel _consumerChannel;
 
-        private readonly IServiceScope _serviceScope;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         private readonly InternalRabbitMQEventHandler _handler;
         private readonly int _retryCount = 3;
+
+        private readonly ILogger<RabbitMQEventBus> _logger;
 
         public Func<IEvent, RabbitMQEventPublishContext, Task> OnProducing { get; set; }
 
@@ -51,12 +54,14 @@ namespace Rye.EventBus.RabbitMQ
 
         public IRabbitMQPersistentConnection Connection => _connection;
 
-        public RabbitMQEventBus(RabbitMQEventBusOptions options, IServiceScopeFactory scopeFactory)
+        public RabbitMQEventBus(RabbitMQEventBusOptions options, IServiceScopeFactory scopeFactory,
+            ILogger<RabbitMQEventBus> logger)
         {
             Check.NotNull(options, nameof(options));
             Check.NotNull(options.ConnectionFactory, nameof(options.ConnectionFactory));
 
-            _serviceScope = scopeFactory.CreateScope();
+            _serviceScopeFactory = scopeFactory;
+            _logger = logger;
             _exchange = string.IsNullOrEmpty(options.Exchange) ? "RyeEventBus" : options.Exchange;
             _queue = string.IsNullOrEmpty(options.Queue) ? "RyeQueue" : options.Queue;
             _handler = new InternalRabbitMQEventHandler();
@@ -119,7 +124,7 @@ namespace Rye.EventBus.RabbitMQ
                 .Or<SocketException>()
                 .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                 {
-                    LogRecord.Warn(nameof(RabbitMQEventBus), $"Could not publish event: {@event.EventId} after {time.TotalSeconds:n1}s ({ex.Message})");
+                    _logger.LogInformation($"Could not publish event: {@event.EventId} after {time.TotalSeconds:n1}s ({ex.Message})");
                 });
 
             using (var channel = _connection.CreateModel())
@@ -133,53 +138,56 @@ namespace Rye.EventBus.RabbitMQ
                 properties.DeliveryMode = 2; // persistent
                 properties.Headers["retry-count"] = retryCount;
 
-                try
+                using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var context = new RabbitMQEventPublishContext
+                    try
                     {
-                        ServiceProvider = _serviceScope.ServiceProvider,
-                        EventBus = this,
-                        RouteKey = routeKey,
-                        RetryCount = retryCount,
-                        Exchange = _exchange,
-                        Queue = _queue,
-                        BasicProperties = properties,
-                    };
+                        var context = new RabbitMQEventPublishContext
+                        {
+                            ServiceProvider = scope.ServiceProvider,
+                            EventBus = this,
+                            RouteKey = routeKey,
+                            RetryCount = retryCount,
+                            Exchange = _exchange,
+                            Queue = _queue,
+                            BasicProperties = properties,
+                        };
 
-                    if (OnProducing != null)
-                        await OnProducing(@event, context);
+                        if (OnProducing != null)
+                            await OnProducing(@event, context);
 
-                    policy.Execute(() =>
+                        policy.Execute(() =>
+                        {
+                            channel.BasicPublish(
+                                    exchange: _exchange,
+                                    routingKey: routeKey,
+                                    mandatory: true,
+                                    basicProperties: properties,
+                                    body: body);
+                        });
+
+                        if (OnProduced != null)
+                            await OnProduced(@event, context);
+
+                    }
+                    catch (Exception ex)
                     {
-                        channel.BasicPublish(
-                                exchange: _exchange,
-                                routingKey: routeKey,
-                                mandatory: true,
-                                basicProperties: properties,
-                                body: body);
-                    });
+                        if (OnProductError == null)
+                            throw;
 
-                    if (OnProduced != null)
-                        await OnProduced(@event, context);
-
-                }
-                catch (Exception ex)
-                {
-                    if (OnProductError == null)
-                        throw;
-
-                    var errorContext = new RabbitMQEventPublishErrorContext
-                    {
-                        ServiceProvider = _serviceScope.ServiceProvider,
-                        EventBus = this,
-                        RouteKey = routeKey,
-                        RetryCount = retryCount,
-                        Exception = ex,
-                        Exchange = _exchange,
-                        Queue = _queue,
-                        BasicProperties = properties
-                    };
-                    await OnProductError(@event, errorContext);
+                        var errorContext = new RabbitMQEventPublishErrorContext
+                        {
+                            ServiceProvider = scope.ServiceProvider,
+                            EventBus = this,
+                            RouteKey = routeKey,
+                            RetryCount = retryCount,
+                            Exception = ex,
+                            Exchange = _exchange,
+                            Queue = _queue,
+                            BasicProperties = properties
+                        };
+                        await OnProductError(@event, errorContext);
+                    }
                 }
             }
         }
@@ -195,7 +203,7 @@ namespace Rye.EventBus.RabbitMQ
                 .Or<SocketException>()
                 .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                 {
-                    LogRecord.Warn(nameof(RabbitMQEventBus), $"Could not publish event: {@event.EventId} after {time.TotalSeconds:n1}s ({ex.Message})");
+                    _logger.LogInformation($"Could not publish event: {@event.EventId} after {time.TotalSeconds:n1}s ({ex.Message})");
                 });
 
             using (var channel = _connection.CreateModel())
@@ -210,56 +218,59 @@ namespace Rye.EventBus.RabbitMQ
                 properties.Headers["retry-count"] = retryCount;
 
                 channel.ConfirmSelect(); // 开启发布确认
-                try
+                using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var context = new RabbitMQEventPublishContext
+                    try
                     {
-                        ServiceProvider = _serviceScope.ServiceProvider,
-                        EventBus = this,
-                        RouteKey = routeKey,
-                        RetryCount = retryCount,
-                        Exchange = _exchange,
-                        Queue = _queue,
-                        BasicProperties = properties,
-                    };
+                        var context = new RabbitMQEventPublishContext
+                        {
+                            ServiceProvider = scope.ServiceProvider,
+                            EventBus = this,
+                            RouteKey = routeKey,
+                            RetryCount = retryCount,
+                            Exchange = _exchange,
+                            Queue = _queue,
+                            BasicProperties = properties,
+                        };
 
-                    if (OnProducing != null)
-                        await OnProducing(@event, context);
+                        if (OnProducing != null)
+                            await OnProducing(@event, context);
 
-                    policy.Execute(() =>
+                        policy.Execute(() =>
+                        {
+                            channel.BasicPublish(
+                                    exchange: _exchange,
+                                    routingKey: routeKey,
+                                    mandatory: true,
+                                    basicProperties: properties,
+                                    body: body);
+                        });
+
+                        if (OnProduced != null)
+                            await OnProduced(@event, context);
+
+                        return channel.WaitForConfirms();
+                    }
+                    catch (Exception ex)
                     {
-                        channel.BasicPublish(
-                                exchange: _exchange,
-                                routingKey: routeKey,
-                                mandatory: true,
-                                basicProperties: properties,
-                                body: body);
-                    });
+                        if (OnProductError == null)
+                            throw;
 
-                    if (OnProduced != null)
-                        await OnProduced(@event, context);
+                        var errorContext = new RabbitMQEventPublishErrorContext
+                        {
+                            ServiceProvider = scope.ServiceProvider,
+                            EventBus = this,
+                            RouteKey = routeKey,
+                            RetryCount = retryCount,
+                            Exception = ex,
+                            Exchange = _exchange,
+                            Queue = _queue,
+                            BasicProperties = properties
+                        };
+                        await OnProductError(@event, errorContext);
 
-                    return channel.WaitForConfirms();
-                }
-                catch (Exception ex)
-                {
-                    if (OnProductError == null)
-                        throw;
-
-                    var errorContext = new RabbitMQEventPublishErrorContext
-                    {
-                        ServiceProvider = _serviceScope.ServiceProvider,
-                        EventBus = this,
-                        RouteKey = routeKey,
-                        RetryCount = retryCount,
-                        Exception = ex,
-                        Exchange = _exchange,
-                        Queue = _queue,
-                        BasicProperties = properties
-                    };
-                    await OnProductError(@event, errorContext);
-
-                    return false;
+                        return false;
+                    }
                 }
             }
         }
@@ -274,7 +285,7 @@ namespace Rye.EventBus.RabbitMQ
 
         private void StartBasicConsume()
         {
-            LogRecord.Trace(nameof(RabbitMQEventBus), "Starting RabbitMQ basic consume");
+            _logger.LogTrace("Starting RabbitMQ basic consume");
 
             if (_consumerChannel != null)
             {
@@ -289,7 +300,7 @@ namespace Rye.EventBus.RabbitMQ
             }
             else
             {
-                LogRecord.Trace(nameof(RabbitMQEventBus), "StartBasicConsume can't call on _consumerChannel == null");
+                _logger.LogTrace("StartBasicConsume can't call on _consumerChannel == null");
             }
         }
 
@@ -318,7 +329,7 @@ namespace Rye.EventBus.RabbitMQ
             }
             catch (Exception ex)
             {
-                LogRecord.Error(nameof(RabbitMQEventBus), $"ERROR Processing message \"{message}\", exception: {ex.Message}");
+                _logger.LogError($"ERROR Processing message \"{message}\", exception: {ex.Message}");
             }
 
             _consumerChannel.BasicAck(eventArgs.DeliveryTag, multiple: false);
@@ -327,86 +338,89 @@ namespace Rye.EventBus.RabbitMQ
         private async Task OnConsumeEvent(BasicDeliverEventArgs eventArgs, EventWrapper wrapper, List<IEventHandler> handlers)
         {
             IEvent firstEvent = null;
-            try
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var context = new RabbitMQEventSubscribeContext
+                try
                 {
-                    EventBus = this,
-                    ServiceProvider = _serviceScope.ServiceProvider,
-                    Exchange = _exchange,
-                    Queue = _queue,
-                    RouteKey = eventArgs.RoutingKey,
-                    Ack = false,
-                };
-                Type eventType;
-
-                var eventTypeDict = new Dictionary<Type, IEvent>();
-                for (var i = 0; i < handlers.Count; i++)
-                {
-                    eventType = handlers[0].GetEventType();
-                    IEvent @event;
-                    if (!eventTypeDict.ContainsKey(eventType))
+                    var context = new RabbitMQEventSubscribeContext
                     {
-                        @event = wrapper.Event.ToObject(eventType) as IEvent;
-                        eventTypeDict.Add(eventType, @event);
+                        EventBus = this,
+                        ServiceProvider = scope.ServiceProvider,
+                        Exchange = _exchange,
+                        Queue = _queue,
+                        RouteKey = eventArgs.RoutingKey,
+                        Ack = false,
+                    };
+                    Type eventType;
+
+                    var eventTypeDict = new Dictionary<Type, IEvent>();
+                    for (var i = 0; i < handlers.Count; i++)
+                    {
+                        eventType = handlers[0].GetEventType();
+                        IEvent @event;
+                        if (!eventTypeDict.ContainsKey(eventType))
+                        {
+                            @event = wrapper.Event.ToObject(eventType) as IEvent;
+                            eventTypeDict.Add(eventType, @event);
+                        }
+                        else
+                        {
+                            @event = eventTypeDict[eventType];
+                        }
+
+                        if (i == 0)
+                        {
+                            firstEvent = @event;
+                            if (OnConsuming != null)
+                                await OnConsuming(firstEvent, context);
+                        }
+
+                        await handlers[i].OnEvent(@event, context);
+                    }
+
+                    if (OnConsumed != null && firstEvent != null)
+                    {
+                        await OnConsumed(firstEvent, context);
+                    }
+
+                    context.Ack = true;
+                    if (context.Ack)
+                    {
+                        _consumerChannel.BasicAck(eventArgs.DeliveryTag, false);
                     }
                     else
                     {
-                        @event = eventTypeDict[eventType];
+                        _consumerChannel.BasicNack(eventArgs.DeliveryTag, false, false);
                     }
 
-                    if (i == 0)
+                }
+                catch (Exception ex)
+                {
+                    if (OnConsumeError == null || firstEvent == null)
                     {
-                        firstEvent = @event;
-                        if (OnConsuming != null)
-                            await OnConsuming(firstEvent, context);
+                        _consumerChannel.BasicNack(eventArgs.DeliveryTag, false, false);
+                        throw;
                     }
 
-                    await handlers[i].OnEvent(@event, context);
-                }
+                    var context = new RabbitMQEventSubscribeErrorContext(_consumerChannel, eventArgs)
+                    {
+                        Exchange = eventArgs.Exchange,
+                        Queue = _queue,
+                        RouteKey = eventArgs.RoutingKey,
+                        ServiceProvider = scope.ServiceProvider,
+                        Exception = ex,
+                        Ack = false,
+                    };
+                    await OnConsumeError(firstEvent, context);
 
-                if (OnConsumed != null && firstEvent != null)
-                {
-                    await OnConsumed(firstEvent, context);
-                }
-
-                context.Ack = true;
-                if (context.Ack)
-                {
-                    _consumerChannel.BasicAck(eventArgs.DeliveryTag, false);
-                }
-                else
-                {
-                    _consumerChannel.BasicNack(eventArgs.DeliveryTag, false, false);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                if (OnConsumeError == null || firstEvent == null)
-                {
-                    _consumerChannel.BasicNack(eventArgs.DeliveryTag, false, false);
-                    throw;
-                }
-
-                var context = new RabbitMQEventSubscribeErrorContext(_consumerChannel, eventArgs)
-                {
-                    Exchange = eventArgs.Exchange,
-                    Queue = _queue,
-                    RouteKey = eventArgs.RoutingKey,
-                    ServiceProvider = _serviceScope.ServiceProvider,
-                    Exception = ex,
-                    Ack = false,
-                };
-                await OnConsumeError(firstEvent, context);
-
-                if (context.Ack)
-                {
-                    _consumerChannel.BasicAck(eventArgs.DeliveryTag, false);
-                }
-                else
-                {
-                    _consumerChannel.BasicNack(eventArgs.DeliveryTag, false, false);
+                    if (context.Ack)
+                    {
+                        _consumerChannel.BasicAck(eventArgs.DeliveryTag, false);
+                    }
+                    else
+                    {
+                        _consumerChannel.BasicNack(eventArgs.DeliveryTag, false, false);
+                    }
                 }
             }
         }
@@ -418,7 +432,6 @@ namespace Rye.EventBus.RabbitMQ
             {
                 if (disposing)
                 {
-                    _serviceScope?.Dispose();
                     _consumerChannel?.Dispose();
                     _connection?.Dispose();
                 }

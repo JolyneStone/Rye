@@ -18,7 +18,7 @@ namespace Rye.Options
                 LogPath = @"/home/admin/logs/temp",
                 IsConsoleEnabled = false,
                 LogLevel = LogLevel.Debug,
-                UseRyeLog = true
+                UseDefaultLog = true
             };
             AssemblyPatterns = new string[0];
             AutoInjection = true;

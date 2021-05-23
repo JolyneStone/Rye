@@ -23,7 +23,7 @@ namespace Rye.Test.AOP
               .AddDistributedMemoryCache();
 
              var services = serviceCollection.BuildServiceProvider();
-            SingleServiceLocator.ConfigService(services);
+            App.ConfigureServiceLocator(services);
 
             var test1 = services.GetRequiredService<ITest>();
             var str = await test1.Output(1);

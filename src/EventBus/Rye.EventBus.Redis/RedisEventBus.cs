@@ -18,7 +18,7 @@ namespace Rye.EventBus.Redis
     public class RedisEventBus : IRedisEventBus
     {
         private readonly string _key;
-        private readonly IServiceScope _serviceScope;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly CSRedisClient _redisClient;
         private readonly InternalRedisEventHandler _handler;
         //private readonly SubscribeListBroadcastObject _subscribeObject;
@@ -55,7 +55,7 @@ namespace Rye.EventBus.Redis
                 _redisClient = RedisHelper.Instance;
             }
 
-            _serviceScope = scopeFactory.CreateScope();
+            _serviceScopeFactory = scopeFactory;
             _key = string.IsNullOrEmpty(options.Key) ? "RyeEventBus" : options.Key;
             var clientId = options.ClientId;
             _handler = new InternalRedisEventHandler();
@@ -80,61 +80,64 @@ namespace Rye.EventBus.Redis
         private async Task OnConsumeEvent(EventWrapper wrapper, List<IEventHandler> handlers)
         {
             IEvent firstEvent = null;
-            try
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var context = new RedisEventContext
+                try
                 {
-                    Key = _key,
-                    EventBus = this,
-                    ServiceProvider = _serviceScope.ServiceProvider,
-                    RouteKey = wrapper.Route,
-                };
-                Type eventType;
-             
-                var eventTypeDict = new Dictionary<Type, IEvent>();
-                for (var i = 0; i < handlers.Count; i++)
-                {
-                    eventType = handlers[0].GetEventType();
-                    IEvent @event;
-                    if (!eventTypeDict.ContainsKey(eventType))
+                    var context = new RedisEventContext
                     {
-                        @event = wrapper.Event.ToObject(eventType) as IEvent;
-                        eventTypeDict.Add(eventType, @event);
-                    }
-                    else
+                        Key = _key,
+                        EventBus = this,
+                        ServiceProvider = scope.ServiceProvider,
+                        RouteKey = wrapper.Route,
+                    };
+                    Type eventType;
+
+                    var eventTypeDict = new Dictionary<Type, IEvent>();
+                    for (var i = 0; i < handlers.Count; i++)
                     {
-                        @event = eventTypeDict[eventType];
+                        eventType = handlers[0].GetEventType();
+                        IEvent @event;
+                        if (!eventTypeDict.ContainsKey(eventType))
+                        {
+                            @event = wrapper.Event.ToObject(eventType) as IEvent;
+                            eventTypeDict.Add(eventType, @event);
+                        }
+                        else
+                        {
+                            @event = eventTypeDict[eventType];
+                        }
+
+                        if (i == 0)
+                        {
+                            firstEvent = @event;
+                            if (OnConsuming != null)
+                                await OnConsuming(firstEvent, context);
+                        }
+
+                        await handlers[i].OnEvent(@event, context);
                     }
 
-                    if (i == 0)
+                    if (OnConsumed != null && firstEvent != null)
                     {
-                        firstEvent = @event;
-                        if (OnConsuming != null)
-                            await OnConsuming(firstEvent, context);
+                        await OnConsumed(firstEvent, context);
                     }
-
-                    await handlers[i].OnEvent(@event, context);
                 }
-
-                if(OnConsumed!=null && firstEvent != null)
+                catch (Exception ex)
                 {
-                    await OnConsumed(firstEvent, context);
+                    if (OnConsumeError == null || firstEvent == null)
+                        throw;
+
+                    var context = new RedisEventErrorContext
+                    {
+                        EventBus = this,
+                        ServiceProvider = scope.ServiceProvider,
+                        RouteKey = wrapper.Route,
+                        RetryCount = wrapper.RetryCount,
+                        Exception = ex
+                    };
+                    await OnConsumeError(firstEvent, context);
                 }
-            }
-            catch(Exception ex)
-            {
-                if (OnConsumeError == null || firstEvent == null)
-                    throw;
-
-                var context = new RedisEventErrorContext
-                {
-                    EventBus = this,
-                    ServiceProvider = _serviceScope.ServiceProvider,
-                    RouteKey = wrapper.Route,
-                    RetryCount = wrapper.RetryCount,
-                    Exception = ex
-                };
-                await OnConsumeError(firstEvent, context);
             }
         }
 
@@ -166,43 +169,46 @@ namespace Rye.EventBus.Redis
 
         private async Task PublishAsync(string route, IEvent @event, int retryCount = 0)
         {
-            try
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var context = new RedisEventContext
+                try
                 {
-                    ServiceProvider = _serviceScope.ServiceProvider,
-                    EventBus = this,
-                    RouteKey = route,
-                    RetryCount = retryCount
-                };
+                    var context = new RedisEventContext
+                    {
+                        ServiceProvider = scope.ServiceProvider,
+                        EventBus = this,
+                        RouteKey = route,
+                        RetryCount = retryCount
+                    };
 
-                if (OnProducing != null)
-                    await OnProducing(@event, context);
+                    if (OnProducing != null)
+                        await OnProducing(@event, context);
 
-                await _redisClient.LPushAsync(_key, new EventWrapper
+                    await _redisClient.LPushAsync(_key, new EventWrapper
+                    {
+                        Route = route,
+                        Event = @event.ToJsonString(),
+                        RetryCount = retryCount
+                    });
+
+                    if (OnProduced != null)
+                        await OnProduced(@event, context);
+                }
+                catch (Exception ex)
                 {
-                    Route = route,
-                    Event = @event.ToJsonString(),
-                    RetryCount = retryCount
-                });
+                    if (OnProductError == null)
+                        throw;
 
-                if (OnProduced != null)
-                    await OnProduced(@event, context);
-            }
-            catch (Exception ex)
-            {
-                if (OnProductError == null)
-                    throw;
-
-                var context = new RedisEventErrorContext
-                {
-                    ServiceProvider = _serviceScope.ServiceProvider,
-                    EventBus = this,
-                    RouteKey = route,
-                    RetryCount = retryCount,
-                    Exception = ex
-                };
-                await OnProductError(@event, context);
+                    var context = new RedisEventErrorContext
+                    {
+                        ServiceProvider = scope.ServiceProvider,
+                        EventBus = this,
+                        RouteKey = route,
+                        RetryCount = retryCount,
+                        Exception = ex
+                    };
+                    await OnProductError(@event, context);
+                }
             }
         }
 
@@ -223,7 +229,6 @@ namespace Rye.EventBus.Redis
             {
                 if (disposing)
                 {
-                    _serviceScope.Dispose();
                     //_subscribeObject?.Dispose(); // 继续订阅，待下次启动后可以读取未处理的消息
                     _redisClient?.Dispose();
                 }

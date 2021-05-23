@@ -19,8 +19,7 @@ namespace Rye.EventBus.CAP
         {
             serviceCollection.AddCap(action);
 
-            serviceCollection.AddEventBus<ICapEventBus>(services=> new CapEventBus(services.GetRequiredService<ICapPublisher>(), 
-                services.GetRequiredService<IServiceScopeFactory>()));
+            serviceCollection.AddEventBus<ICapEventBus>(services=> new CapEventBus(services.GetRequiredService<ICapPublisher>()));
             serviceCollection.AddEventPublisher<ICapEventPublisher>(service => service.GetService<ICapEventBus>());
             serviceCollection.AddEventSubscriber<ICapEventSubscriber>(service => service.GetService<ICapEventBus>());
             serviceCollection.AddEventBus<IEventBus>(sevice => sevice.GetService<ICapEventBus>());

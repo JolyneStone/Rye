@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Rye.Authorization.Abstraction.Attributes
+namespace Rye.Authorization
 {
     /// <summary>
     /// 限制错误的Token的访问

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Rye.Logger;
@@ -21,6 +22,9 @@ namespace Rye.Web.Filter
         private static IGlobalExceptionFilterResponseProvider _provider;
         public async Task OnExceptionAsync(ExceptionContext context)
         {
+            var logger = context.HttpContext.RequestServices
+                .GetRequiredService<ILoggerFactory>()
+                .CreateLogger("GlobalException");
             try
             {
                 string requestBody = null;
@@ -32,7 +36,7 @@ namespace Rye.Web.Filter
                     }
                 }
 
-                LogRecord.Error("GlobalException", $@"Error:{context.Exception}{Environment.NewLine}
+                logger.LogError($@"Error:{context.Exception}{Environment.NewLine}
                     Headers:{context.HttpContext.Request.Headers.ToJsonString()}{Environment.NewLine}
                     Query:{context.HttpContext.Request.Query.ToJsonString()}{Environment.NewLine}
                     Body:{requestBody}");
@@ -47,10 +51,10 @@ namespace Rye.Web.Filter
             }
             catch (Exception ex)
             {
-                LogRecord.Error("GlobalExceptionFilter", $@"Error:{context.Exception}{Environment.NewLine}
+                logger.LogError($@"GlobalExceptionFilter: Error:{context.Exception}{Environment.NewLine}
                     Headers:{context.HttpContext.Request.Headers.ToJsonString()}{Environment.NewLine}
                     Query:{context.HttpContext.Request.Query.ToJsonString()}{Environment.NewLine}
-                    Exception:{ex.ToString()}");
+                    Exception:{ex}");
             }
 
 

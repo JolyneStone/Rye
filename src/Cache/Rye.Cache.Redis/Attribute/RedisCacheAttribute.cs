@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
-
+using Microsoft.Extensions.DependencyInjection;
 using Rye.AspectFlare;
 using Rye.Cache.Redis.Store;
 using Rye.Cache.Store;
@@ -18,7 +18,7 @@ namespace Rye.Cache.Redis
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class RedisCacheAttribute : InterceptAttribute, ICallingInterceptor, ICalledInterceptor
     {
-        private static readonly Lazy<IRedisStore> _cacheLazy = new Lazy<IRedisStore>(() => SingleServiceLocator.GetService<IRedisStore>());
+        private static readonly Lazy<IRedisStore> _cacheLazy = new Lazy<IRedisStore>(() => App.ApplicationServices.GetService<IRedisStore>());
 
         private static IRedisStore Cache { get => _cacheLazy.Value; }
 
@@ -85,7 +85,7 @@ namespace Rye.Cache.Redis
                     TypeDescriptor.GetConverter(callingInterceptorContext.ReturnType).ConvertFromInvariantString(result) :
                     (callingInterceptorContext.ReturnType == typeof(string) ?
                     result :
-                    result.ToObject());
+                    result.ToObject(callingInterceptorContext.ReturnType));
             }
         }
 
@@ -119,7 +119,7 @@ namespace Rye.Cache.Redis
                 var sb = new StringBuilder(cacheKey);
                 foreach (var param in parameters)
                 {
-                    sb.Append("_" + param.GetHashCode());
+                    sb.Append("_" + param?.GetHashCode());
                 }
 
                 return sb.ToString();

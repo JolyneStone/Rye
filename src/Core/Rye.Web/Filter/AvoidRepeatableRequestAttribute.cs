@@ -40,7 +40,7 @@ namespace Rye.Web.Filter
             //var controller = actionContext.RouteData.Values["controller"];
             var ips = IpAddress.GetRemoteIpV4Address(actionContext.HttpContext);
             var key = $"{ips.First()}{request.Path}{request.QueryString}";
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             if (cache.Exist(key))
             {
                 if (_provider == null)

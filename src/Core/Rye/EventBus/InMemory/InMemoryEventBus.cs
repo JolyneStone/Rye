@@ -3,7 +3,6 @@
 using Rye.EventBus.Abstractions;
 using Rye.EventBus.InMemory.Internal;
 using Rye.EventBus.InMemory.Options;
-using Rye.Logger;
 using Rye.Util;
 
 using System;
@@ -14,10 +13,10 @@ namespace Rye.EventBus.InMemory
 {
     public class InMemoryEventBus : IMemoryEventBus
     {
-        private Disruptor.Dsl.Disruptor<EventWrapper> _disruptor;
-        private Disruptor.RingBuffer<EventWrapper> _ringBuffer;
-        private InternalDisruptorHandler _handler;
-        private readonly IServiceScope _serviceScope;
+        private readonly Disruptor.Dsl.Disruptor<EventWrapper> _disruptor;
+        private readonly Disruptor.RingBuffer<EventWrapper> _ringBuffer;
+        private readonly InternalDisruptorHandler _handler;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         public event Func<IEvent, InMemoryEventContext, Task> OnProducing;
 
@@ -33,7 +32,7 @@ namespace Rye.EventBus.InMemory
 
         public InMemoryEventBus(InMemoryEventBusOptions options, IServiceScopeFactory scopeFactory)
         {
-            _serviceScope = scopeFactory.CreateScope();
+            _serviceScopeFactory = scopeFactory;
             _handler = new InternalDisruptorHandler();
             _handler.OnConsumeEvent += OnConsumeEvent;
 
@@ -63,41 +62,44 @@ namespace Rye.EventBus.InMemory
         private async Task OnConsumeEvent(EventWrapper wrapper, List<IEventHandler> handlers)
         {
             var @event = wrapper.Event;
-            try
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var context = new InMemoryEventContext()
+                try
                 {
-                    EventBus = this,
-                    ServiceProvider = _serviceScope.ServiceProvider,
-                    RouteKey = wrapper.Route,
-                    RetryCount = wrapper.RetryCount
-                };
+                    var context = new InMemoryEventContext()
+                    {
+                        EventBus = this,
+                        ServiceProvider = scope.ServiceProvider,
+                        RouteKey = wrapper.Route,
+                        RetryCount = wrapper.RetryCount
+                    };
 
-                if (OnConsuming != null)
-                    await OnConsuming(@event, context);
+                    if (OnConsuming != null)
+                        await OnConsuming(@event, context);
 
-                foreach (var handle in handlers)
-                {
-                    await handle.OnEvent(wrapper.Event, context);
+                    foreach (var handle in handlers)
+                    {
+                        await handle.OnEvent(wrapper.Event, context);
+                    }
+
+                    if (OnConsumed != null)
+                        await OnConsumed(@event, context);
                 }
-
-                if (OnConsumed != null)
-                    await OnConsumed(@event, context);
-            }
-            catch (Exception ex)
-            {
-                if (OnConsumeError == null)
-                    throw;
-
-                var context = new InMemoryEventErrorContext
+                catch (Exception ex)
                 {
-                    EventBus = this,
-                    ServiceProvider = _serviceScope.ServiceProvider,
-                    RouteKey = wrapper.Route,
-                    RetryCount = wrapper.RetryCount,
-                    Exception = ex
-                };
-                await OnConsumeError(@event, context);
+                    if (OnConsumeError == null)
+                        throw;
+
+                    var context = new InMemoryEventErrorContext
+                    {
+                        EventBus = this,
+                        ServiceProvider = scope.ServiceProvider,
+                        RouteKey = wrapper.Route,
+                        RetryCount = wrapper.RetryCount,
+                        Exception = ex
+                    };
+                    await OnConsumeError(@event, context);
+                }
             }
         }
 
@@ -116,43 +118,46 @@ namespace Rye.EventBus.InMemory
 
         private async Task PublishAsync(string eventRoute, IEvent @event, int retryCount = 0)
         {
-            try
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var context = new InMemoryEventContext
+                try
                 {
-                    ServiceProvider = _serviceScope.ServiceProvider,
-                    EventBus = this,
-                    RouteKey = eventRoute,
-                    RetryCount = retryCount
-                };
+                    var context = new InMemoryEventContext
+                    {
+                        ServiceProvider = scope.ServiceProvider,
+                        EventBus = this,
+                        RouteKey = eventRoute,
+                        RetryCount = retryCount
+                    };
 
-                if (OnProducing != null)
-                    await OnProducing(@event, context);
+                    if (OnProducing != null)
+                        await OnProducing(@event, context);
 
-                long sequence = _ringBuffer.Next();
-                var wapper = _ringBuffer[sequence];
-                wapper.Route = eventRoute;
-                wapper.Event = @event;
-                wapper.RetryCount = retryCount;
-                _ringBuffer.Publish(sequence);
+                    long sequence = _ringBuffer.Next();
+                    var wapper = _ringBuffer[sequence];
+                    wapper.Route = eventRoute;
+                    wapper.Event = @event;
+                    wapper.RetryCount = retryCount;
+                    _ringBuffer.Publish(sequence);
 
-                if (OnProduced != null)
-                    await OnProduced(@event, context);
-            }
-            catch (Exception ex)
-            {
-                if (OnProductError == null)
-                    throw;
-
-                var context = new InMemoryEventErrorContext
+                    if (OnProduced != null)
+                        await OnProduced(@event, context);
+                }
+                catch (Exception ex)
                 {
-                    ServiceProvider = _serviceScope.ServiceProvider,
-                    EventBus = this,
-                    RouteKey = eventRoute,
-                    RetryCount = retryCount,
-                    Exception = ex
-                };
-                await OnProductError(@event, context);
+                    if (OnProductError == null)
+                        throw;
+
+                    var context = new InMemoryEventErrorContext
+                    {
+                        ServiceProvider = scope.ServiceProvider,
+                        EventBus = this,
+                        RouteKey = eventRoute,
+                        RetryCount = retryCount,
+                        Exception = ex
+                    };
+                    await OnProductError(@event, context);
+                }
             }
         }
 
@@ -178,12 +183,6 @@ namespace Rye.EventBus.InMemory
                 if (disposing)
                 {
                     _disruptor?.Shutdown();
-                    _ringBuffer = null;
-                    if (_handler != null)
-                    {
-                        _handler = null;
-                    }
-                    _serviceScope.Dispose();
                 }
 
                 disposedValue = true;

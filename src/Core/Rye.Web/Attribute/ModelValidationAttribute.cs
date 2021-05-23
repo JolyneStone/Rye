@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Rye.Logger;
@@ -12,20 +13,29 @@ using System;
 using System.Linq;
 using System.Net;
 
-namespace Rye.Web.Filter
+namespace Rye.Web
 {
     /// <summary>
     /// 模型校验过滤器
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-    public class ModelValidationAttribute : ActionFilterAttribute
+    public class ModelValidationAttribute : System.Attribute, IActionFilter
     {
         private static IModeValidationResponseProvider _provider;
-        public override void OnActionExecuting(ActionExecutingContext actionContext)
+
+        public void OnActionExecuted(ActionExecutedContext context)
+        {
+            return;
+        }
+
+        public void OnActionExecuting(ActionExecutingContext actionContext)
         {
             var modelState = actionContext.ModelState;
             var logName = $"{actionContext.HttpContext.Request.Path.Value.Trim('/').Replace("/", "_")}_req";
 
+            var logger = actionContext.HttpContext.RequestServices
+                .GetRequiredService<ILoggerFactory>()
+                .CreateLogger(logName);
             if (!modelState.IsValid)
             {
                 foreach (var key in modelState.Keys)
@@ -34,7 +44,7 @@ namespace Rye.Web.Filter
                     if (state.Errors.Any())
                     {
                         string error = GetErrorMessage(actionContext.HttpContext, state.Errors);
-                        LogRecord.Error(logName, $"errorMsg:{error}，ActionArguments:{actionContext.ActionArguments.ToJsonString()}");
+                        logger.LogError($"errorMsg:{error}，ActionArguments:{actionContext.ActionArguments.ToJsonString()}");
                         if (_provider == null)
                         {
                             _provider = actionContext.HttpContext.RequestServices.GetRequiredService<IOptions<RyeWebOptions>>().Value.ModeValidation.Provider;
@@ -47,7 +57,7 @@ namespace Rye.Web.Filter
             }
 
             if (actionContext.ActionArguments != null)
-                LogRecord.Info(logName, $"ActionArguments:{actionContext.ActionArguments.ToJsonString()}");
+                logger.LogInformation($"ActionArguments:{actionContext.ActionArguments.ToJsonString()}");
         }
 
         protected virtual string GetErrorMessage(HttpContext httpContext, ModelErrorCollection errors)

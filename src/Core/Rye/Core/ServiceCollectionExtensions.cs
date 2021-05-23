@@ -75,11 +75,11 @@ namespace Rye
                 using (var scope = services.CreateScope())
                 {
                     var options = scope.ServiceProvider.GetRequiredService<IOptions<RyeOptions>>();
-                    if (options.Value.Logger.UseRyeLog)
+                    if (options.Value.Logger.UseDefaultLog)
                     {
                         serviceCollection.AddLogging(builder => builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, RyeLoggerProvider>()));
+                        LogRecord.Options = options.Value?.Logger;
                     }
-                    LogRecord.Options = options.Value?.Logger;
                     if (options.Value.AutoInjection)
                     {
                         serviceCollection.AutoInject();

@@ -3,6 +3,7 @@ using Rye.DependencyInjection;
 using Rye.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,7 +110,7 @@ namespace Rye.EntityFrameworkCore
             int cacheSeconds = 60)
         {
             Check.NotNullOrEmpty(key, nameof(key));
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.Get(key, () => source.ToPage(predicate, pageCondition, selector), cacheSeconds);
         }
 
@@ -169,7 +170,7 @@ namespace Rye.EntityFrameworkCore
             Expression<Func<TSource, TResult>> selector,
             int cacheSeconds = 60)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.Get(key, () => source.Select(selector).ToList(), cacheSeconds);
         }
 
@@ -188,7 +189,7 @@ namespace Rye.EntityFrameworkCore
             Expression<Func<TSource, TResult>> selector,
             int cacheSeconds = 60)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.Get(key, () => source.Select(selector).ToArray(), cacheSeconds);
         }
 
@@ -203,7 +204,7 @@ namespace Rye.EntityFrameworkCore
         /// <returns>查询结果</returns>
         public static List<TSource> ToCacheList<TSource>(this IQueryable<TSource> source, string key, int cacheSeconds = 60)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.Get(key, source.ToList, cacheSeconds);
         }
 
@@ -218,7 +219,7 @@ namespace Rye.EntityFrameworkCore
         /// <returns>查询结果</returns>
         public static TSource[] ToCacheArray<TSource>(this IQueryable<TSource> source, string key, int cacheSeconds = 60)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.Get(key, source.ToArray, cacheSeconds);
         }
 
@@ -231,7 +232,7 @@ namespace Rye.EntityFrameworkCore
         /// <returns>查询结果</returns>
         public static List<TSource> ToCacheList<TSource>(this IQueryable<TSource> source, string key)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.Get(key, source.ToList);
         }
 
@@ -244,7 +245,7 @@ namespace Rye.EntityFrameworkCore
         /// <returns>查询结果</returns>
         public static TSource[] ToCacheArray<TSource>(this IQueryable<TSource> source, string key)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.Get(key, source.ToArray);
         }
 
@@ -392,7 +393,7 @@ namespace Rye.EntityFrameworkCore
             int cacheSeconds = 60)
         {
             Check.NotNullOrEmpty(key, nameof(key));
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.GetAsync(key, async () => await source.ToPageAsync(predicate, pageCondition, selector), cacheSeconds);
         }
 
@@ -452,7 +453,7 @@ namespace Rye.EntityFrameworkCore
             Expression<Func<TSource, TResult>> selector,
             int cacheSeconds = 60)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.GetAsync(key, async () => await source.Select(selector).ToListAsync(), cacheSeconds);
         }
 
@@ -471,7 +472,7 @@ namespace Rye.EntityFrameworkCore
             Expression<Func<TSource, TResult>> selector,
             int cacheSeconds = 60)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.GetAsync(key, async () => await source.Select(selector).ToArrayAsync(), cacheSeconds);
         }
 
@@ -486,7 +487,7 @@ namespace Rye.EntityFrameworkCore
         /// <returns>查询结果</returns>
         public static Task<List<TSource>> ToCacheListAsync<TSource>(this IQueryable<TSource> source, string key, int cacheSeconds = 60)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.GetAsync(key, async () => await source.ToListAsync(), cacheSeconds);
         }
 
@@ -501,7 +502,7 @@ namespace Rye.EntityFrameworkCore
         /// <returns>查询结果</returns>
         public static Task<TSource[]> ToCacheArrayAsync<TSource>(this IQueryable<TSource> source, string key, int cacheSeconds = 60)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.GetAsync(key, async () => await source.ToArrayAsync(), cacheSeconds);
         }
 
@@ -514,7 +515,7 @@ namespace Rye.EntityFrameworkCore
         /// <returns>查询结果</returns>
         public static Task<List<TSource>> ToCacheListAsync<TSource>(this IQueryable<TSource> source, string key)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.GetAsync(key, async () => await source.ToListAsync());
         }
 
@@ -527,7 +528,7 @@ namespace Rye.EntityFrameworkCore
         /// <returns>查询结果</returns>
         public static Task<TSource[]> ToCacheArrayAsync<TSource>(this IQueryable<TSource> source, string key)
         {
-            IDistributedCache cache = SingleServiceLocator.GetService<IDistributedCache>();
+            IDistributedCache cache = App.GetService<IDistributedCache>();
             return cache.GetAsync(key, async () => await source.ToArrayAsync());
         }
     }

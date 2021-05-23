@@ -5,11 +5,10 @@ using Demo.Core.Model.Input;
 using Microsoft.AspNetCore.Mvc;
 
 using Rye;
-using Rye.Authorization.Abstraction.Attributes;
+using Rye.Authorization;
 using Rye.Entities.Abstractions;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

@@ -30,7 +30,7 @@ namespace Rye.Test
                     configAction(services);
                 }).Build();
 
-            SingleServiceLocator.ConfigService(host.Services);
+            App.ConfigureServiceLocator(host.Services);
             return host.Services;
         }
     }

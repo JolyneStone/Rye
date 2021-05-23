@@ -7,6 +7,6 @@ namespace Rye.Options
         public string LogPath { get; set; }
         public bool IsConsoleEnabled { get; set; }
         public LogLevel LogLevel { get; set; }
-        public bool UseRyeLog { get; set; } = true;
+        public bool UseDefaultLog { get; set; } = true;
     }
 }
