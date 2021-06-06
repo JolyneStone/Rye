@@ -32,7 +32,7 @@ namespace Demo.WebApi.Controllers
             {
                 if (_ipAddress != null)
                     return _ipAddress;
-                _ipAddress = Rye.Web.Util.IpAddress.GetRemoteIpV4AddressStr(HttpContext);
+                _ipAddress = Rye.Web.Utils.IpAddress.GetRemoteIpV4AddressStr(HttpContext);
                 return _ipAddress;
             }
         }

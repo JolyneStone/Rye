@@ -8,9 +8,9 @@ namespace Microsoft.Extensions.DependencyInjection
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface,AllowMultiple = true, Inherited = true)]
     public class InjectionAttribute: Attribute
     {
-        public InjectionAttribute(Type serviceType)
+        public InjectionAttribute(params Type[] serviceTypes)
         {
-            ServiceType = serviceType;
+            ServiceTypes = serviceTypes;
         }
 
         public InjectionAttribute(ServiceLifetime lifetime)
@@ -25,9 +25,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public InjectionAttribute(ServiceLifetime lifetime = ServiceLifetime.Scoped, 
             InjectionPolicy policy = InjectionPolicy.Append,
-            Type serviceType = null)
+            params Type[] serviceTypes)
         {
-            ServiceType = serviceType;
+            ServiceTypes = serviceTypes;
             Lifetime = lifetime;
             Policy = policy;
         }
@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// 服务类型, 如果宿主为类,则默认为当前类型, 如果宿主为接口或抽象类, 则查找所有实现类或继承类进行注入
         /// </summary>
-        public Type ServiceType { get; set; }
+        public Type[] ServiceTypes { get; set; }
 
         /// <summary>
         /// 注入生命周期, 默认为Scoped

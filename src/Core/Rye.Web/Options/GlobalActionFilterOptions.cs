@@ -1,4 +1,6 @@
-﻿namespace Rye.Web.Options
+﻿using Rye.Web.ResponseProvider;
+
+namespace Rye.Web.Options
 {
     public class GlobalActionFilterOptions
     {
@@ -6,5 +8,7 @@
         /// 是否启用全局过滤器
         /// </summary>
         public bool Enabled { get; set; } = true;
+
+        public IGlobalActionFilterResponseProvider Provider { get; set; } = new DefaultGlobalActionFilterResponseProvider();
     }
 }

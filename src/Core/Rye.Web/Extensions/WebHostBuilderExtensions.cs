@@ -15,10 +15,7 @@ namespace Rye
                 // 加载配置
                 App.AddConfigureFiles(config, hostingContext.HostingEnvironment);
             })
-            .ConfigureServices(services =>
-            {
-                
-            });
+            .ConfigureServices(services => services.AddRye());
         }
     }
 }

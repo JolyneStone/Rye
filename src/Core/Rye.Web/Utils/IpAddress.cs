@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Rye.Web.Util
+namespace Rye.Web.Utils
 {
     public static class IpAddress
     {

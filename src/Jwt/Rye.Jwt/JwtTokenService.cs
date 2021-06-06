@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -7,7 +8,8 @@ using Rye.Cache.Store;
 using Rye.Exceptions;
 using Rye.Jwt.Entities;
 using Rye.Jwt.Options;
-
+using Rye.Web.Utils;
+using Rye.Web;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,6 +28,7 @@ namespace Rye.Jwt
     {
         private readonly JwtOptions _jwtOptions;
         private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
+
         private readonly ICacheStore _store;
         public JwtTokenService(IOptions<JwtOptions> jwtOptions, ICacheStore store)
         {
@@ -33,19 +36,45 @@ namespace Rye.Jwt
             _store = store;
         }
 
+        public JwtOptions GetCurrentOptions()
+        {
+            var appKey = HttpContextUtil.GetCurrentHttpContext().Request.GetString("appKey");
+            return GetOptions(appKey);
+        }
+
+        public JwtOptions GetOptions(string appKey)
+        {
+            return new JwtOptions
+            {
+                Secret = _jwtOptions.Secret,
+                Scheme = _jwtOptions.Scheme,
+                Encrypt = _jwtOptions.Encrypt,
+                IsExpire = _jwtOptions.IsExpire,
+                Issuer = _jwtOptions.Issuer,
+                AccessExpireMins = _jwtOptions.AccessExpireMins,
+                RefreshExpireMins = _jwtOptions.RefreshExpireMins,
+                Audience = appKey.IsNullOrEmpty() ? _jwtOptions.Audience : appKey,
+                Cache = _jwtOptions.Cache
+            };
+        }
+
         /// <summary>
         /// 校验token是否正确
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public virtual async Task<ClaimsPrincipal> ValidateTokenAsync(JwtTokenType jwtTokenType, string token)
+        public virtual async Task<ClaimsPrincipal> ValidateTokenAsync(JwtTokenType jwtTokenType, string token, JwtOptions options = null)
         {
-            ClaimsPrincipal principal = _tokenHandler.ValidateToken(token, _jwtOptions.GetValidationParameters(), out _);
-            if (_jwtOptions.Cache)
+            if (options == null)
+            {
+                options = GetCurrentOptions();
+            }
+            ClaimsPrincipal principal = _tokenHandler.ValidateToken(token, options.GetValidationParameters(), out _);
+            if (options.Cache)
             {
                 var clientType = principal.Claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.ClientType)).Value;
                 var userId = principal.Claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.UserId)).Value;
-                var tokenEntry = CacheEntryCollection.GetTokenEntry(jwtTokenType, clientType, userId, (int)_jwtOptions.AccessExpireMins * 60);
+                var tokenEntry = CacheEntryCollection.GetTokenEntry(jwtTokenType, clientType, userId, (int)options.AccessExpireMins * 60);
 
                 var cacheToken = await _store.GetAsync<string>(tokenEntry);
                 if (cacheToken.IsNullOrEmpty() || cacheToken != token)
@@ -56,17 +85,25 @@ namespace Rye.Jwt
             return principal;
         }
 
-        public virtual async Task<JsonWebToken> CreateTokenAsync<T>(T tokenEntity)
+        public virtual async Task<JsonWebToken> CreateTokenAsync<T>(T tokenEntity, JwtOptions options = null)
             where T : TokenEntityBase
         {
+            if (options == null)
+            {
+                options = GetCurrentOptions();
+            }
             var claims = GetClaims(tokenEntity);
-            return await GenerateTokenAsync(claims);
+            return await GenerateTokenAsync(claims, options);
         }
 
-        public virtual async Task<JsonWebToken> RefreshTokenAsync(string refreshToken)
+        public virtual async Task<JsonWebToken> RefreshTokenAsync(string refreshToken, JwtOptions options = null)
         {
             Check.NotNull(refreshToken, nameof(refreshToken));
-            TokenValidationParameters parameters = _jwtOptions.GetValidationParameters();
+            if (options == null)
+            {
+                options = GetCurrentOptions();
+            }
+            TokenValidationParameters parameters = options.GetValidationParameters();
             JwtSecurityToken jwtSecurityToken = _tokenHandler.ReadJwtToken(refreshToken);
             string clientId = jwtSecurityToken.Claims.FirstOrDefault(m => m.Type == "clientId")?.Value;
             if (clientId == null)
@@ -76,7 +113,7 @@ namespace Rye.Jwt
 
             ClaimsPrincipal principal = _tokenHandler.ValidateToken(refreshToken, parameters, out _);
 
-            return await GenerateTokenAsync(principal.Claims.ToList());
+            return await GenerateTokenAsync(principal.Claims.ToList(), options);
         }
 
         public virtual async Task DeleteTokenAsync(string userId, string clientType)
@@ -88,26 +125,26 @@ namespace Rye.Jwt
             await _store.RemoveAsync(tokenEntry.Key);
         }
 
-        private async Task<JsonWebToken> GenerateTokenAsync(List<Claim> claims)
+        private async Task<JsonWebToken> GenerateTokenAsync(List<Claim> claims, JwtOptions options)
         {
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, $"{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}"));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Exp, $"{DateTimeOffset.UtcNow.AddMinutes(_jwtOptions.AccessExpireMins).ToUnixTimeSeconds()}"));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Exp, $"{DateTimeOffset.UtcNow.AddMinutes(options.AccessExpireMins).ToUnixTimeSeconds()}"));
 
             // AccessToken
-            var (accessToken, accessExpires) = CreateTokenCore(claims, _jwtOptions, JwtTokenType.AccessToken);
+            var (accessToken, accessExpires) = CreateTokenCore(claims, options, JwtTokenType.AccessToken);
 
             // RefreshToken
-            var (refreshToken, refreshExpires) = CreateTokenCore(claims, _jwtOptions, JwtTokenType.RefreshToken);
+            var (refreshToken, refreshExpires) = CreateTokenCore(claims, options, JwtTokenType.RefreshToken);
 
-            if (_jwtOptions.Cache)
+            if (options.Cache)
             {
                 var clientType = claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.ClientType)).Value;
                 var userId = claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.UserId)).Value;
 
-                var tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.AccessToken, clientType, userId, (int)_jwtOptions.AccessExpireMins * 60);
+                var tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.AccessToken, clientType, userId, (int)options.AccessExpireMins * 60);
                 await _store.SetAsync<string>(tokenEntry, accessToken);
 
-                tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.RefreshToken, clientType, userId, (int)_jwtOptions.AccessExpireMins * 60);
+                tokenEntry = CacheEntryCollection.GetTokenEntry(JwtTokenType.RefreshToken, clientType, userId, (int)options.AccessExpireMins * 60);
                 await _store.SetAsync<string>(tokenEntry, accessToken);
             }
 
@@ -142,7 +179,7 @@ namespace Rye.Jwt
                 expires = now.AddMinutes(minutes);
             }
             SecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-            SigningCredentials credentials = new SigningCredentials(key, _jwtOptions.Encrypt);
+            SigningCredentials credentials = new SigningCredentials(key, options.Encrypt);
 
             SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor()
             {

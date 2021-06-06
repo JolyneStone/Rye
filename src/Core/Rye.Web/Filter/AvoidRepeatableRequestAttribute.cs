@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Rye.DependencyInjection;
 using Rye.Web.Options;
 using Rye.Web.ResponseProvider.AvoidRepeatableRequestAttr;
-using Rye.Web.Util;
+using Rye.Web.Utils;
 using System;
 using System.Linq;
 using System.Net;
@@ -19,6 +19,19 @@ namespace Rye.Web.Filter
     public class AvoidRepeatableRequestAttribute : ActionFilterAttribute
     {
         private static IAvoidRepeatableRequestResponseProvider _provider;
+
+        protected static IAvoidRepeatableRequestResponseProvider Provider
+        {
+            get
+            {
+                if (_provider != null)
+                    return _provider;
+
+                _provider = App.GetRequiredService<IOptions<RyeWebOptions>>().Value.AvoidRepeatableRequest.Provider;
+                return _provider;
+            }
+        }
+
         public AvoidRepeatableRequestAttribute()
         {
             Seconds = 5;
@@ -43,12 +56,7 @@ namespace Rye.Web.Filter
             IDistributedCache cache = App.GetService<IDistributedCache>();
             if (cache.Exist(key))
             {
-                if (_provider == null)
-                {
-                    _provider = actionContext.HttpContext.RequestServices.GetRequiredService<IOptions<RyeWebOptions>>().Value.AvoidRepeatableRequest.Provider;
-                }
-
-                actionContext.Result = _provider.CreateResponse(new AvoidRepeatableRequestContext(actionContext.HttpContext, key));
+                actionContext.Result = Provider.CreateResponse(new AvoidRepeatableRequestContext(actionContext.HttpContext, key));
                 actionContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
             }
             else

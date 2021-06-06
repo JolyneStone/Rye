@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -13,6 +14,8 @@ using Rye.Security;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
+using System.Text.RegularExpressions;
 
 namespace Rye
 {
@@ -58,18 +61,7 @@ namespace Rye
                 action = options => serviceProvider.GetService<IConfiguration>().GetSection("Framework").Bind(options);
             }
 
-
             serviceCollection.Configure<RyeOptions>(action);
-            //if (action != null)
-            //{
-            //    serviceCollection.Configure<RyeOptions>(action);
-            //}
-            //else
-            //{
-            //    serviceCollection.AddOptions<RyeOptions>();
-            //}
-            //serviceCollection.TryAddSingleton<IConfigureOptions<RyeOptions>, RyeOptionsSetup>();
-            serviceCollection.TryAddSingleton<ISearcher<Assembly>, AssemblySeracher>();
             using (var services = serviceCollection.BuildServiceProvider())
             {
                 using (var scope = services.CreateScope())
@@ -80,10 +72,10 @@ namespace Rye
                         serviceCollection.AddLogging(builder => builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, RyeLoggerProvider>()));
                         LogRecord.Options = options.Value?.Logger;
                     }
-                    if (options.Value.AutoInjection)
-                    {
-                        serviceCollection.AutoInject();
-                    }
+
+                    App.Assemblies = GetDenpencyAssemblies(scope.ServiceProvider);
+                    App.Types = GetEffectiveTypes(App.Assemblies);
+                    serviceCollection.AutoInject();
 
                     return serviceCollection;
                 }
@@ -95,20 +87,10 @@ namespace Rye
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static IServiceCollection AutoInject(this IServiceCollection serviceCollection)
+        private static IServiceCollection AutoInject(this IServiceCollection serviceCollection)
         {
-            using (var services = serviceCollection.BuildServiceProvider())
-            {
-                using (var scope = services.CreateScope())
-                {
-                    var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-                    var section = configuration.GetSection("Framework:AssemblyPatterns");
-                    var patterns = section.Get<string[]>();
-                    //var options = scope.ServiceProvider.GetRequiredService<IOptions<RyeOptions>>().Value;
-                    LoadInjector.Load(serviceCollection, scope.ServiceProvider.GetRequiredService<ISearcher<Assembly>>(), patterns);
-                    return serviceCollection;
-                }
-            }
+            LoadInjector.Load(serviceCollection);
+            return serviceCollection;
         }
 
         /// <summary>
@@ -146,7 +128,7 @@ namespace Rye
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
         public static IServiceCollection AddSecuritySupport<T>(this IServiceCollection serviceCollection)
-            where T: class, ISecurityService
+            where T : class, ISecurityService
         {
             return serviceCollection.AddSingleton<ISecurityService, T>();
         }
@@ -167,6 +149,41 @@ namespace Rye
             }
 
             return serviceCollection.AddSingleton<ISecurityService, T>(factory);
+        }
+
+
+        private static Assembly[] GetDenpencyAssemblies(IServiceProvider serviceProvider)
+        {
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            var section = configuration.GetSection("Framework:AssemblyPatterns");
+            var patterns = section.Get<string[]>();
+            var hasMatch = patterns != null && patterns.Length > 0;
+            if (hasMatch)
+            {
+                for (var i = 0; i < patterns.Length; i++)
+                {
+                    patterns[i] = "^" + Regex.Escape(patterns[i])
+                           .Replace("*", ".*")
+                           .Replace("?", ".") + "$";
+                }
+            }
+
+            var dependencyContext = DependencyContext.Default;
+
+            // 读取项目程序集或 Rye 发布的包，或配置特定的包前缀
+            var scanAssemblies = dependencyContext.CompileLibraries
+                .Where(lib =>
+                       !lib.Serviceable &&
+                       ((lib.Type == "project" && !lib.Name.StartsWith("Microsoft")) || (lib.Type == "package" && lib.Name.StartsWith("Rye"))))
+                .Select(u => AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(u.Name)));
+
+            return scanAssemblies.ToArray();
+        }
+
+        private static Type[] GetEffectiveTypes(Assembly[] assemblies)
+        {
+            return assemblies.SelectMany(u => u.GetTypes()
+                .Where(u => u.IsPublic && !u.IsDefined(typeof(SkipScanAttribute), false))).ToArray();
         }
     }
 }

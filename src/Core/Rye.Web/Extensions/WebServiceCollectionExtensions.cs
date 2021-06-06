@@ -7,7 +7,7 @@ using Rye.Module;
 using Rye.Web.Filter;
 using Rye.Web.Module;
 using Rye.Web.Options;
-using Rye.Web.Util;
+using Rye.Web.Utils;
 
 using System;
 using System.Text.Encodings.Web;
@@ -45,10 +45,6 @@ namespace Rye.Web
                 var webOptions = scopeProvider.ServiceProvider.GetRequiredService<IOptions<RyeWebOptions>>().Value;
                 serviceCollection.AddControllers(options =>
                 {
-                    if (webOptions.GlobalExceptionFilter.Enabled)
-                    {
-                        options.Filters.Add<GlobalExceptionFilter>();
-                    }
                     if (webOptions.GlobalActionFilter.Enabled)
                     {
                         options.Filters.Add<GlobalActionFilter>();

@@ -7,7 +7,7 @@ using System;
 
 namespace Rye.Web.Module
 {
-    [DependsOnModules(typeof(RyeCoreModule), typeof(CacheModule))]
+    [DependsOnModules(typeof(CacheModule))]
     public class AspNetCoreMonincaModule: AspNetCoreModule
     {
         public override ModuleLevel Level => ModuleLevel.Core;

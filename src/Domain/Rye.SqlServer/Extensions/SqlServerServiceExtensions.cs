@@ -157,13 +157,13 @@ namespace Rye.SqlServer
             return serviceCollection;
         }
 
-        public static IServiceCollection AddSqlServerPersmission<TPermissionKey>(this IServiceCollection serviceCollection)
-            where TPermissionKey: IEquatable<TPermissionKey>
-        {
-            serviceCollection.RemoveAll<IPermissionService<TPermissionKey>>();
-            serviceCollection.TryAddSingleton<IPermissionService<TPermissionKey>, SqlServerPermissionService<TPermissionKey>>();
-            return serviceCollection;
-        }
+        //public static IServiceCollection AddSqlServerPersmission<TPermissionKey>(this IServiceCollection serviceCollection)
+        //    where TPermissionKey: IEquatable<TPermissionKey>
+        //{
+        //    serviceCollection.RemoveAll<IPermissionService<TPermissionKey>>();
+        //    serviceCollection.TryAddSingleton<IPermissionService<TPermissionKey>, SqlServerPermissionService<TPermissionKey>>();
+        //    return serviceCollection;
+        //}
 
         //public static IServiceCollection AddSqlServerDbConnectionProvider<T>(this IServiceCollection services, ServiceLifetime serviceLifetime)
         //    where T : SqlServerConnectionProvider

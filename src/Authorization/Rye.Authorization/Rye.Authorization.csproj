@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Domain\Rye.Entities\Rye.Entities.csproj" />
     <ProjectReference Include="..\Rye.Authorization.Abstraction\Rye.Authorization.Abstraction.csproj" />
   </ItemGroup>
 

@@ -24,7 +24,7 @@ namespace Rye.EventBus.RabbitMQ
             serviceCollection.AddEventBus<IRabbitMQEventBus>(service => new RabbitMQEventBus(
                 options, 
                 service.GetRequiredService<IServiceScopeFactory>(),
-                service.GetRequiredService<ILogger<RabbitMQEventBus>>()));
+                service.GetRequiredService<ILoggerFactory>()));
             serviceCollection.AddEventPublisher<IRabbitMQEventPublisher>(service => service.GetService<IRabbitMQEventBus>());
             serviceCollection.AddEventSubscriber<IRabbitMQEventSubscriber>(service => service.GetService<IRabbitMQEventBus>());
             serviceCollection.AddEventBus<IEventBus>(sevice => sevice.GetService<IRabbitMQEventBus>());

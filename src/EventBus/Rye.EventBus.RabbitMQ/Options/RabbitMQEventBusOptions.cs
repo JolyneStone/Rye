@@ -15,6 +15,11 @@ namespace Rye.EventBus.RabbitMQ.Options
     public class RabbitMQEventBusOptions
     {
         /// <summary>
+        /// 连接重试次数
+        /// </summary>
+        public int RetryCount { get; set; } = 5;
+
+        /// <summary>
         /// 交换机名称
         /// </summary>
         public string Exchange { get; set; }

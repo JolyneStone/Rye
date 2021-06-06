@@ -139,7 +139,7 @@ namespace Rye
 
         public static IServiceCollection ConfigureModule(this IServiceCollection serviceCollection)
         {
-            AddCoreModule(serviceCollection);
+            //AddCoreModule(serviceCollection);
             InjectModules(serviceCollection);
 
             return serviceCollection;
@@ -163,17 +163,17 @@ namespace Rye
             }
         }
 
-        /// <summary>
-        /// 注入Rye核心模块
-        /// </summary>
-        /// <param name="serviceCollection"></param>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddCoreModule(this IServiceCollection serviceCollection, Action<RyeOptions> action = null)
-        {
-            var module = new RyeCoreModule(action);
-            serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupModule>(module));
-            return serviceCollection;
-        }
+        ///// <summary>
+        ///// 注入Rye核心模块
+        ///// </summary>
+        ///// <param name="serviceCollection"></param>
+        ///// <param name="action"></param>
+        ///// <returns></returns>
+        //public static IServiceCollection AddCoreModule(this IServiceCollection serviceCollection, Action<RyeOptions> action = null)
+        //{
+        //    var module = new RyeCoreModule(action);
+        //    serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupModule>(module));
+        //    return serviceCollection;
+        //}
     }
 }

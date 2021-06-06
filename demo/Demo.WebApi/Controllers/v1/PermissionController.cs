@@ -29,7 +29,7 @@ namespace Demo.WebApi.Controllers.v1
         /// <returns></returns>
         [HttpGet]
         public async Task<ApiResult<object>> GetPermissions([FromQuery] BasicInput basicInput,
-            [FromServices] IPermissionService<int> permissionService)
+            [FromServices] IPermissionService permissionService)
         {
             var roleIdsStr = HttpContext.User.Claims.FirstOrDefault(d => d.Type.Equals("RoleIds", StringComparison.InvariantCultureIgnoreCase))?.Value;
             if (roleIdsStr.IsNullOrEmpty())

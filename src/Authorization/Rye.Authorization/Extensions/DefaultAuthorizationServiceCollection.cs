@@ -21,10 +21,9 @@ namespace Rye
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static IServiceCollection AddRyeAuthorization<TPermissionKey>(this IServiceCollection serviceCollection)
-            where TPermissionKey: IEquatable<TPermissionKey>
+        public static IServiceCollection AddRyeAuthorization(this IServiceCollection serviceCollection)
         {
-            return serviceCollection.AddRyeAuthorization(ConfigureBuilder<TPermissionKey>);
+            return serviceCollection.AddRyeAuthorization(ConfigureBuilder);
         }
 
         /// <summary>
@@ -32,21 +31,19 @@ namespace Rye
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static IServiceCollection AddAuthorizationModule<TPermissionKey>(this IServiceCollection serviceCollection)
-            where TPermissionKey: IEquatable<TPermissionKey>
+        public static IServiceCollection AddAuthorizationModule(this IServiceCollection serviceCollection)
         {
-            return serviceCollection.AddAuthorizationModule(ConfigureBuilder<TPermissionKey>);
+            return serviceCollection.AddAuthorizationModule(ConfigureBuilder);
         }
 
-        private static void ConfigureBuilder<TPermissionKey>(IModuleAuthorizationBuilder builder)
-            where TPermissionKey: IEquatable<TPermissionKey>
+        private static void ConfigureBuilder(IModuleAuthorizationBuilder builder)
         {
             builder.ConfigureOptions = options =>
             {
                 options.InvokeHandlersAfterFailure = false;
-                options.AddPolicy("RyePermission", policy => policy.Requirements.Add(new RyeRequirement()));
+                options.AddPolicy("RyeAuth", policy => policy.Requirements.Add(new RyeRequirement()));
             };
-            builder.UseHandle<RyeDefaultPolicyAuthorizationHandler<TPermissionKey>>();
+            builder.UseHandle<RyeDefaultPolicyAuthorizationHandler>();
         }
     }
 }

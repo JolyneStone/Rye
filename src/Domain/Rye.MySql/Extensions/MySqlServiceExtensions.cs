@@ -155,13 +155,13 @@ namespace Rye.MySql
             return serviceCollection;
         }
 
-        public static IServiceCollection AddMySqlPersmission<TPermissionKey>(this IServiceCollection serviceCollection)
-            where TPermissionKey : IEquatable<TPermissionKey>
-        {
-            serviceCollection.RemoveAll<IPermissionService<TPermissionKey>>();
-            serviceCollection.TryAddSingleton<IPermissionService<TPermissionKey>, MySqlPermissionService<TPermissionKey>>();
-            return serviceCollection;
-        }
+        //public static IServiceCollection AddMySqlPersmission<TPermissionKey>(this IServiceCollection serviceCollection)
+        //    where TPermissionKey : IEquatable<TPermissionKey>
+        //{
+        //    serviceCollection.RemoveAll<IPermissionService<TPermissionKey>>();
+        //    serviceCollection.TryAddSingleton<IPermissionService<TPermissionKey>, MySqlPermissionService<TPermissionKey>>();
+        //    return serviceCollection;
+        //}
 
         //public static IServiceCollection AddMySqlDbConnectionProvider<T>(this IServiceCollection services, ServiceLifetime serviceLifetime)
         // where T : MySqlConnectionProvider

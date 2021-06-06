@@ -3,9 +3,9 @@ using System;
 
 namespace Rye.Web.ResponseProvider
 {
-    public class GlobalExceptionFilterConetxt
+    public class GlobalActionFilterConetxt
     {
-        public GlobalExceptionFilterConetxt(HttpContext httpContext, Exception exception)
+        public GlobalActionFilterConetxt(HttpContext httpContext, Exception exception)
         {
             HttpContext = httpContext;
             Exception = exception;

@@ -23,6 +23,18 @@ namespace Rye.Web
     {
         private static IModeValidationResponseProvider _provider;
 
+        protected static IModeValidationResponseProvider Provider
+        {
+            get
+            {
+                if (_provider != null)
+                    return _provider;
+
+                _provider = App.GetRequiredService<IOptions<RyeWebOptions>>().Value.ModeValidation.Provider;
+                return _provider;
+            }
+        }
+
         public void OnActionExecuted(ActionExecutedContext context)
         {
             return;
@@ -45,11 +57,7 @@ namespace Rye.Web
                     {
                         string error = GetErrorMessage(actionContext.HttpContext, state.Errors);
                         logger.LogError($"errorMsg:{error}，ActionArguments:{actionContext.ActionArguments.ToJsonString()}");
-                        if (_provider == null)
-                        {
-                            _provider = actionContext.HttpContext.RequestServices.GetRequiredService<IOptions<RyeWebOptions>>().Value.ModeValidation.Provider;
-                        }
-                        actionContext.Result = _provider.CreateResponse(new ModeValidationContext(actionContext.HttpContext, modelState, state.Errors));
+                        actionContext.Result = Provider.CreateResponse(new ModeValidationContext(actionContext.HttpContext, modelState, state.Errors));
                         actionContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                         return;
                     }

@@ -4,9 +4,9 @@ using System.Net;
 
 namespace Rye.Web.ResponseProvider
 {
-    public class DefaultGlobalExceptionFilterResponseProvider : IGlobalExceptionFilterResponseProvider
+    public class DefaultGlobalActionFilterResponseProvider : IGlobalActionFilterResponseProvider
     {
-        public IActionResult CreateResponse(GlobalExceptionFilterConetxt context)
+        public IActionResult CreateResponse(GlobalActionFilterConetxt context)
         {
             return new JsonResult(Result
                 .Create(HttpStatusCode.InternalServerError, context.Exception?.Message));

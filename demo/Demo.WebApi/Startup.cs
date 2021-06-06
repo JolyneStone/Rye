@@ -77,15 +77,9 @@ namespace Demo.WebApi
             services.AddSwaggerGen(options => options.OperationFilter<SwaggerDefaultValues>());
 
             services = services.UseDynamicProxyService();
-            services.AddMySqlPersmission<int>();
-            services.AddCoreModule(options =>
-                    {
-                        options.AutoInjection = true;
-                    })
-                    .AddWebModule(options =>
+            services.AddWebModule(options =>
                     {
                         options.GlobalActionFilter.Enabled = true;
-                        options.GlobalExceptionFilter.Enabled = true;
                     })
                     .AddBusinessModule(options =>
                     {
@@ -100,25 +94,25 @@ namespace Demo.WebApi
                         builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye_Read.GetDescription());
                     })
                     .AddJwtModule()
-                    .AddAuthorizationModule<int>()
+                    .AddAuthorizationModule()
                     .AddModule<DemoModule>()
                     .ConfigureModule();
 
 
-            services = services.UseDynamicProxyService();
-            services.AddRye()
-                    .AddWebRye()
-                    .AddRedisCache(options =>
-                        Configuration.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(options))
-                    .AddMySqlDbConnectionProvider<MyDbConnectionProvider>()
-                    .AddDbBuillderOptions(builder =>
-                    {
-                        builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye.GetDescription());
-                        builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye_Read.GetDescription());
-                    })
-                    .AddMySqlEFCore()
-                    .AddJwt()
-                    .AddRyeAuthorization<int>();
+            //services = services.UseDynamicProxyService();
+            //services.AddRye()
+            //        .AddWebRye()
+            //        .AddRedisCache(options =>
+            //            Configuration.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(options))
+            //        .AddMySqlDbConnectionProvider<MyDbConnectionProvider>()
+            //        .AddDbBuillderOptions(builder =>
+            //        {
+            //            builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye.GetDescription());
+            //            builder.AddDbContext<DefaultDbContext>(DbConfig.DbRye_Read.GetDescription());
+            //        })
+            //        .AddMySqlEFCore()
+            //        .AddJwt()
+            //        .AddRyeAuthorization<int>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)

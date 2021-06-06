@@ -1,11 +1,16 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Hosting;
+
+using Rye.Reflection;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
 using System.Text.RegularExpressions;
 
 namespace Rye
@@ -13,27 +18,11 @@ namespace Rye
     public partial class App
     {
         /// <summary>
-        /// 全局配置选项
-        /// </summary>
-        public static IConfiguration Configuration { get; internal set; }
-
-        /// <summary>
         /// 获取泛型主机环境，如，是否是开发环境，生产环境等
         /// </summary>
         public static IHostEnvironment HostEnvironment { get; internal set; }
 
-        public static IServiceProvider ApplicationServices { get; internal set; } 
-
-        /// <summary>
-        /// 配置服务定位器
-        /// </summary>
-        /// <param name="serviceProvider"></param>
-        /// <returns></returns>
-        public static IServiceProvider ConfigureServiceLocator(IServiceProvider serviceProvider)
-        {
-            App.ApplicationServices = serviceProvider;
-            return serviceProvider;
-        }
+        #region Configuration
 
         /// <summary>
         /// 添加配置文件
@@ -137,8 +126,39 @@ namespace Rye
             "runtimeconfig.json"
         };
 
+        /// <summary>
+        /// 全局配置选项
+        /// </summary>
+        public static IConfiguration Configuration { get; internal set; }
+
+        /// <summary>
+        /// 获取配置
+        /// </summary>
+        /// <typeparam name="TOptions">强类型选项类</typeparam>
+        /// <param name="jsonKey">配置中对应的Key</param>
+        /// <returns>TOptions</returns>
+        public static TOptions GetConfig<TOptions>(string jsonKey)
+        {
+            return Configuration.GetSection(jsonKey).Get<TOptions>();
+        }
+
+        #endregion
 
         #region 依赖注入
+
+        public static IServiceProvider ApplicationServices { get; internal set; }
+
+        /// <summary>
+        /// 配置服务定位器
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <returns></returns>
+        public static IServiceProvider ConfigureServiceLocator(IServiceProvider serviceProvider)
+        {
+            App.ApplicationServices = serviceProvider;
+            return serviceProvider;
+        }
+
 
         public static IServiceScope CreateScope()
         {
@@ -171,8 +191,15 @@ namespace Rye
         public static IEnumerable<object?> GetServices(Type serviceType)
 #pragma warning restore CS8632 // 只能在 "#nullable" 注释上下文内的代码中使用可为 null 的引用类型的注释。
         {
-            return App.GetServices(serviceType);
+            return App.ApplicationServices.GetServices(serviceType);
         }
+
+        #endregion
+
+        #region Reflection
+
+        public static Assembly[] Assemblies { get; internal set; }
+        public static Type[] Types { get; internal set; }
 
         #endregion
     }

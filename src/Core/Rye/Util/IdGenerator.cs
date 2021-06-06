@@ -23,7 +23,6 @@ namespace Rye.Util
         private readonly object _iLock = new object();
         private static readonly object _sLock = new object();
         private long _lastTimestamp = -1L;
-        private static bool _hasRegister = false;
 
         public IdGenerator(long workerId, long datacenterId, long sequence = 0L)
         {

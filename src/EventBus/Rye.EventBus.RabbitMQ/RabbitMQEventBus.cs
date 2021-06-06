@@ -9,6 +9,7 @@ using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 
 using Rye.EventBus.Abstractions;
+using Rye.EventBus.RabbitMQ.Connect;
 using Rye.EventBus.RabbitMQ.Internal;
 using Rye.EventBus.RabbitMQ.Options;
 using Rye.Logger;
@@ -55,18 +56,23 @@ namespace Rye.EventBus.RabbitMQ
         public IRabbitMQPersistentConnection Connection => _connection;
 
         public RabbitMQEventBus(RabbitMQEventBusOptions options, IServiceScopeFactory scopeFactory,
-            ILogger<RabbitMQEventBus> logger)
+            ILoggerFactory loggerFactory)
         {
             Check.NotNull(options, nameof(options));
             Check.NotNull(options.ConnectionFactory, nameof(options.ConnectionFactory));
 
             _serviceScopeFactory = scopeFactory;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<RabbitMQEventBus>();
             _exchange = string.IsNullOrEmpty(options.Exchange) ? "RyeEventBus" : options.Exchange;
             _queue = string.IsNullOrEmpty(options.Queue) ? "RyeQueue" : options.Queue;
             _handler = new InternalRabbitMQEventHandler();
             _handler.OnConsumeEvent += OnConsumeEvent;
 
+            _connection = new RabbitMQPersistentConnection(options.ConnectionFactory,
+                loggerFactory.CreateLogger<RabbitMQPersistentConnection>(),
+                options.RetryCount);
+
+            _consumerChannel = CreateConsumerChannel();
             if (options.OnProducing != null)
                 OnProducing = options.OnProducing;
             if (options.OnProduced != null)
@@ -191,6 +197,39 @@ namespace Rye.EventBus.RabbitMQ
                 }
             }
         }
+
+        private IModel CreateConsumerChannel()
+        {
+            if (!_connection.IsConnected)
+            {
+                _connection.TryConnect();
+            }
+
+            _logger.LogTrace("Creating RabbitMQ consumer channel");
+
+            var channel = _connection.CreateModel();
+
+            channel.ExchangeDeclare(exchange: _exchange,
+                                    type: "direct");
+
+            channel.QueueDeclare(queue: _queue,
+                                 durable: true,
+                                 exclusive: false,
+                                 autoDelete: false,
+                                 arguments: null);
+
+            channel.CallbackException += (sender, ea) =>
+            {
+                _logger.LogWarning(ea.Exception, "Recreating RabbitMQ consumer channel");
+
+                _consumerChannel.Dispose();
+                _consumerChannel = CreateConsumerChannel();
+                StartBasicConsume();
+            };
+
+            return channel;
+        }
+
 
         private async Task<bool> PublishForWaitAsync(string routeKey, IEvent @event, int retryCount = 0)
         {

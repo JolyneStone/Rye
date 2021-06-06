@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using Rye.Cache;
 using Rye.Cache.Store;
-using Rye.Module;
 
 namespace Rye
 {

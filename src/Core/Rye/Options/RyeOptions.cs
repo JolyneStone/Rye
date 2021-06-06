@@ -21,7 +21,6 @@ namespace Rye.Options
                 UseDefaultLog = true
             };
             AssemblyPatterns = new string[0];
-            AutoInjection = true;
         }
 
         //public DatabaseType DefaultDatabaseType { get; set; }
@@ -35,6 +34,5 @@ namespace Rye.Options
         public LoggerOptions Logger { get; set; }
 
         public string[] AssemblyPatterns { get; set; }
-        public bool AutoInjection { get; set; }
     }
 }
