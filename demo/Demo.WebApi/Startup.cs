@@ -3,6 +3,8 @@ using Demo.Core.Common.Enums;
 using Demo.DataAccess;
 using Demo.DataAccess.EFCore.DbContexts;
 using Demo.Library;
+using Demo.Library.Abstraction;
+using Demo.Library.Business;
 using Demo.WebApi.Swagger;
 
 using Microsoft.AspNetCore.Builder;
@@ -98,7 +100,7 @@ namespace Demo.WebApi
                     .AddModule<DemoModule>()
                     .ConfigureModule();
 
-
+            var any = App.ScanTypes.Any(d => d.FullName == typeof(LoginService).FullName);
             //services = services.UseDynamicProxyService();
             //services.AddRye()
             //        .AddWebRye()
@@ -140,6 +142,7 @@ namespace Demo.WebApi
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHubs(); // ∆Ù”√SignalR
                 endpoints.MapDefaultControllerRoute();
             });
             app.UseApiVersioning();

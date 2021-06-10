@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using Rye.DependencyInjection;
 using Rye.Logger;
 using Rye.Options;
-using Rye.Reflection;
+using Rye;
 using Rye.Security;
 
 using System;
@@ -74,7 +74,7 @@ namespace Rye
                     }
 
                     App.Assemblies = GetDenpencyAssemblies(scope.ServiceProvider);
-                    App.Types = GetEffectiveTypes(App.Assemblies);
+                    App.ScanTypes = GetEffectiveTypes(App.Assemblies);
                     serviceCollection.AutoInject();
 
                     return serviceCollection;
@@ -183,7 +183,7 @@ namespace Rye
         private static Type[] GetEffectiveTypes(Assembly[] assemblies)
         {
             return assemblies.SelectMany(u => u.GetTypes()
-                .Where(u => u.IsPublic && !u.IsDefined(typeof(SkipScanAttribute), false))).ToArray();
+                .Where(u => u.IsDefineWithBaseAttribute(typeof(ScanAttribute)))).ToArray();
         }
     }
 }

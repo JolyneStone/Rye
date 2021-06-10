@@ -70,10 +70,20 @@ namespace Rye.Jwt
                 options = GetCurrentOptions();
             }
             ClaimsPrincipal principal = _tokenHandler.ValidateToken(token, options.GetValidationParameters(), out _);
+            string userId = null;
+            if (options.EnabledSignalR)
+            {
+                userId = principal.Claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.UserId)).Value;
+                principal.AddIdentity(new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userId)
+                }));
+            }
             if (options.Cache)
             {
                 var clientType = principal.Claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.ClientType)).Value;
-                var userId = principal.Claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.UserId)).Value;
+                if (userId == null)
+                    userId = principal.Claims.FirstOrDefault(d => d.Type == nameof(TokenEntityBase.UserId)).Value;
                 var tokenEntry = CacheEntryCollection.GetTokenEntry(jwtTokenType, clientType, userId, (int)options.AccessExpireMins * 60);
 
                 var cacheToken = await _store.GetAsync<string>(tokenEntry);

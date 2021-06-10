@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Hosting;
 
-using Rye.Reflection;
+using Rye;
 
 using System;
 using System.Collections.Generic;
@@ -199,7 +199,7 @@ namespace Rye
         #region Reflection
 
         public static Assembly[] Assemblies { get; internal set; }
-        public static Type[] Types { get; internal set; }
+        public static Type[] ScanTypes { get; internal set; }
 
         #endregion
     }

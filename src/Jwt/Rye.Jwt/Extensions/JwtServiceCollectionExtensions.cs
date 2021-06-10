@@ -98,21 +98,24 @@ namespace Rye
                         {
                             OnAuthenticationFailed = context =>
                             {
-                            //Token expired
-                            if (context.Exception is SecurityTokenExpiredException)
+                                //Token expired
+                                if (context.Exception is SecurityTokenExpiredException)
                                 {
-                                    context.Response.Headers.Add("Token-Expired", "true");
+                                    context.Response.Headers.Add("token-expired", "true");
                                 }
                                 return Task.CompletedTask;
                             },
-                        // 生成SignalR的用户信息
-                        OnMessageReceived = context =>
+                            OnMessageReceived = context =>
                             {
-                                string token = context.Request.Query["access_token"];
-                                string path = context.HttpContext.Request.Path;
-                                if (!string.IsNullOrEmpty(token) && path.Contains("hub"))
-                                {
-                                    context.Token = token;
+                                if (jwtOptions.EnabledSignalR)
+                                {  
+                                    // 生成SignalR的用户信息
+                                    string token = context.Request.Query["access_token"];
+                                    string path = context.HttpContext.Request.Path;
+                                    if (!string.IsNullOrEmpty(token) && path.Contains("hub"))
+                                    {
+                                        context.Token = token;
+                                    }
                                 }
                                 return Task.CompletedTask;
                             }

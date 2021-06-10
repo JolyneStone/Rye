@@ -15,7 +15,7 @@ namespace Rye.DependencyInjection
             var typeDict = new Dictionary<Type, InjectionAttribute>();
             var classList = new List<Type>();
             var injectionAttrType = typeof(InjectionAttribute);
-            foreach (var type in App.Types)
+            foreach (var type in App.ScanTypes)
             {
                 var attr = type.GetCustomAttribute<InjectionAttribute>(true);
                 if (attr != null)

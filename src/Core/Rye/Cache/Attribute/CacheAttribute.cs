@@ -3,7 +3,7 @@
 using Rye.AspectFlare;
 using Rye.Cache.Store;
 using Rye.DependencyInjection;
-using Rye.Reflection;
+using Rye;
 
 using System;
 using System.ComponentModel;

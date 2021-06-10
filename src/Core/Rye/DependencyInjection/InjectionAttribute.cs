@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Rye.DependencyInjection;
+
+using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -6,7 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// 依赖注入特性
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface,AllowMultiple = true, Inherited = true)]
-    public class InjectionAttribute: Attribute
+    public class InjectionAttribute: ScanAttribute
     {
         public InjectionAttribute(params Type[] serviceTypes)
         {

@@ -55,7 +55,12 @@ namespace Rye.Jwt.Options
         /// <summary>
         /// 是否使用缓存
         /// </summary>
-        public bool Cache { get; set; } = true; 
+        public bool Cache { get; set; } = true;
+
+        /// <summary>
+        /// 是否启用SignalR身份认证
+        /// </summary>
+        public bool EnabledSignalR { get; set; } = false;
 
         /// <summary>
         /// 获取TokenValidationParameters

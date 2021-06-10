@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Rye.DependencyInjection;
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,8 +11,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rye.Reflection
+namespace Rye
 {
+    [Scan]
     public static class ReflectionExtensions
     {
         /// <summary>
@@ -139,7 +142,7 @@ namespace Rye.Reflection
         /// <returns>返回所有指定Attribute特性的数组</returns>
         public static T[] GetAttributes<T>(this MemberInfo memberInfo, bool inherit = true) where T : Attribute
         {
-            return memberInfo.GetCustomAttributes(typeof(T), inherit).Select(d=>d.Parse<T>()).ToArray();
+            return memberInfo.GetCustomAttributes(typeof(T), inherit).Select(d => d.Parse<T>()).ToArray();
         }
 
         /// <summary>
@@ -194,6 +197,51 @@ namespace Rye.Reflection
                     cur = cur.BaseType;
                 }
             }
+            return false;
+        }
+
+        /// <summary>
+        /// 判断类型是否实现某个泛型
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <param name="generic">泛型类型</param>
+        /// <returns>bool</returns>
+        public static bool HasImplementedRawGeneric(this Type type, Type generic)
+        {
+            // 检查接口类型
+            var isTheRawGenericType = type.GetInterfaces().Any(IsTheRawGenericType);
+            if (isTheRawGenericType) return true;
+
+            // 检查类型
+            while (type != null && type != typeof(object))
+            {
+                isTheRawGenericType = IsTheRawGenericType(type);
+                if (isTheRawGenericType) return true;
+                type = type.BaseType;
+            }
+
+            return false;
+
+            // 判断逻辑
+            bool IsTheRawGenericType(Type type) => generic == (type.IsGenericType ? type.GetGenericTypeDefinition() : type);
+        }
+
+        public static bool IsDefineWithBaseAttribute(this Type type, Type attributeType)
+        {
+            Check.NotNull(attributeType, nameof(attributeType));
+
+            // 检查接口类型
+            var isDefine = type.GetInterfaces().Any(d => d.IsDefined(attributeType, true));
+            if (isDefine) return true;
+
+            // 检查类型
+            while (type != null && type != typeof(object))
+            {
+                isDefine = type.IsDefined(attributeType, true);
+                if (isDefine) return true;
+                type = type.BaseType;
+            }
+
             return false;
         }
 

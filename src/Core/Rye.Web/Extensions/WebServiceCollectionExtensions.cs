@@ -77,7 +77,7 @@ namespace Rye.Web
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            var module = new AspNetCoreMonincaModule(action);
+            var module = new AspNetCoreConfigModule(action);
             serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupModule>(module));
             return serviceCollection;
         }

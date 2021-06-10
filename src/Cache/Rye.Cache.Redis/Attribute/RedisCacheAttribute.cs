@@ -1,10 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+
 using Rye.AspectFlare;
 using Rye.Cache.Redis.Store;
-using Rye.Cache.Store;
-using Rye.DependencyInjection;
-using Rye.Reflection;
 
 using System;
 using System.ComponentModel;

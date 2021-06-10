@@ -48,16 +48,15 @@ namespace Rye.Web.Filter
         public int Seconds { get; set; }
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
-            var request = actionContext.HttpContext.Request;
+            var httpContext = actionContext.HttpContext;
             //var action = actionContext.RouteData.Values["action"];
             //var controller = actionContext.RouteData.Values["controller"];
-            var ips = IpAddress.GetRemoteIpV4Address(actionContext.HttpContext);
-            var key = $"{ips.First()}{request.Path}{request.QueryString}";
+            var key = $"{httpContext.GetRemoteIpAddressToIPv4()}_{httpContext.Request.GetRequestUrlAddress()}";
             IDistributedCache cache = App.GetService<IDistributedCache>();
             if (cache.Exist(key))
             {
-                actionContext.Result = Provider.CreateResponse(new AvoidRepeatableRequestContext(actionContext.HttpContext, key));
-                actionContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                actionContext.Result = Provider.CreateResponse(new AvoidRepeatableRequestContext(httpContext, key));
+                httpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
             }
             else
             {

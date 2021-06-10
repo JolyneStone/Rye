@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Rye.EventBus
 {
-    public static class EventBusServiceCollection
+    public static class EventBusServiceCollectionExtensions
     {
         /// <summary>
         /// 添加事件总线依赖
