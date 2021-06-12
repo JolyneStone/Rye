@@ -1,6 +1,6 @@
-﻿using Demo.Core.Common;
-using Demo.Core.Common.Enums;
-using Demo.Core.Model.Input;
+﻿using Demo.Common;
+using Demo.Common.Enums;
+using Demo.Model.Input;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,12 +34,12 @@ namespace Demo.WebApi.Controllers.v1
             var roleIdsStr = HttpContext.User.Claims.FirstOrDefault(d => d.Type.Equals("RoleIds", StringComparison.InvariantCultureIgnoreCase))?.Value;
             if (roleIdsStr.IsNullOrEmpty())
             {
-                return Result<object>(CommonStatusCode.UsertokenInvalid);
+                return Result<object>(DefaultStatusCode.UsertokenInvalid);
             }
 
             var permissons = await permissionService.GetPermissionCodeAsync(roleIdsStr);
 
-            return Result<object>(CommonStatusCode.Success,
+            return Result<object>(DefaultStatusCode.Success,
              new
              {
                  Permissions = permissons

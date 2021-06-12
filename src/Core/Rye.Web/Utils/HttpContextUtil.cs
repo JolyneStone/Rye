@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿
+using Microsoft.AspNetCore.Http;
 
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 
-namespace Rye.Web.Utils
+namespace Rye
 {
     /// <summary>
     /// 获取当前线程中的HttpContext

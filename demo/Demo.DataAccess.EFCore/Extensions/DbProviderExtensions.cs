@@ -1,4 +1,4 @@
-﻿using Demo.Core.Common.Enums;
+﻿using Demo.Common.Enums;
 using Demo.DataAccess.EFCore.DbContexts;
 
 using Rye.EntityFrameworkCore;

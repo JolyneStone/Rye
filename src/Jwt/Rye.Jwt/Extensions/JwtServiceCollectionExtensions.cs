@@ -44,21 +44,9 @@ namespace Rye
         /// 添加Rye JWT服务
         /// </summary>
         /// <param name="serviceCollection"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddJwt(this IServiceCollection serviceCollection)
-        {
-            //serviceCollection.TryAddSingleton<IConfigureOptions<JwtOptions>, JwtOptionsSetup>();
-            serviceCollection.Configure<JwtOptions>(ConfigurationManager.Appsettings.GetSection("Framework:Jwt"));
-            return AddJwtCore(serviceCollection);
-        }
-
-        /// <summary>
-        /// 添加Rye JWT服务
-        /// </summary>
-        /// <param name="serviceCollection"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static IServiceCollection AddJwt(this IServiceCollection serviceCollection, Action<JwtOptions> action)
+        public static IServiceCollection AddJwt(this IServiceCollection serviceCollection, Action<JwtOptions> action = null)
         {
             if (action != null)
             {

@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
@@ -8,10 +7,11 @@ namespace Rye
 {
     public static class EnumExtensions
     {
-        private static readonly Dictionary<Enum, string> _descriptionsDict = new Dictionary<Enum, string>();
-        private static readonly Dictionary<Enum, string> _langKeyDict = new Dictionary<Enum, string>();
-        private static readonly object _descriptionLocker = new object();
-        private static readonly object _langKeyLocker = new object();
+        private static readonly Dictionary<Enum, string> _descriptionsDict = new();
+        private static readonly Dictionary<Enum, KeyValuePair<string, string>> _langDict = new();
+        private static readonly object _descriptionLocker = new();
+        private static readonly object _langLocker = new();
+
         public static string GetDescription(this Enum @enum)
         {
             if (_descriptionsDict.ContainsKey(@enum))
@@ -38,33 +38,44 @@ namespace Rye
             }
         }
 
-        public static string GetLangKey(this Enum @enum)
+        /// <summary>
+        /// 获取多语言信息
+        /// </summary>
+        /// <param name="enum"></param>
+        /// <returns></returns>
+        public static KeyValuePair<string, string> GetLang(this Enum @enum)
         {
-
-            if (_langKeyDict.ContainsKey(@enum))
+            if (_langDict.TryGetValue(@enum, out var pair))
             {
-                return _langKeyDict[@enum];
+                return pair;
             }
             try
             {
-                string langKey = @enum.ToString();
-                var attribute = @enum.GetType().GetField(langKey).GetCustomAttribute<LangKeyAttribute>();
+                string name = @enum.ToString();
+                var attribute = @enum.GetType().GetField(name).GetCustomAttribute<LangAttribute>();
                 if (attribute != null)
                 {
-                    langKey = attribute.LangKey;
+                    if (attribute.LangKey == null)
+                    {
+                        pair = new KeyValuePair<string, string>(name, attribute.LangValue);
+                    }
+                    else
+                    {
+                        pair = new KeyValuePair<string, string>(attribute.LangKey, attribute.LangValue);
+                    }
                 }
-
-                lock (_langKeyLocker)
+                lock (_langLocker)
                 {
-                    _langKeyDict[@enum] = langKey;
+                    _langDict[@enum] = pair;
                 }
-                return langKey;
+                return pair;
             }
             catch (Exception)
             {
-                return "GetLangKey枚举错误";
+                return new KeyValuePair<string, string>("", "");
             }
         }
+
         public static int Value(this Enum item)
         {
             return item.GetHashCode();

@@ -1,30 +1,25 @@
 ﻿using Rye;
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Demo.Core.Common.Enums
+namespace Demo.Common.Enums
 {
     public enum PermissionType
     {
         /// <summary>
         /// 一级菜单
         /// </summary>
-        [Description("一级菜单"), LangKey("PermissionType.Module")]
+        [Description("一级菜单"), Lang("PermissionType.Module", "一级菜单")]
         Module = 1,
         /// <summary>
         /// 二级菜单
         /// </summary>
-        [Description("二级菜单"), LangKey("PermissionType.Menu")]
+        [Description("二级菜单"), Lang("PermissionType.Menu", "二级菜单")]
         Menu = 2,
         /// <summary>
         /// 权限
         /// </summary>
-        [Description("权限"), LangKey("PermissionType.Authority")]
+        [Description("权限"), Lang("PermissionType.Authority", "权限")]
         Authority = 99
     }
 }

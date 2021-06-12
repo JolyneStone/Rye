@@ -147,9 +147,6 @@ namespace Rye.MySql
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            serviceCollection.RemoveAll<ILangDictionaryService>();
-            serviceCollection.TryAddSingleton<ILangDictionaryService, MySqlLangDictionaryService>();
-
             serviceCollection.RemoveAll<IAppInfoService>();
             serviceCollection.TryAddSingleton<IAppInfoService, MySqlAppInfoService>();
             return serviceCollection;

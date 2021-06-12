@@ -15,18 +15,20 @@ namespace Rye
     public static class Check
     {
         /// <summary>
-        /// 验证指定值的断言<paramref name="assertion"/>是否为真，如果不为真，抛出指定消息<paramref name="message"/>的指定类型<typeparamref name="TException"/>异常
+        /// 验证指定值的断言<paramref name="assertion"/>是否为真，如果不为真，抛出指定消息<paramref name="action"/>的指定类型<typeparamref name="TException"/>异常
         /// </summary>
         /// <typeparam name="TException">异常类型</typeparam>
         /// <param name="assertion">要验证的断言。</param>
-        /// <param name="message">异常消息。</param>
-        public static void Required<TException>(bool assertion, string message)
+        /// <param name="action">异常消息。</param>
+        public static void Required<TException>(bool assertion, Func<string> action)
             where TException : Exception
         {
             if (assertion)
             {
                 return;
             }
+
+            string message = action();
             if (string.IsNullOrEmpty(message))
             {
                 throw new ArgumentNullException(nameof(message));
@@ -43,7 +45,7 @@ namespace Rye
         /// <exception cref="ArgumentNullException"></exception>
         public static void NotNull<T>(T value, string paramName)
         {
-            Required<ArgumentNullException>(value != null, string.Format(Resources.ParameterCheck_NotNull, paramName));
+            Required<ArgumentNullException>(value != null, () => string.Format(GetMessage(CheckEnum.ParameterCheck_NotNull), paramName));
         }
 
         /// <summary>
@@ -55,7 +57,7 @@ namespace Rye
         /// <exception cref="ArgumentException"></exception>
         public static void NotNullOrEmpty(string value, string paramName)
         {
-            Required<ArgumentException>(!string.IsNullOrEmpty(value), string.Format(Resources.ParameterCheck_NotNullOrEmpty_String, paramName));
+            Required<ArgumentException>(!string.IsNullOrEmpty(value), () => string.Format(GetMessage(CheckEnum.ParameterCheck_NotNullOrEmpty_String), paramName));
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace Rye
         /// <exception cref="ArgumentException"></exception>
         public static void NotEmpty(Guid value, string paramName)
         {
-            Required<ArgumentException>(value != Guid.Empty, string.Format(Resources.ParameterCheck_NotEmpty_Guid, paramName));
+            Required<ArgumentException>(value != Guid.Empty, () => string.Format(GetMessage(CheckEnum.ParameterCheck_NotEmpty_Guid), paramName));
         }
 
         /// <summary>
@@ -80,7 +82,7 @@ namespace Rye
         public static void NotNullOrEmpty<T>(IReadOnlyList<T> list, string paramName)
         {
             NotNull(list, paramName);
-            Required<ArgumentException>(list.Any(), string.Format(Resources.ParameterCheck_NotNullOrEmpty_Collection, paramName));
+            Required<ArgumentException>(list.Any(), () => string.Format(GetMessage(CheckEnum.ParameterCheck_NotNullOrEmpty_Collection), paramName));
         }
 
         /// <summary>
@@ -89,7 +91,7 @@ namespace Rye
         public static void HasNoNulls<T>(IReadOnlyList<T> list, string paramName)
         {
             NotNull(list, paramName);
-            Required<ArgumentException>(list.All(m => m != null), string.Format(Resources.ParameterCheck_NotContainsNull_Collection, paramName));
+            Required<ArgumentException>(list.All(m => m != null), () => string.Format(GetMessage(CheckEnum.ParameterCheck_NotContainsNull_Collection), paramName));
         }
 
         /// <summary>
@@ -104,8 +106,8 @@ namespace Rye
         public static void LessThan<T>(T value, string paramName, T target, bool canEqual = false) where T : IComparable<T>
         {
             bool flag = canEqual ? value.CompareTo(target) <= 0 : value.CompareTo(target) < 0;
-            string format = canEqual ? Resources.ParameterCheck_NotLessThanOrEqual : Resources.ParameterCheck_NotLessThan;
-            Required<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
+            string format = GetMessage(canEqual ? CheckEnum.ParameterCheck_NotLessThanOrEqual : CheckEnum.ParameterCheck_NotLessThan);
+            Required<ArgumentOutOfRangeException>(flag, () => string.Format(format, paramName, target));
         }
 
         /// <summary>
@@ -120,8 +122,8 @@ namespace Rye
         public static void GreaterThan<T>(T value, string paramName, T target, bool canEqual = false) where T : IComparable<T>
         {
             bool flag = canEqual ? value.CompareTo(target) >= 0 : value.CompareTo(target) > 0;
-            string format = canEqual ? Resources.ParameterCheck_NotGreaterThanOrEqual : Resources.ParameterCheck_NotGreaterThan;
-            Required<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
+            string format = GetMessage(canEqual ? CheckEnum.ParameterCheck_NotGreaterThanOrEqual : CheckEnum.ParameterCheck_NotGreaterThan);
+            Required<ArgumentOutOfRangeException>(flag, () => string.Format(format, paramName, target));
         }
 
         /// <summary>
@@ -139,16 +141,15 @@ namespace Rye
             where T : IComparable<T>
         {
             bool flag = startEqual ? value.CompareTo(start) >= 0 : value.CompareTo(start) > 0;
-            string message = startEqual
-                ? string.Format(Resources.ParameterCheck_Between, paramName, start, end)
-                : string.Format(Resources.ParameterCheck_BetweenNotEqual, paramName, start, end, start);
-            Required<ArgumentOutOfRangeException>(flag, message);
+            Required<ArgumentOutOfRangeException>(flag, () => startEqual
+                ? string.Format(GetMessage(CheckEnum.ParameterCheck_Between), paramName, start, end)
+                : string.Format(GetMessage(CheckEnum.ParameterCheck_BetweenNotEqual), paramName, start, end, start));
 
             flag = endEqual ? value.CompareTo(end) <= 0 : value.CompareTo(end) < 0;
-            message = endEqual
-                ? string.Format(Resources.ParameterCheck_Between, paramName, start, end)
-                : string.Format(Resources.ParameterCheck_BetweenNotEqual, paramName, start, end, end);
-            Required<ArgumentOutOfRangeException>(flag, message);
+
+            Required<ArgumentOutOfRangeException>(flag, () => endEqual
+                ? string.Format(GetMessage(CheckEnum.ParameterCheck_Between), paramName, start, end)
+                : string.Format(GetMessage(CheckEnum.ParameterCheck_BetweenNotEqual), paramName, start, end, end));
         }
 
         /// <summary>
@@ -161,7 +162,7 @@ namespace Rye
         public static void DirectoryExists(string directory, string paramName = null)
         {
             NotNull(directory, paramName);
-            Required<DirectoryNotFoundException>(Directory.Exists(directory), string.Format(Resources.ParameterCheck_DirectoryNotExists, directory));
+            Required<DirectoryNotFoundException>(Directory.Exists(directory), () => string.Format(GetMessage(CheckEnum.ParameterCheck_DirectoryNotExists), directory));
         }
 
         /// <summary>
@@ -174,7 +175,7 @@ namespace Rye
         public static void FileExists(string filename, string paramName = null)
         {
             NotNull(filename, paramName);
-            Required<FileNotFoundException>(File.Exists(filename), string.Format(Resources.ParameterCheck_FileNotExists, filename));
+            Required<FileNotFoundException>(File.Exists(filename), () => string.Format(GetMessage(CheckEnum.ParameterCheck_FileNotExists), filename));
         }
 
         /// <summary>
@@ -189,8 +190,8 @@ namespace Rye
         public static void CheckGreaterThan<T>(T value, T target, bool canEqual = false, string paramName = "") where T : IComparable<T>
         {
             bool flag = canEqual ? value.CompareTo(target) >= 0 : value.CompareTo(target) > 0;
-            string format = canEqual ? Resources.ParameterCheck_NotGreaterThanOrEqual : Resources.ParameterCheck_NotGreaterThan;
-            Required<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
+            string format = GetMessage(canEqual ? CheckEnum.ParameterCheck_NotGreaterThanOrEqual : CheckEnum.ParameterCheck_NotGreaterThan);
+            Required<ArgumentOutOfRangeException>(flag, () => string.Format(format, paramName, target));
         }
 
         /// <summary>
@@ -205,8 +206,13 @@ namespace Rye
         public static void CheckLessThan<T>(this T value, T target, bool canEqual = false, string paramName = "") where T : IComparable<T>
         {
             bool flag = canEqual ? value.CompareTo(target) <= 0 : value.CompareTo(target) < 0;
-            string format = canEqual ? Resources.ParameterCheck_NotLessThanOrEqual : Resources.ParameterCheck_NotLessThan;
-            Required<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
+            string format = GetMessage(canEqual ? CheckEnum.ParameterCheck_NotLessThanOrEqual : CheckEnum.ParameterCheck_NotLessThan);
+            Required<ArgumentOutOfRangeException>(flag, () => string.Format(format, paramName, target));
+        }
+
+        private static string GetMessage(CheckEnum @enum)
+        {
+            return I18n.GetText(@enum);
         }
     }
 }

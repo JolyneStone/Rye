@@ -52,20 +52,6 @@ namespace Rye.Cache
         }
 
         /// <summary>
-        /// 获取多语言字典列表缓存Key
-        /// </summary>
-        /// <param name="expire"></param>
-        /// <returns></returns>
-        public static CacheOptionEntry GetLangDictionaryListEntry(int expire = 10 * 60)
-        {
-            return new CacheOptionEntry
-            {
-                Key = "Rye_LangDictionary:List",
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(expire)
-            };
-        }
-
-        /// <summary>
         /// 获取AppInfo Sign 缓存Key
         /// </summary>
         /// <param name="appId"></param>

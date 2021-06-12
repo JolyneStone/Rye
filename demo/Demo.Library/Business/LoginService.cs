@@ -1,4 +1,4 @@
-﻿using Demo.Core.Common.Enums;
+﻿using Demo.Common.Enums;
 using Demo.DataAccess.EFCore;
 using Demo.DataAccess.EFCore.Models;
 using Demo.Library.Abstraction;
@@ -14,7 +14,6 @@ using Rye.Util;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Demo.Core;
 
 namespace Demo.Library.Business
 {
@@ -29,7 +28,7 @@ namespace Demo.Library.Business
             _securityService = securityService;
         }
 
-        public async Task<(CommonStatusCode, LoginUserInfoDto)> LoginAsync(string appKey, string account, string password)
+        public async Task<(DefaultStatusCode, LoginUserInfoDto)> LoginAsync(string appKey, string account, string password)
         {
             var uow = _provider.GetUnitOfWorkByReadDb();
             var userInfoRepository = uow.GetReadOnlyRepository<UserInfo, int>();
@@ -37,7 +36,7 @@ namespace Demo.Library.Business
             var appInfo = await appInfoRepository.GetFirstOrDefaultAsync(d => d.AppKey == appKey);
             if (appInfo == null)
             {
-                return (CommonStatusCode.AppNotExist, null);
+                return (DefaultStatusCode.AppNotExist, null);
             }
             UserInfo userInfo;
             if (StringUtil.IsMobile(account))
@@ -60,17 +59,17 @@ namespace Demo.Library.Business
             }
             else
             {
-                return (CommonStatusCode.InvalidAccount, null);
+                return (DefaultStatusCode.InvalidAccount, null);
             }
 
             if (userInfo == null)
             {
-                return (CommonStatusCode.AccountError, null);
+                return (DefaultStatusCode.AccountError, null);
             }
 
             if (userInfo.LockTime.HasValue && userInfo.LockTime.Value < DateTime.UtcNow)
             {
-                return (CommonStatusCode.AccountAlreadyLock, null);
+                return (DefaultStatusCode.AccountAlreadyLock, null);
             }
 
             if (userInfo.Password != password.ToPassword())
@@ -82,14 +81,14 @@ namespace Demo.Library.Business
                 {
                     await repo.UpdateAsync(userInfo);
                     await uow.SaveChangesAsync();
-                    return (CommonStatusCode.AccountError, null);
+                    return (DefaultStatusCode.AccountError, null);
                 }
                 else
                 {
                     userInfo.LockTime = DateTime.UtcNow.AddHours(2);
                     await repo.UpdateAsync(userInfo);
                     await uow.SaveChangesAsync();
-                    return (CommonStatusCode.AccountError, null);
+                    return (DefaultStatusCode.AccountError, null);
                 }
             }
 
@@ -98,7 +97,7 @@ namespace Demo.Library.Business
             var rolesRepository = uow.GetReadOnlyRepository<Role, int>();
             roleIds = await rolesRepository.Query(d => d.AppId == appInfo.AppId && roleIds.Contains(d.Id)).Select(d => d.Id).ToArrayAsync();
 
-            return (CommonStatusCode.Success, new LoginUserInfoDto
+            return (DefaultStatusCode.Success, new LoginUserInfoDto
             {
                 Id = userInfo.Id,
                 AppId = userInfo.AppId,

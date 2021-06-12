@@ -1,6 +1,6 @@
-﻿using Demo.Core.Common;
-using Demo.Core.Common.Enums;
-using Demo.Core.Model.Input;
+﻿using Demo.Common;
+using Demo.Common.Enums;
+using Demo.Model.Input;
 using Demo.Library.Abstraction;
 using Demo.Library.Dto;
 using Demo.WebApi.Model.Intput;
@@ -62,7 +62,7 @@ namespace Demo.WebApi.Controllers
                 basicInput.AppKey,
                 input.Account.FromBase64String(),
                 input.Password.FromBase64String());
-            if (code != CommonStatusCode.Success)
+            if (code != DefaultStatusCode.Success)
             {
                 return Result<JsonWebToken>(code);
             }
@@ -79,7 +79,7 @@ namespace Demo.WebApi.Controllers
                 Phone = userInfo.Phone
             };
             var token = await _jwtTokenService.CreateTokenAsync(entry);
-            return Result(CommonStatusCode.Success, token);
+            return Result(DefaultStatusCode.Success, token);
         }
 
         /// <summary>
@@ -92,14 +92,14 @@ namespace Demo.WebApi.Controllers
         public async Task<ApiResult> Logout([FromQuery] BasicInput basicInput, [FromQuery] string token)
         {
             if(token.IsNullOrEmpty())
-                return Result(CommonStatusCode.Success);
+                return Result(DefaultStatusCode.Success);
 
             var principal = await _jwtTokenService.ValidateTokenAsync(JwtTokenType.AccessToken, token);
             var userIdStr = principal.Claims.FirstOrDefault(d => d.Type.Equals("UserId", StringComparison.InvariantCultureIgnoreCase))?.Value;
             var clientType = basicInput.ClientType.ToString();
 
             await _jwtTokenService.DeleteTokenAsync(userIdStr, clientType);
-            return Result(CommonStatusCode.Success);
+            return Result(DefaultStatusCode.Success);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Demo.WebApi.Controllers
         {
             if (refreshToken.IsNullOrEmpty())
             {
-                return Result<JsonWebToken>(CommonStatusCode.ParametersError);
+                return Result<JsonWebToken>(DefaultStatusCode.ParametersError);
             }
 
             ClaimsPrincipal principal;
@@ -125,11 +125,11 @@ namespace Demo.WebApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"{nameof(RefreshToken)}: Exception: {ex.ToString()}");
-                return Result<JsonWebToken>(CommonStatusCode.Fail);
+                return Result<JsonWebToken>(DefaultStatusCode.Fail);
             }
 
             var token = await _jwtTokenService.RefreshTokenAsync(refreshToken);
-            return Result(CommonStatusCode.Success, token);
+            return Result(DefaultStatusCode.Success, token);
         }
 
         /// <summary>
@@ -143,10 +143,10 @@ namespace Demo.WebApi.Controllers
             var userIdStr = HttpContext.User.Claims.FirstOrDefault(d => d.Type.Equals("UserId", StringComparison.InvariantCultureIgnoreCase))?.Value;
             if (appIdStr.IsNullOrEmpty() || userIdStr.IsNullOrEmpty())
             {
-                return Result<UserInfoDto>(CommonStatusCode.UsertokenInvalid);
+                return Result<UserInfoDto>(DefaultStatusCode.UsertokenInvalid);
             }
 
-            return Result(CommonStatusCode.Success,
+            return Result(DefaultStatusCode.Success,
                 await _userService.GetBasicUserAsync(appIdStr.ParseByInt(), userIdStr.ParseByInt()));
         }
 

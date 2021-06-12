@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Rye.DependencyInjection;
+
 using Rye.Web.Options;
 using Rye.Web.ResponseProvider.AvoidRepeatableRequestAttr;
-using Rye.Web.Utils;
+
 using System;
-using System.Linq;
 using System.Net;
 
 namespace Rye.Web.Filter

@@ -1,4 +1,4 @@
-﻿using Demo.Core.Common;
+﻿using Demo.Common;
 using Demo.DataAccess;
 
 using Rye.Cache;

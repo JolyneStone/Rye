@@ -1,7 +1,7 @@
-﻿using Demo.Core.Common.Enums;
+﻿using Demo.Common.Enums;
 using Rye;
 
-namespace Demo.Core.Common
+namespace Demo.Common
 {
     public class ApiResult
     {

@@ -1,6 +1,6 @@
 ﻿using Dapper;
 
-using Demo.Core.Common;
+using Demo.Common;
 
 using Rye.Cache.Redis;
 using Rye.Cache.Store;
@@ -12,13 +12,6 @@ namespace Demo.DataAccess
 {
     public partial class DaoAppInfo
     {
-        private readonly ICacheStore _store;
-        public DaoAppInfo(MySqlConnectionProvider provider, ICacheStore store)
-        {
-            ConnectionProvider = provider;
-            _store = store;
-        }
-
         public AppInfo GetModel(string appKey)
         {
             var sql = $"select {GetColumns()} from AppInfo where appKey = @appKey";

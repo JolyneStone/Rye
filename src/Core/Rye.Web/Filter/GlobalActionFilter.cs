@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Threading.Tasks;
-using System.Net;
-using Rye.Web.ResponseProvider;
-using Rye.Web.Utils;
 using Microsoft.Extensions.Options;
+
 using Rye.Web.Options;
+using Rye.Web.ResponseProvider;
+
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Rye.Web.Filter
 {

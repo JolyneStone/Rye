@@ -1,8 +1,7 @@
-﻿using Rye.Business.Language;
-
+﻿
 using System.ComponentModel.DataAnnotations;
 
-namespace Demo.Core.Model.Input
+namespace Demo.Model.Input
 {
     public class BasicInput
     {
@@ -11,12 +10,6 @@ namespace Demo.Core.Model.Input
         /// </summary>
         [Required(ErrorMessage = "INVALID_PARAMS")]
         public string AppKey { get; set; }
-
-        /// <summary>
-        /// 语言，默认为zh-cn
-        /// </summary>
-        [Required(ErrorMessage = "INVALID_PARAMS")]
-        public string Lang { get; set; } = LangCode.ZHCN;
 
         /// <summary>
         /// 客户端类型

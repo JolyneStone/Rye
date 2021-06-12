@@ -1,9 +1,8 @@
-using Demo.Core.Common;
-using Demo.Core.Common.Enums;
+using Demo.Common;
+using Demo.Common.Enums;
 using Demo.DataAccess;
 using Demo.DataAccess.EFCore.DbContexts;
 using Demo.Library;
-using Demo.Library.Abstraction;
 using Demo.Library.Business;
 using Demo.WebApi.Swagger;
 
@@ -40,7 +39,10 @@ namespace Demo.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddLocalization<Startup>();
+            services.AddControllers()
+                .AddAppLocalization();
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
@@ -126,6 +128,10 @@ namespace Demo.WebApi
             }
 
             app.UseHttpsRedirection();
+
+            // 配置多语言中间件，必须在路由注册之前
+            app.UseAppLocalization();
+
             app.UseStaticFiles();
             app.UseSwagger();
             app.UseSwaggerUI(options =>
@@ -156,7 +162,7 @@ namespace Demo.WebApi
             {
                 return new JsonResult(new ApiResult
                 {
-                    Code = (int)CommonStatusCode.Fail,
+                    Code = (int)DefaultStatusCode.Fail,
                     Message = "Unsupported Api Version",
                 });
             }

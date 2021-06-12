@@ -1,4 +1,4 @@
-﻿using Demo.Core;
+﻿using Demo;
 
 using System;
 using System.Collections.Generic;

@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
-using Rye.Business.Language;
 using Rye.Entities.Abstractions;
 using Rye.Security;
 using Rye.Web.Options;
@@ -48,12 +47,8 @@ namespace Rye.Web.Middleware
             var securityService = services.GetRequiredService<ISecurityService>();
 
             var responseTempBody = string.Empty;
-            string lang = LangCode.ZHCN;
-            if (context.Request.Query.TryGetValue("lang", out var langVal))
-            {
-                lang = langVal.ToString();
-            }
-            if (!context.Request.Query.TryGetValue("appKey", out var appKey) || StringValues.IsNullOrEmpty(appKey))
+            var appKey = context.Request.GetString("appKey");
+            if (appKey.IsNullOrEmpty())
             {
                 responseTempBody = _provider.CreateParameterErrorResponse(new SecurityContext { HttpContext = context });
                 await WriteResponseAsync(context, attr.EncryptResponseBody, securityService, null, null, responseTempBody);

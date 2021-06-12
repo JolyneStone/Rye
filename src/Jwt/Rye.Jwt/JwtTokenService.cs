@@ -8,8 +8,8 @@ using Rye.Cache.Store;
 using Rye.Exceptions;
 using Rye.Jwt.Entities;
 using Rye.Jwt.Options;
-using Rye.Web.Utils;
 using Rye.Web;
+
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;

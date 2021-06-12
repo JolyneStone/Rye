@@ -1,5 +1,7 @@
-﻿using Demo.Core.Common.Enums;
+﻿using Demo.Common.Enums;
+
 using Microsoft.Extensions.Options;
+
 using Rye;
 using Rye.DataAccess.Options;
 using Rye.MySql;

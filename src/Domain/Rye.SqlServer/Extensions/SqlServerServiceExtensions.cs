@@ -148,10 +148,6 @@ namespace Rye.SqlServer
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            serviceCollection.RemoveAll<ILangDictionaryService>();
-            serviceCollection.TryAddSingleton<ILangDictionaryService, SqlServerLangDictionaryService>();
-
-
             serviceCollection.RemoveAll<IAppInfoService>();
             serviceCollection.TryAddSingleton<IAppInfoService, SqlServerAppInfoService>();
             return serviceCollection;

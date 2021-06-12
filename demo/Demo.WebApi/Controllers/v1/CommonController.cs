@@ -1,5 +1,5 @@
-﻿using Demo.Core.Common;
-using Demo.Core.Common.Enums;
+﻿using Demo.Common;
+using Demo.Common.Enums;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,21 +36,21 @@ namespace Demo.WebApi.Controllers.v1
             };
             Bitmap bitmap = coder.CreateImage(4, out string code);
             var id = await verifyCodeService.SetCodeAsync(code);
-            return Result<string>(CommonStatusCode.Success, verifyCodeService.GetImageString(bitmap, id));
+            return Result<string>(DefaultStatusCode.Success, verifyCodeService.GetImageString(bitmap, id));
         }
 
         [HttpPost]
         public async Task<ApiResult<string>> Encrypt([FromForm] string param, [FromForm] int appId,
             [FromServices] ISecurityService securityService)
         {
-            return Result<string>(CommonStatusCode.Success, await securityService.EncryptAsync(appId, param));
+            return Result<string>(DefaultStatusCode.Success, await securityService.EncryptAsync(appId, param));
         }
 
         [HttpPost]
         public async Task<ApiResult<string>> Decrypt([FromForm] string param, [FromForm] int appId,
                 [FromServices] ISecurityService securityService)
         {
-            return Result<string>(CommonStatusCode.Success, await securityService.DecryptAsync(appId, param));
+            return Result<string>(DefaultStatusCode.Success, await securityService.DecryptAsync(appId, param));
         }
 
         [Security(decryptRequestBody: true, encryptResponseBody: true)]

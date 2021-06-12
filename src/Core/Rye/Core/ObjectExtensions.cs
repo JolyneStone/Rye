@@ -233,27 +233,6 @@ namespace Rye
             }
         }
 
-        public static T Parse<T>(this object obj, T defaultValue = default)
-        {
-            try
-            {
-                if (obj == null && default(T) == null)
-                {
-                    return defaultValue;
-                }
-                if (obj.GetType() == typeof(T))
-                {
-                    return (T)obj;
-                }
-                object result = Parse(obj, typeof(T));
-                return (T)result;
-            }
-            catch (Exception)
-            {
-                return default;
-            }
-        }
-
         /// <summary>
         /// obj.ToString之后DateTime.Parse
         /// </summary>
@@ -294,6 +273,55 @@ namespace Rye
             }
             catch { }
             return temp;
+        }
+
+        public static T Parse<T>(this object obj, T defaultValue = default)
+        {
+            try
+            {
+                if (obj == null && default(T) == null)
+                {
+                    return defaultValue;
+                }
+                if (obj.GetType() == typeof(T))
+                {
+                    return (T)obj;
+                }
+                object result = Parse(obj, typeof(T));
+                return (T)result;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
+
+        public static object Parse(this object value, Type conversionType)
+        {
+            try
+            {
+                if (value == null)
+                {
+                    return conversionType.IsValueType ? Activator.CreateInstance(conversionType) : null;
+                }
+                if (conversionType.IsNullableType())
+                {
+                    conversionType = conversionType.GetUnNullableType();
+                }
+                if (conversionType.IsEnum)
+                {
+                    return Enum.Parse(conversionType, value.ToString());
+                }
+                if (conversionType == typeof(Guid))
+                {
+                    return Guid.Parse(value.ToString());
+                }
+                return Convert.ChangeType(value, conversionType);
+            }
+            catch
+            {
+                return conversionType.IsValueType ? Activator.CreateInstance(conversionType) : null;
+            }
         }
 
         #endregion

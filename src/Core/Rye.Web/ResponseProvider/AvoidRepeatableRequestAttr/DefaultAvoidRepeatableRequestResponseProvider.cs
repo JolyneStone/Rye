@@ -11,7 +11,7 @@ namespace Rye.Web.ResponseProvider.AvoidRepeatableRequestAttr
         public IActionResult CreateResponse(AvoidRepeatableRequestContext context)
         {
             return new JsonResult(Result
-                .Create(HttpStatusCode.Forbidden, "You can't repeat the request, please try again later!"));
+                .Create(HttpStatusCode.Forbidden, I18n.GetText(LangKeyEnum.AvoidRepeatableRequest)));
         }
     }
 }

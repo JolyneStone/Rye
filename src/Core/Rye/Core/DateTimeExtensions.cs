@@ -72,7 +72,7 @@ namespace Rye
         public static DateTime FromJsGetTime(this long jsTime)
         {
             int length = jsTime.ToString().Length;
-            Check.Required<ArgumentException>(length != 10 || length != 13, "JS时间数值的长度不正确，必须为10位或13位");
+            Check.Required<ArgumentException>(length != 10 || length != 13, () => I18n.GetText(LangKeyEnum.JsDateLengthInValid));
             DateTime start = new DateTime(1970, 1, 1);
             DateTime result = length == 10 ? start.AddSeconds(jsTime) : start.AddMilliseconds(jsTime);
             return result.FromUtcTime();

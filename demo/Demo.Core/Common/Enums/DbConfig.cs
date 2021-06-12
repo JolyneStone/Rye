@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Demo.Core.Common.Enums
+namespace Demo.Common.Enums
 {
     public enum DbConfig
     {

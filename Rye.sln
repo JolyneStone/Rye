@@ -79,7 +79,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rye.EventBus.CAP", "src\Eve
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Log", "Log", "{03CACEA9-B304-4830-832C-522ED852C481}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rye.Log.Serilog", "src\Log\Rye.Log.Serilog\Rye.Log.Serilog.csproj", "{73111397-586D-42F8-BEDB-4C7B52D22307}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rye.Log.Serilog", "src\Log\Rye.Log.Serilog\Rye.Log.Serilog.csproj", "{73111397-586D-42F8-BEDB-4C7B52D22307}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

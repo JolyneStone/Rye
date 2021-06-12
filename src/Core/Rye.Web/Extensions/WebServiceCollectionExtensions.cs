@@ -7,7 +7,6 @@ using Rye.Module;
 using Rye.Web.Filter;
 using Rye.Web.Module;
 using Rye.Web.Options;
-using Rye.Web.Utils;
 
 using System;
 using System.Text.Encodings.Web;

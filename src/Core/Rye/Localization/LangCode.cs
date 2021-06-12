@@ -1,4 +1,4 @@
-﻿namespace Rye.Business.Language
+﻿namespace Rye.Localization
 {
     public class LangCode
     {

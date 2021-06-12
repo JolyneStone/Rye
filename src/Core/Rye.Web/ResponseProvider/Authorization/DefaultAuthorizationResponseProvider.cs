@@ -10,25 +10,25 @@ namespace Rye.Web.ResponseProvider.Authorization
         public JsonResult CreateNotLoginResponse(HttpContext context)
         {
             return new JsonResult(Result
-                .Create(HttpStatusCode.Unauthorized, $"Please log in and try again"));
+                .Create(HttpStatusCode.Unauthorized, I18n.GetText(LangKeyEnum.NotLogin)));
         }
 
         public JsonResult CreateTokenExpireResponse(HttpContext context)
         {
             return new JsonResult(Result
-                .Create(HttpStatusCode.Unauthorized, $"Access token has expired"));
+                .Create(HttpStatusCode.Unauthorized, I18n.GetText(LangKeyEnum.TokenExpire)));
         }
 
         public JsonResult CreatePermissionNotAllowResponse(HttpContext context)
         {
             return new JsonResult(Result
-                .Create(HttpStatusCode.Unauthorized, $"You do not have access to this api"));
+                .Create(HttpStatusCode.Unauthorized, I18n.GetText(LangKeyEnum.PermissionNotAllow)));
         }
 
         public JsonResult CreateTokenErrorResponse(HttpContext context)
         {
             return new JsonResult(Result
-             .Create(HttpStatusCode.Unauthorized, $"Access token is error"));
+             .Create(HttpStatusCode.Unauthorized, I18n.GetText(LangKeyEnum.TokenError)));
         }
     }
 }

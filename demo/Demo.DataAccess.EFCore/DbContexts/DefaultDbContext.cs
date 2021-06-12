@@ -44,14 +44,14 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnType("varchar(2000)")
                     .HasColumnName("appKey")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.AppSecret)
                     .IsRequired()
                     .HasColumnType("varchar(2000)")
                     .HasColumnName("appSecret")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.CreateTime)
                     .HasColumnType("datetime")
@@ -63,7 +63,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnType("varchar(100)")
                     .HasColumnName("name")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Remark)
                     .IsRequired()
@@ -71,7 +71,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("remark")
                     .HasDefaultValueSql("''")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Status)
                     .HasColumnName("status")
@@ -89,14 +89,14 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnType("varchar(255)")
                     .HasColumnName("dicKey")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.DicValue)
                     .IsRequired()
                     .HasColumnType("varchar(8000)")
                     .HasColumnName("dicValue")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
             });
 
             modelBuilder.Entity<LangDictionary>(entity =>
@@ -111,20 +111,20 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnType("varchar(255)")
                     .HasColumnName("dicKey")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Lang)
                     .HasColumnType("varchar(50)")
                     .HasColumnName("lang")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.DicValue)
                     .IsRequired()
                     .HasColumnType("varchar(8000)")
                     .HasColumnName("dicValue")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
             });
 
             modelBuilder.Entity<Permission>(entity =>
@@ -143,7 +143,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("code")
                     .HasComment("权限编码")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_bin");
+                    .UseCollation("utf8mb4_bin");
 
                 entity.Property(e => e.CreateTime)
                     .HasColumnType("datetime")
@@ -156,7 +156,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("icon")
                     .HasComment("图标")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_bin");
+                    .UseCollation("utf8mb4_bin");
 
                 entity.Property(e => e.Link)
                     .IsRequired()
@@ -164,7 +164,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("link")
                     .HasComment("地址")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_bin");
+                    .UseCollation("utf8mb4_bin");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -172,7 +172,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("name")
                     .HasComment("权限名称")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_bin");
+                    .UseCollation("utf8mb4_bin");
 
                 entity.Property(e => e.ParentId)
                     .HasColumnName("parentId")
@@ -184,7 +184,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("remark")
                     .HasComment("备注")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_bin");
+                    .UseCollation("utf8mb4_bin");
 
                 entity.Property(e => e.Sort)
                     .HasColumnName("sort")
@@ -225,7 +225,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("name")
                     .HasComment("角色名称")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Remarks)
                     .IsRequired()
@@ -233,7 +233,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("remarks")
                     .HasComment("备注")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Status)
                     .HasColumnName("status")
@@ -270,7 +270,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasDefaultValueSql("''")
                     .HasComment("邮箱")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Lock)
                     .HasColumnType("bit(1)")
@@ -288,7 +288,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("nickame")
                     .HasComment("昵称")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Password)
                     .IsRequired()
@@ -296,7 +296,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("password")
                     .HasComment("密码")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Phone)
                     .IsRequired()
@@ -305,7 +305,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasDefaultValueSql("''")
                     .HasComment("手机号")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.ProfilePicture)
                     .IsRequired()
@@ -313,7 +313,7 @@ namespace Demo.DataAccess.EFCore.DbContexts
                     .HasColumnName("profilePicture")
                     .HasComment("头像地址")
                     .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                    .UseCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.RegisterTime)
                     .HasColumnType("datetime")

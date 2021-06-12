@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Demo.Core.Common
+namespace Demo.Common
 {
     public sealed class CacheEntrys
     {
