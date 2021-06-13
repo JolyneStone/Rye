@@ -7,6 +7,7 @@ using Rye.Web.ResponseProvider.AvoidRepeatableRequestAttr;
 
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Rye.Web.Filter
 {
@@ -14,8 +15,10 @@ namespace Rye.Web.Filter
     /// 防止重复提交
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-    public class AvoidRepeatableRequestAttribute : ActionFilterAttribute
+    public class AvoidRepeatableRequestAttribute : Attribute, IAsyncActionFilter, IOrderedFilter
     {
+        public int Order => -10;
+
         private static IAvoidRepeatableRequestResponseProvider _provider;
 
         protected static IAvoidRepeatableRequestResponseProvider Provider
@@ -44,22 +47,25 @@ namespace Rye.Web.Filter
         /// 默认为五秒
         /// </summary>
         public int Seconds { get; set; }
-        public override void OnActionExecuting(ActionExecutingContext actionContext)
+
+        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var httpContext = actionContext.HttpContext;
+            var httpContext = context.HttpContext;
             //var action = actionContext.RouteData.Values["action"];
             //var controller = actionContext.RouteData.Values["controller"];
             var key = $"{httpContext.GetRemoteIpAddressToIPv4()}_{httpContext.Request.GetRequestUrlAddress()}";
             IDistributedCache cache = App.GetService<IDistributedCache>();
             if (cache.Exist(key))
             {
-                actionContext.Result = Provider.CreateResponse(new AvoidRepeatableRequestContext(httpContext, key));
+                context.Result = Provider.CreateResponse(new AvoidRepeatableRequestContext(httpContext, key));
                 httpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
             }
             else
             {
                 cache.Set(key, 1, Seconds);
             }
+
+            await next();
         }
     }
 }

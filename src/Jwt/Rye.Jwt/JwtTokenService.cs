@@ -38,7 +38,7 @@ namespace Rye.Jwt
 
         public JwtOptions GetCurrentOptions()
         {
-            var appKey = HttpContextUtil.GetCurrentHttpContext().Request.GetString("appKey");
+            var appKey = WebApp.HttpContext?.Request.GetString("appKey");
             return GetOptions(appKey);
         }
 

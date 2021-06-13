@@ -1,14 +1,16 @@
-﻿using Rye.CodeGenerator;
+﻿using Rye;
+using Rye.CodeGenerator;
 using Rye.CodeGenerator.MySql;
-using Rye.Configuration;
+
 using System.Threading.Tasks;
+
 using Xunit;
 
 namespace Demo.DataAccess.Tests
 {
     public class DataAccessGeneratorTest
     {
-        private static readonly string ConnectionString = ConfigurationManager.GetSectionValue($"Framework:DbConnections:RyeDemo:ConnectionString");
+        private static readonly string ConnectionString = App.Configuration.GetSectionValue($"Framework:DbConnections:RyeDemo:ConnectionString");
 
         [Fact()]
         public async Task GenerateAsync()

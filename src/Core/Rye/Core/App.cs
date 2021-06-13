@@ -55,32 +55,24 @@ namespace Rye
         {
             // 获取程序目录下的所有配置文件
             var jsonFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.json", SearchOption.TopDirectoryOnly)
-                .Union(
-                    Directory.GetFiles(Directory.GetCurrentDirectory(), "*.json", SearchOption.TopDirectoryOnly)
-                )
-                .Where(u => CheckIncludeDefaultSettings(Path.GetFileName(u)) && !ignoreConfigurationFiles.Contains(Path.GetFileName(u)) && !runtimeJsonSuffixs.Any(j => u.EndsWith(j)));
+                .Where(u => CheckIncludeDefaultSettings(Path.GetFileName(u)) && 
+                    !ignoreConfigurationFiles.Contains(Path.GetFileName(u)) && 
+                    !runtimeJsonSuffixs.Any(j => u.EndsWith(j)));
 
             if (!jsonFiles.Any()) return;
 
             // 获取环境变量名
             var envName = env.EnvironmentName;
-            var envFiles = new List<string>();
 
-            // 自动加载配置文件
-            foreach (var jsonFile in jsonFiles)
+            // 遍历所有配置分组
+            foreach (var jsonFile in jsonFiles.Where(j =>
+                                                {
+                                                    var fileName = Path.GetFileNameWithoutExtension(j);
+                                                    return fileName.IndexOf('.') < 0 || fileName.EndsWith($".{envName}");
+                                                }).OrderBy(j => Path.GetFileName(j).Length))
             {
-                // 处理带环境的配置文件
-                if (Path.GetFileNameWithoutExtension(jsonFile).EndsWith($".{envName}"))
-                {
-                    envFiles.Add(jsonFile);
-                    continue;
-                }
-
                 config.AddJsonFile(jsonFile, optional: true, reloadOnChange: true);
             }
-
-            // 配置带环境的配置文件
-            envFiles.ForEach(u => config.AddJsonFile(u, optional: true, reloadOnChange: true));
         }
 
         /// <summary>
@@ -108,7 +100,7 @@ namespace Rye
         /// <summary>
         /// 排序的配置文件前缀
         /// </summary>
-        private static readonly string[] excludeJsonPrefixs = new[] { "appsettings", "bundleconfig", "compilerconfig" };
+        private static readonly string[] excludeJsonPrefixs = new[] { "bundleconfig", "compilerconfig" };
 
         /// <summary>
         /// 排除特定配置文件正则表达式

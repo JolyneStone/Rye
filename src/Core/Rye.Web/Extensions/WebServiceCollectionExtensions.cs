@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -47,6 +48,17 @@ namespace Rye.Web
                     if (webOptions.GlobalActionFilter.Enabled)
                     {
                         options.Filters.Add<GlobalActionFilter>();
+                    }
+
+                    if (webOptions.ModeValidation.Enabled)
+                    {
+                        //关闭默认检查
+                        serviceCollection.Configure<ApiBehaviorOptions>(options =>
+                        {
+                            options.SuppressModelStateInvalidFilter = true;
+                        });
+
+                        options.Filters.Add<ModelValidationAttribute>();
                     }
                 })
                 .AddJsonOptions(options =>

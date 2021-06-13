@@ -1,14 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-using Rye.Configuration;
 using Rye.Localization;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Rye
 {
@@ -30,7 +25,7 @@ namespace Rye
             }
             else
             {
-                serviceCollection.Configure<LocalizationSettingOptions>(ConfigurationManager.Appsettings.GetSection("Framework:LocalizationSetting"));
+                serviceCollection.Configure<LocalizationSettingOptions>(App.Configuration.GetSection("Framework:LocalizationSetting"));
             }
 
             // 获取多语言配置选项

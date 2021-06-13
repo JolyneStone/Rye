@@ -19,8 +19,10 @@ namespace Rye.Web
     /// 模型校验过滤器
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-    public class ModelValidationAttribute : System.Attribute, IActionFilter
+    public class ModelValidationAttribute : Attribute, IActionFilter, IOrderedFilter
     {
+        public int Order => 0;
+
         private static IModeValidationResponseProvider _provider;
 
         protected static IModeValidationResponseProvider Provider

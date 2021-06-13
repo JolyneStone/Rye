@@ -1,18 +1,17 @@
-﻿using Rye.Jwt.Options;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+
+using Rye.Jwt;
+using Rye.Jwt.Options;
+
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using Rye.Jwt;
-using Rye.Configuration;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Threading.Tasks;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Rye
 {
@@ -54,7 +53,7 @@ namespace Rye
             }
             else
             {
-                serviceCollection.Configure<JwtOptions>(ConfigurationManager.Appsettings.GetSection("Framework:Jwt"));
+                serviceCollection.Configure<JwtOptions>(App.Configuration.GetSection("Framework:Jwt"));
             }
             return AddJwtCore(serviceCollection);
         }

@@ -38,8 +38,8 @@ namespace Rye.AspectFlare.DynamicProxy
             bool hasInterfaceIntercept = interfaceType.HasInterceptAttribute();
             var interfaceMethods = interfaceType.GetMethods(
                  BindingFlags.Public |
-                 BindingFlags.Instance |
-                 BindingFlags.DeclaredOnly
+                 BindingFlags.Instance
+                 //BindingFlags.DeclaredOnly
              );
 
             foreach (var proxyMethod in classType.GetMethods(

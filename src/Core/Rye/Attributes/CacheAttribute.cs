@@ -1,16 +1,16 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 
-using Rye.AspectFlare;
-using Rye.Cache.Store;
-using Rye.DependencyInjection;
 using Rye;
+using Rye.AspectFlare;
+using Rye.Cache;
+using Rye.Cache.Store;
 
 using System;
 using System.ComponentModel;
 using System.Text;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Rye.Cache
+namespace Rye
 {
     /// <summary>
     /// 提供方法数据缓存功能，使用IMemoryStore

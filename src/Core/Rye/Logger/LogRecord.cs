@@ -1,7 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
-using Rye.Configuration;
 using Rye.Options;
 
 using System;
@@ -29,7 +27,7 @@ namespace Rye.Logger
             {
                 //if (_options == null)
                 //{
-                //    _options = ConfigurationManager.Appsettings.GetSection("Framework:Logger").Get<LoggerOptions>();
+                //    _options = App.Configuration.GetSection("Framework:Logger").Get<LoggerOptions>();
                 //    if (_options == null)
                 //    {
                 //        _options = new LoggerOptions

@@ -50,7 +50,7 @@ namespace Rye
 
             I18n.OnGetSelectCulturing = () =>
             {
-                var httpContext = HttpContextUtil.GetCurrentHttpContext();
+                var httpContext = WebApp.HttpContext;
                 if (httpContext == null) return default;
 
                 // 获取请求特性
@@ -60,7 +60,7 @@ namespace Rye
 
             I18n.OnSetCultured = (string culture) =>
             {
-                var httpContext = HttpContextUtil.GetCurrentHttpContext();
+                var httpContext = WebApp.HttpContext;
                 if (httpContext == null) return;
 
                 httpContext.Response.Cookies.Append(

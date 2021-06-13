@@ -3,7 +3,7 @@
 namespace Rye.Web
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-    public class SecurityAttribute : System.Attribute
+    public class SecurityAttribute : Attribute
     {
         public SecurityAttribute(bool decryptRequestBody = true, bool encryptResponseBody = true)
         {

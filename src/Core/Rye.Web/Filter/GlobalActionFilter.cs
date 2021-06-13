@@ -16,6 +16,8 @@ namespace Rye.Web.Filter
 {
     public class GlobalActionFilter : IAsyncActionFilter, IOrderedFilter
     {
+        public int Order => -9999;
+
         private readonly string actionPerf = "ActionExecuting_Millisecond";
         private static IGlobalActionFilterResponseProvider _provider;
 
@@ -30,8 +32,6 @@ namespace Rye.Web.Filter
                 return _provider;
             }
         }
-
-        public int Order => -9999;
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {

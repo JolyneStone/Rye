@@ -18,7 +18,7 @@
 
 //        //public RyeOptionsSetup()
 //        //{
-//        //    _configuration = ConfigurationManager.Appsettings;
+//        //    _configuration = App.Configuration;
 //        //}
 
 //        public RyeOptionsSetup(IConfiguration configuration)

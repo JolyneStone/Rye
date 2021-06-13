@@ -2,13 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using Rye.Cache.Redis;
-using Rye.Configuration;
-using Rye.DependencyInjection;
-
 using System;
 using System.IO;
-using System.Linq;
 
 namespace Rye.Test
 {
@@ -16,7 +11,7 @@ namespace Rye.Test
     {
         public static IServiceProvider ConfigService(Action<IServiceCollection> configAction)
         {
-            var devSetting = ConfigurationManager.Appsettings.GetSection("ASPNETCORE_ENVIRONMENT").Value == "Development" ? ".Development" : "";
+            var devSetting = App.Configuration.GetSection("ASPNETCORE_ENVIRONMENT").Value == "Development" ? ".Development" : "";
             var host = Host.CreateDefaultBuilder()
                 .ConfigureHostConfiguration(configure =>
                 {

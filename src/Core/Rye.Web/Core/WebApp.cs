@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Rye
 {
@@ -14,5 +10,9 @@ namespace Rye
         /// </summary>
         public static IWebHostEnvironment WebHostEnvironment { get; internal set; }
 
+        /// <summary>
+        /// 获取当前HttpContext上下文
+        /// </summary>
+        public static HttpContext HttpContext { get => HttpContextUtil.GetCurrentHttpContext(); }
     }
 }

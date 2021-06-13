@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rye.Configuration;
-using Rye.Enums;
+
 using Rye.Exceptions;
-using System.Collections.Generic;
+
 using System.Linq;
 
 namespace Rye.DataAccess.Options
@@ -18,7 +16,7 @@ namespace Rye.DataAccess.Options
 
         //public RyeOptionsSetup()
         //{
-        //    _configuration = ConfigurationManager.Appsettings;
+        //    _configuration = App.Configuration;
         //}
 
         public DbConnectionsMapOptionsSetup(IConfiguration configuration)

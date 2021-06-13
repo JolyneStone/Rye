@@ -1,6 +1,7 @@
-﻿using Rye.CodeGenerator;
+﻿using Rye;
+using Rye.CodeGenerator;
 using Rye.CodeGenerator.MySql;
-using Rye.Configuration;
+
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace Demo.DataAccess.CodeGenerator
         static async Task Main(string[] args)
         {
             // 通过代码生成器生成访问层代码
-            var connectionString = ConfigurationManager.Appsettings.GetSection("Framework:DbConnections:RyeDemo:ConnectionString").Value;
+            var connectionString = App.Configuration.GetSection("Framework:DbConnections:RyeDemo:ConnectionString").Value;
             var modelGenerator = new MySqlModelCompiler();
             await modelGenerator.GenerateAllAsync(new ModelConfig
             {

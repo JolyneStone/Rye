@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 
-using Rye.Configuration;
 using Rye.DataAccess.Options;
 using Rye.DataAccess.Pool;
 

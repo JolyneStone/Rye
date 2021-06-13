@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Rye.Configuration;
 using Rye.EventBus;
 using Rye.EventBus.Redis;
 
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,7 +20,7 @@ namespace Rye.Test.EventBus
             serviceCollection.AddRedisEventBus(options =>
                 {
                     options.RedisOptions = redisOptions =>
-                        ConfigurationManager.Appsettings.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(redisOptions);
+                        App.Configuration.GetSection("Framework:Redis").GetChildren().FirstOrDefault().Bind(redisOptions);
                     options.Key = "RyeEventBus";
                     options.ClientId = "1";
                 });

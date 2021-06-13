@@ -3,16 +3,11 @@ using Demo.DataAccess.EFCore.Models;
 using Demo.Library.Abstraction;
 using Demo.Library.Dto;
 
-using Rye.Configuration;
+using Rye;
 using Rye.EntityFrameworkCore;
 using Rye.Enums;
 using Rye.Security;
-using Rye;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Demo.Library.Business
@@ -49,7 +44,7 @@ namespace Demo.Library.Business
                 {
                     Id = user.Id,
                     Nickname = user.Nickame,
-                    Avatar = ConfigurationManager.GetSectionValue("Domain") + user.ProfilePicture,
+                    Avatar = App.Configuration.GetSectionValue("Domain") + user.ProfilePicture,
                     Phone = user.Phone.IsNullOrEmpty() ? "" : await _securityService.DecryptAsync(appId, user.Phone),
                     Email = user.Email.IsNullOrEmpty() ? "" : await _securityService.DecryptAsync(appId, user.Email),
                 };
