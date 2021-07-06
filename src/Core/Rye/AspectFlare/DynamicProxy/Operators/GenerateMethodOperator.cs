@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
 using Rye.AspectFlare.DynamicProxy.Extensions;
 using Rye.AspectFlare.Utilities;
 
@@ -126,7 +127,7 @@ namespace Rye.AspectFlare.DynamicProxy
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (context.Interface != null && context.ReturnType.IsByRef)
+            if (context.Interface != null && context.ReturnType != null && context.ReturnType.IsByRef)
             {
                 GenerateRefMethod(context);
             }
