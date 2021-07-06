@@ -2,21 +2,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-using Rye.Authorization.Entities;
-using Rye.Cache;
-using Rye.Cache.Store;
-using Rye.Entities.Abstractions;
 using Rye.Jwt;
 using Rye.Jwt.Options;
 using Rye.Web;
-using Rye.Web.Options;
-using Rye.Web.ResponseProvider.Authorization;
 
 using System;
 using System.Collections.Generic;

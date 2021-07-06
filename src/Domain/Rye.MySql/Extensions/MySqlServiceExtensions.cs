@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using Rye.Entities.Abstractions;
-using Rye.MySql.Service;
-
 using System;
 
 namespace Rye.MySql
@@ -85,7 +82,6 @@ namespace Rye.MySql
             }
 
             services.TryAddSingleton<MySqlConnectionProvider, T>();
-            AddMySqlInternalService(services);
             return services;
         }
 
@@ -102,7 +98,6 @@ namespace Rye.MySql
                 throw new ArgumentNullException(nameof(providerFunc));
             }
             services.TryAddSingleton<MySqlConnectionProvider>(providerFunc);
-            AddMySqlInternalService(services);
             return services;
         }
 
@@ -119,7 +114,6 @@ namespace Rye.MySql
             }
 
             services.TryAddSingleton(typeof(MySqlConnectionProvider), providerType);
-            AddMySqlInternalService(services);
             return services;
         }
 
@@ -136,21 +130,20 @@ namespace Rye.MySql
             }
 
             services.TryAddSingleton(typeof(MySqlConnectionProvider), providerFunc);
-            AddMySqlInternalService(services);
             return services;
         }
 
-        private static IServiceCollection AddMySqlInternalService(this IServiceCollection serviceCollection)
-        {
-            if (serviceCollection is null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
+        //private static IServiceCollection AddMySqlInternalService(this IServiceCollection serviceCollection)
+        //{
+        //    if (serviceCollection is null)
+        //    {
+        //        throw new ArgumentNullException(nameof(serviceCollection));
+        //    }
 
-            serviceCollection.RemoveAll<IAppInfoService>();
-            serviceCollection.TryAddSingleton<IAppInfoService, MySqlAppInfoService>();
-            return serviceCollection;
-        }
+        //    serviceCollection.RemoveAll<IAppInfoService>();
+        //    serviceCollection.TryAddSingleton<IAppInfoService, MySqlAppInfoService>();
+        //    return serviceCollection;
+        //}
 
         //public static IServiceCollection AddMySqlPersmission<TPermissionKey>(this IServiceCollection serviceCollection)
         //    where TPermissionKey : IEquatable<TPermissionKey>

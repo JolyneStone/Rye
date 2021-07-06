@@ -9,7 +9,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Demo.Library.Business
+namespace Demo.Library.Service
 {
     public class SecurityService : ISecurityService
     {

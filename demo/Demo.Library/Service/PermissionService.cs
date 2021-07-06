@@ -1,9 +1,10 @@
 ﻿using Dapper;
 
+using Demo.Library.Abstraction;
+using Demo.Library.Dto;
+
 using Microsoft.Extensions.DependencyInjection;
 
-using Rye.Entities.Abstractions;
-using Rye.Entities.Internal;
 using Rye.Enums;
 using Rye.MySql;
 
@@ -12,7 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Demo.Library.Business
+namespace Demo.Library.Service
 {
     [Injection(ServiceLifetime.Scoped, InjectionPolicy.Replace, typeof(IPermissionService))]
     public class PermissionService: IPermissionService
@@ -31,10 +32,10 @@ namespace Demo.Library.Business
             var parameters = new DynamicParameters();
             parameters.Add("@status", EntityStatus.Enabled);
             parameters.Add("@roleIds", roleIds.Trim().Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse));
-            IEnumerable<PermissionEntry<int>> list;
+            IEnumerable<PermissionEntryDto<int>> list;
             using (var connector = _connectionProvider.GetReadOnlyConnection())
             {
-                list = await connector.Connection.QueryAsync<PermissionEntry<int>>(sql, param: parameters);
+                list = await connector.Connection.QueryAsync<PermissionEntryDto<int>>(sql, param: parameters);
             }
 
             if (list == null)
@@ -46,10 +47,10 @@ namespace Demo.Library.Business
 
             return list.Select(d => d.Code);
 
-            void BulidCode(IEnumerable<PermissionEntry<int>> treeNodes)
+            void BulidCode(IEnumerable<PermissionEntryDto<int>> treeNodes)
             {
                 int defaultVal = default;
-                List<PermissionEntry<int>> trees = new List<PermissionEntry<int>>();
+                List<PermissionEntryDto<int>> trees = new List<PermissionEntryDto<int>>();
 
                 foreach (var treeNode in treeNodes)
                 {
@@ -64,7 +65,7 @@ namespace Demo.Library.Business
                         {
                             if (treeNode.Children == null)
                             {
-                                treeNode.Children = new List<PermissionEntry<int>>();
+                                treeNode.Children = new List<PermissionEntryDto<int>>();
                             }
                             it.Code = $"{treeNode.Code}.{it.Code}";
                             treeNode.Children.Add(it);

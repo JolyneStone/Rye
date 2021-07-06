@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Demo.Library.Abstraction;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Routing;
+
+using Rye;
+using Rye.Authorization;
 using Rye.Authorization.Entities;
 using Rye.Cache;
 using Rye.Cache.Store;
-using Rye.Entities.Abstractions;
 using Rye.Web.Options;
 using Rye.Web.ResponseProvider.Authorization;
 
@@ -16,7 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Rye.Authorization
+namespace Demo.WebApi
 {
     /// <summary>
     /// 限制有权限的用户访问

@@ -8,7 +8,7 @@ using Rye.EntityFrameworkCore;
 
 namespace Demo.DataAccess.EFCore.DbContexts
 {
-    public partial class DefaultDbContext : DbContext
+    public partial class DefaultDbContext : DbContext, IDbContext
     {
         public DefaultDbContext()
         {

@@ -10,7 +10,7 @@ using Rye.Security;
 
 using System.Threading.Tasks;
 
-namespace Demo.Library.Business
+namespace Demo.Library.Service
 {
     public class UserService : IUserService
     {

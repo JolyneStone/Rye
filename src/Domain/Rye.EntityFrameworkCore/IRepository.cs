@@ -12,16 +12,6 @@ namespace Rye.EntityFrameworkCore
     public interface IReadOnlyRepository<TEntity> where TEntity : class, IEntity
     {
         /// <summary>
-        /// 当前单元工作对象
-        /// </summary>
-        IUnitOfWork UnitOfWork { get; }
-
-        /// <summary>
-        /// 当前数据上下文对象
-        /// </summary>
-        IDbContext DbContext { get; }
-
-        /// <summary>
         /// 查询是否存在满足条件的实体
         /// </summary>
         /// <param name="predicate"></param>
@@ -78,6 +68,16 @@ namespace Rye.EntityFrameworkCore
     public interface IRepository<TEntity> : IReadOnlyRepository<TEntity>
         where TEntity : class, IEntity
     {
+        /// <summary>
+        /// 当前单元工作对象
+        /// </summary>
+        IUnitOfWork UnitOfWork { get; }
+
+        /// <summary>
+        /// 当前数据上下文对象
+        /// </summary>
+        IDbContext DbContext { get; }
+
         /// <summary>
         /// 删除实体
         /// </summary>

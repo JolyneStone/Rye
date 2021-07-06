@@ -1,10 +1,8 @@
-﻿using Rye.DataAccess;
-using Rye.Entities;
-using Rye.Entities.Abstractions;
+﻿using Rye.Entities;
 
 namespace Demo.DataAccess.EFCore.Models
 {
-    public partial class UserRole : EntityBase<string>, IEntityUserRoleBase<int, int, string>
+    public partial class UserRole : EntityBase<string>
     {
         public override string Key => $"{UserId}-{RoleId}";
     }

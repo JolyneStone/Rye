@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
-using Rye.Entities.Abstractions;
 using Rye.Security;
+using Rye.Web.Abstraction;
 using Rye.Web.Options;
 using Rye.Web.ResponseProvider.Security;
 
@@ -47,7 +47,8 @@ namespace Rye.Web.Middleware
             var securityService = services.GetRequiredService<ISecurityService>();
 
             var responseTempBody = string.Empty;
-            var appKey = context.Request.GetString("appKey");
+            var appInfoService = services.GetRequiredService<IAppInfoService>();
+            var appKey = appInfoService.GetAppKey();
             if (appKey.IsNullOrEmpty())
             {
                 responseTempBody = _provider.CreateParameterErrorResponse(new SecurityContext { HttpContext = context });
@@ -56,8 +57,8 @@ namespace Rye.Web.Middleware
             }
             else
             {
-                var appInfoService = services.GetRequiredService<IAppInfoService>();
-                var appSecret = await appInfoService.GetAppSecretAsync(appKey.ToString());
+               
+                var appSecret = appInfoService.GetAppSecret(appKey.ToString());
                 if (appSecret.IsNullOrEmpty())
                 {
                     responseTempBody = _provider.CreateParameterErrorResponse(new SecurityContext { HttpContext = context });

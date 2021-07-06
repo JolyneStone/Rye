@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Rye.Entities.Internal
+namespace Demo.Library.Dto
 {
-    public class PermissionEntry<TPermissionKey>
+    public class PermissionEntryDto<TPermissionKey>
          where TPermissionKey : IEquatable<TPermissionKey>
     {
         public TPermissionKey Id { get; set; }
         public TPermissionKey ParentId { get; set; }
         public string Code { get; set; }
-        public List<PermissionEntry<TPermissionKey>> Children { get; set; }
+        public List<PermissionEntryDto<TPermissionKey>> Children { get; set; }
     }
 }

@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Rye.Enums;
 using System;
 
-namespace Demo.Library.Business
+namespace Demo.Library.Service
 {
     public class UserPermissionService : IUserPermissionService
     {

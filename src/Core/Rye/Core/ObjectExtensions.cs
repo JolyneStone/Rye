@@ -14,31 +14,33 @@ namespace Rye
     public static class ObjectExtensions
     {
         #region Parse
-        public static short ParseByInt16(this object obj)
+        /// <summary>
+        /// 将对象转化为int类型
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static int ParseByInt(this object obj, int defaultValue = default)
         {
-            short temp = default;
             if (obj == null)
             {
-                return temp;
+                return defaultValue;
             }
 
-            return short.TryParse(obj.ToString(), out temp) ? temp : default;
+            return int.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
         }
-        public static int ParseByInt(this object obj)
-        {
-            int temp = default;
-            if (obj == null)
-            {
-                return temp;
-            }
 
-            return int.TryParse(obj.ToString(), out temp) ? temp : default;
-        }
-        public static string ParseByString(this object obj)
+        /// <summary>
+        /// 将对象转化为string类型
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static string ParseByString(this object obj, string defaultValue = default)
         {
             if (obj == null)
             {
-                return string.Empty;
+                return defaultValue;
             }
             else
             {
@@ -46,75 +48,113 @@ namespace Rye
             }
         }
 
-        public static int ParseByIntMax(this object obj)
+        /// <summary>
+        /// 将对象转化为short类型
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static short ParseByShort(this object obj, short defaultValue = default)
         {
-            int temp = int.MaxValue;
             if (obj == null)
             {
-                return temp;
+                return defaultValue;
             }
 
-            return int.TryParse(obj.ToString(), out temp) ? temp : int.MaxValue;
+            return short.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
         }
-        public static short ParseByShort(this object obj)
+
+        /// <summary>
+        /// 将对象转化为byte类型
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static byte ParseByByte(this object obj, byte defaultValue = default)
         {
-            short temp = default;
             if (obj == null)
             {
-                return temp;
+                return defaultValue;
             }
 
-            return short.TryParse(obj.ToString(), out temp) ? temp : default;
+            return byte.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
         }
-        public static long ParseByLong(this object obj)
+
+        /// <summary>
+        /// 将对象转化为long类型
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static long ParseByLong(this object obj, long defaultValue = default)
         {
-            long temp = default;
             if (obj == null)
             {
-                return temp;
+                return defaultValue;
             }
 
-            return long.TryParse(obj.ToString(), out temp) ? temp : default;
+            return long.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
         }
 
-
-        public static uint ParseByUInt32(this object obj)
+        /// <summary>
+        /// 将对象转化为uint
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static uint ParseByUInt(this object obj, uint defaultValue = default)
         {
-            uint temp = default;
             if (obj == null)
             {
-                return temp;
+                return defaultValue;
             }
 
-            return uint.TryParse(obj.ToString(), out temp) ? temp : default;
+            return uint.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
         }
-        public static ushort ParseByUInt16(this object obj)
+
+        /// <summary>
+        /// 将对象转化为ushort
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static ushort ParseByUShort(this object obj, ushort defaultValue = default)
         {
-            ushort temp = default;
             if (obj == null)
             {
-                return temp;
+                return defaultValue;
             }
 
-            return ushort.TryParse(obj.ToString(), out temp) ? temp : default;
+            return ushort.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
         }
-        public static ulong ParseByUlong(this object obj)
+
+        /// <summary>
+        /// 将对象转化为ulong
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static ulong ParseByULong(this object obj, ulong defaultValue = default)
         {
-            ulong temp = default;
             if (obj == null)
             {
-                return temp;
+                return defaultValue;
             }
 
-            return ulong.TryParse(obj.ToString(), out temp) ? temp : default;
+            return ulong.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
         }
 
-        public static decimal ParseByDecimal(this object obj)
+        /// <summary>
+        /// 将对象转化为decimal
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static decimal ParseByDecimal(this object obj, decimal defaultValue = default)
         {
-            decimal temp = default;
             if (obj == null)
             {
-                return temp;
+                return defaultValue;
             }
 
             string _decimalContent = obj.ToString();
@@ -128,35 +168,53 @@ namespace Rye
                 {
 
                 }
-                return default;
+                return defaultValue;
             }
             else
             {
-                return decimal.TryParse(obj.ToString(), out temp) ? temp : default;
+                return decimal.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
             }
         }
 
-        public static decimal ParseByDecimal(this object obj, int precision)
+        /// <summary>
+        /// 将对象转化为decimal, 并保留precision位小数
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="precision"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static decimal ParseByDecimal(this object obj, int precision, decimal defaultValue = default)
         {
-            return Math.Round(ParseByDecimal(obj), precision);
+            return Math.Round(ParseByDecimal(obj, defaultValue), precision, MidpointRounding.AwayFromZero);
         }
 
-        public static float ParseByFloat(this object obj)
+        /// <summary>
+        /// 将对象转化为float
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static float ParseByFloat(this object obj, float defaultValue = default)
         {
-            float temp = default;
             if (obj == null)
             {
-                return temp;
+                return defaultValue;
             }
 
-            return float.TryParse(obj.ToString(), out temp) ? temp : default;
+            return float.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
         }
-        public static double ParseByDouble(this object obj)
+
+        /// <summary>
+        /// 将对象转化为double
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static double ParseByDouble(this object obj, double defaultValue = default)
         {
-            double temp = default;
             if (obj == null)
             {
-                return temp;
+                return defaultValue;
             }
 
             string _doubleContent = obj.ToString();
@@ -174,10 +232,45 @@ namespace Rye
             }
             else
             {
-                return double.TryParse(obj.ToString(), out temp) ? temp : default;
+                return double.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
             }
         }
 
+        /// <summary>
+        /// 将对象转化为double, 并保留precision位小数
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="precision"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static double ParseByDouble(this object obj, int precision, double defaultValue = default)
+        {
+            return Math.Round(ParseByDouble(obj, defaultValue), precision, MidpointRounding.AwayFromZero);
+        }
+
+        /// <summary>
+        /// 将对象转化为Guid
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static Guid ParseByGuid(this object obj, Guid defaultValue = default)
+        {
+            if (obj == null)
+            {
+                return defaultValue;
+            }
+
+            return Guid.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
+        }
+
+        /// <summary>
+        /// 将对象转化为指定的枚举
+        /// </summary>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
         public static TEnum ParseByEnum<TEnum>(this object obj, TEnum defaultValue = default)
             where TEnum : Enum
         {
@@ -194,24 +287,35 @@ namespace Rye
             return (TEnum)Enum.Parse(type, obj.ToString());
         }
 
-        public static bool ParseByBool(this object obj)
+        /// <summary>
+        /// 将对象转化为bool
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static bool ParseByBool(this object obj, bool defaultValue = default)
         {
-            bool temp = default;
             if (obj == null)
             {
-                return temp;
+                return defaultValue;
             }
 
-            return bool.TryParse(obj.ToString(), out temp) ? temp : default;
+            return bool.TryParse(obj.ToString(), out var temp) ? temp : defaultValue;
         }
 
-        public static object TryPase(this object value, Type conversionType)
+        /// <summary>
+        /// 将对象转化为任意类型
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="conversionType"></param>
+        /// <returns></returns>
+        public static object Parse(this object obj, Type conversionType)
         {
             try
             {
-                if (value == null)
+                if (obj == null)
                 {
-                    return null;
+                    return conversionType.IsValueType ? Activator.CreateInstance(conversionType) : null;
                 }
                 if (conversionType.IsNullableType())
                 {
@@ -219,62 +323,27 @@ namespace Rye
                 }
                 if (conversionType.IsEnum)
                 {
-                    return Enum.Parse(conversionType, value.ToString());
+                    return Enum.Parse(conversionType, obj.ToString());
                 }
                 if (conversionType == typeof(Guid))
                 {
-                    return Guid.Parse(value.ToString());
+                    return Guid.Parse(obj.ToString());
                 }
-                return Convert.ChangeType(value, conversionType);
+                return Convert.ChangeType(obj, conversionType);
             }
             catch
             {
-                return default;
+                return conversionType.IsValueType ? Activator.CreateInstance(conversionType) : null;
             }
         }
 
         /// <summary>
-        /// obj.ToString之后DateTime.Parse
+        /// 将对象转化为任意类型
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public static DateTime ParseByDateTime(this object obj)
-        {
-            DateTime temp = DateTime.MinValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            if (DateTime.TryParse(obj.ToString(), out temp))
-            {
-                return Convert.ToDateTime(obj);
-            }
-            return temp;
-        }
-
-        /// <summary>
-        /// obj.ToString之后DateTime.Parse带格式
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="format"></param>
-        /// <returns></returns>
-        public static DateTime ParseExactByDateTime(this object obj, string format)
-        {
-            DateTime temp = DateTime.MinValue;
-            if (obj == null)
-            {
-                return temp;
-            }
-
-            try
-            {
-                return DateTime.ParseExact(obj.ToString(), format, System.Globalization.CultureInfo.InvariantCulture);
-            }
-            catch { }
-            return temp;
-        }
-
         public static T Parse<T>(this object obj, T defaultValue = default)
         {
             try
@@ -292,36 +361,50 @@ namespace Rye
             }
             catch (Exception)
             {
-                return default;
+                return defaultValue;
             }
         }
 
-        public static object Parse(this object value, Type conversionType)
+        /// <summary>
+        /// 将对象转化为DateTime
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static DateTime ParseByDateTime(this object obj, DateTime defaultValue = default)
         {
+            if (obj == null)
+            {
+                return defaultValue;
+            }
+
+            if (DateTime.TryParse(obj.ToString(), out var val))
+            {
+                return val;
+            }
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// 将对象转化为DateTime
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="format"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static DateTime ParseExactByDateTime(this object obj, string format, DateTime defaultValue = default)
+        {
+            if (obj == null)
+            {
+                return defaultValue;
+            }
+
             try
             {
-                if (value == null)
-                {
-                    return conversionType.IsValueType ? Activator.CreateInstance(conversionType) : null;
-                }
-                if (conversionType.IsNullableType())
-                {
-                    conversionType = conversionType.GetUnNullableType();
-                }
-                if (conversionType.IsEnum)
-                {
-                    return Enum.Parse(conversionType, value.ToString());
-                }
-                if (conversionType == typeof(Guid))
-                {
-                    return Guid.Parse(value.ToString());
-                }
-                return Convert.ChangeType(value, conversionType);
+                return DateTime.ParseExact(obj.ToString(), format, System.Globalization.CultureInfo.InvariantCulture);
             }
-            catch
-            {
-                return conversionType.IsValueType ? Activator.CreateInstance(conversionType) : null;
-            }
+            catch { }
+            return defaultValue;
         }
 
         #endregion

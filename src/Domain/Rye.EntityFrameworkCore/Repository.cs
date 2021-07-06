@@ -14,22 +14,16 @@ namespace Rye.EntityFrameworkCore
     public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity>
         where TEntity : class, IEntity
     {
-        protected readonly IUnitOfWork _unitOfWork;
-        protected readonly IDbContext _context;
         protected readonly DbSet<TEntity> _set;
 
         public ReadOnlyRepository(IUnitOfWork unitOfWork)
         {
             Check.NotNull(unitOfWork, nameof(unitOfWork));
 
-            _unitOfWork = unitOfWork;
-            _context = unitOfWork.DbContext;
-            _set = _context.AsDbContext().Set<TEntity>();
+            var context = unitOfWork.DbContext;
+            _set = context.AsDbContext().Set<TEntity>();
         }
 
-        public IUnitOfWork UnitOfWork => _unitOfWork;
-
-        public IDbContext DbContext => _context;
 
         public bool Exists(Expression<Func<TEntity, bool>> predicate = null)
         {
@@ -105,7 +99,16 @@ namespace Rye.EntityFrameworkCore
     {
         public Repository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+            _context = unitOfWork.DbContext;
         }
+
+        private IUnitOfWork _unitOfWork;
+        private IDbContext _context;
+
+        public IUnitOfWork UnitOfWork => _unitOfWork;
+
+        public IDbContext DbContext => _context;
 
         public void Delete(TEntity entity)
         {

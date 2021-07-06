@@ -1,10 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using Rye.DataAccess;
-using Rye.Entities.Abstractions;
-using Rye.SqlServer.Service;
-
 using System;
 
 namespace Rye.SqlServer
@@ -86,7 +82,6 @@ namespace Rye.SqlServer
             }
 
             services.TryAddSingleton<SqlServerConnectionProvider, T>();
-            AddSqlServerInternalService(services);
             return services;
         }
 
@@ -103,7 +98,6 @@ namespace Rye.SqlServer
                 throw new ArgumentNullException(nameof(providerFunc));
             }
             services.TryAddSingleton<SqlServerConnectionProvider>(providerFunc);
-            AddSqlServerInternalService(services);
             return services;
         }
 
@@ -120,7 +114,6 @@ namespace Rye.SqlServer
             }
 
             services.TryAddSingleton(typeof(SqlServerConnectionProvider), providerType);
-            AddSqlServerInternalService(services);
             return services;
         }
 
@@ -137,21 +130,20 @@ namespace Rye.SqlServer
             }
 
             services.TryAddSingleton(typeof(SqlServerConnectionProvider), providerFunc);
-            AddSqlServerInternalService(services);
             return services;
         }
 
-        public static IServiceCollection AddSqlServerInternalService(this IServiceCollection serviceCollection)
-        {
-            if (serviceCollection is null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
+        //public static IServiceCollection AddSqlServerInternalService(this IServiceCollection serviceCollection)
+        //{
+        //    if (serviceCollection is null)
+        //    {
+        //        throw new ArgumentNullException(nameof(serviceCollection));
+        //    }
 
-            serviceCollection.RemoveAll<IAppInfoService>();
-            serviceCollection.TryAddSingleton<IAppInfoService, SqlServerAppInfoService>();
-            return serviceCollection;
-        }
+        //    serviceCollection.RemoveAll<IAppInfoService>();
+        //    serviceCollection.TryAddSingleton<IAppInfoService, SqlServerAppInfoService>();
+        //    return serviceCollection;
+        //}
 
         //public static IServiceCollection AddSqlServerPersmission<TPermissionKey>(this IServiceCollection serviceCollection)
         //    where TPermissionKey: IEquatable<TPermissionKey>

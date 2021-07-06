@@ -15,7 +15,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Demo.Library.Business
+namespace Demo.Library.Service
 {
     public class LoginService : ILoginService
     {

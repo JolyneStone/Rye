@@ -1,12 +1,12 @@
 ﻿using Demo.Common;
 using Demo.Common.Enums;
+using Demo.Library.Abstraction;
 using Demo.Model.Input;
 
 using Microsoft.AspNetCore.Mvc;
 
 using Rye;
 using Rye.Authorization;
-using Rye.Entities.Abstractions;
 
 using System;
 using System.Linq;

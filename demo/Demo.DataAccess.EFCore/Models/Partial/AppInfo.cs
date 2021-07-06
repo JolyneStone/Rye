@@ -1,10 +1,8 @@
-﻿using Rye.DataAccess;
-using Rye.Entities;
-using Rye.Entities.Abstractions;
+﻿using Rye.Entities;
 
 namespace Demo.DataAccess.EFCore.Models
 {
-    public partial class AppInfo : EntityBase<int>, IEntityAppInfoBase<int>
+    public partial class AppInfo : EntityBase<int>
     {
         public override int Key => AppId;
     }

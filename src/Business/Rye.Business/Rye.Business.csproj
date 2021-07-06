@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Language\**" />
+    <EmbeddedResource Remove="Language\**" />
+    <None Remove="Language\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
     <PackageReference Include="QRCoder" Version="1.4.1" />
   </ItemGroup>
@@ -12,10 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Rye\Rye.csproj" />
     <ProjectReference Include="..\..\Domain\Rye.Entities\Rye.Entities.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Language\" />
   </ItemGroup>
 
 </Project>

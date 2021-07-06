@@ -93,7 +93,7 @@ namespace Rye.DataAccess.Pool
                 }
             }
 
-            if (realCount / unUseCount >= 2) // 当缓冲池里有一半的连接都处于未使用状态时，是否未使用的连接
+            if (realCount / unUseCount >= 2) // 当缓冲池里有一半的连接都处于未使用状态时，释放未使用的连接
             {
                 item = _firstItem;
                 if (item != null && !item.Used)

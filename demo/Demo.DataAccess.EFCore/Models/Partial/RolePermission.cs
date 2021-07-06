@@ -1,16 +1,8 @@
-﻿using Rye.DataAccess;
-using Rye.Entities;
-using Rye.Entities.Abstractions;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Rye.Entities;
 
 namespace Demo.DataAccess.EFCore.Models
 {
-    public partial class RolePermission : EntityBase<string>, IEntityRolePermissionBase<int, int, string>
+    public partial class RolePermission : EntityBase<string>
     {
         public override string Key => $"{RoleId}-{PermissionId}";
     }

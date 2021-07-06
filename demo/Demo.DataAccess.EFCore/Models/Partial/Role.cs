@@ -1,10 +1,8 @@
-﻿using Rye.DataAccess;
-using Rye.Entities;
-using Rye.Entities.Abstractions;
+﻿using Rye.Entities;
 
 namespace Demo.DataAccess.EFCore.Models
 {
-    public partial class Role : EntityBase<int>, IEntityRoleBase<int, int>
+    public partial class Role : EntityBase<int>
     {
         public override int Key => Id;
     }
