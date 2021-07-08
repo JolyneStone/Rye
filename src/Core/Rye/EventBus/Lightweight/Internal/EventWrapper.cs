@@ -1,6 +1,6 @@
 ﻿using Rye.EventBus.Abstractions;
 
-namespace Rye.EventBus.InMemory.Internal
+namespace Rye.EventBus.Lightweight.Internal
 {
     internal class EventWrapper
     {

@@ -1,57 +1,60 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 using Rye.EventBus.Abstractions;
-using Rye.EventBus.InMemory.Internal;
-using Rye.EventBus.InMemory.Options;
+using Rye.EventBus.Lightweight.Internal;
+using Rye.EventBus.Lightweight.Options;
 using Rye.Util;
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Rye.EventBus.InMemory
+namespace Rye.EventBus.Lightweight
 {
-    public class InMemoryEventBus : IMemoryEventBus
+    public class LightweightEventBus : IMemoryEventBus
     {
         private readonly Disruptor.Dsl.Disruptor<EventWrapper> _disruptor;
         private readonly Disruptor.RingBuffer<EventWrapper> _ringBuffer;
         private readonly InternalDisruptorHandler _handler;
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
-        public event Func<IEvent, InMemoryEventContext, Task> OnProducing;
+        public event Func<IEvent, LightweightEventContext, Task> OnProducing;
 
-        public event Func<IEvent, InMemoryEventContext, Task> OnProduced;
+        public event Func<IEvent, LightweightEventContext, Task> OnProduced;
 
-        public event Func<IEvent, InMemoryEventErrorContext, Task> OnProductError;
+        public event Func<IEvent, LightweightEventErrorContext, Task> OnProductError;
 
-        public event Func<IEvent, InMemoryEventContext, Task> OnConsuming;
+        public event Func<IEvent, LightweightEventContext, Task> OnConsuming;
 
-        public event Func<IEvent, InMemoryEventContext, Task> OnConsumed;
+        public event Func<IEvent, LightweightEventContext, Task> OnConsumed;
 
-        public event Func<IEvent, InMemoryEventErrorContext, Task> OnConsumeError;
+        public event Func<IEvent, LightweightEventErrorContext, Task> OnConsumeError;
 
-        public InMemoryEventBus(InMemoryEventBusOptions options, IServiceScopeFactory scopeFactory)
+        public LightweightEventBus(IOptions<LightweightEventBusOptions> options, IServiceScopeFactory scopeFactory)
         {
             _serviceScopeFactory = scopeFactory;
             _handler = new InternalDisruptorHandler();
             _handler.OnConsumeEvent += OnConsumeEvent;
 
-            if (options.OnProducing != null)
-                OnProducing = options.OnProducing;
-            if (options.OnProduced != null)
-                OnProduced = options.OnProduced;
-            if (options.OnProductError != null)
-                OnProductError = options.OnProductError;
-            if (options.OnConsuming != null)
-                OnConsuming = options.OnConsuming;
-            if (options.OnConsumed != null)
-                OnConsumed = options.OnConsumed;
-            if (options.OnConsumeError != null)
-                OnConsumeError = options.OnConsumeError;
+            var busOptions = options.Value;
+
+            if (busOptions.OnProducing != null)
+                OnProducing = busOptions.OnProducing;
+            if (busOptions.OnProduced != null)
+                OnProduced = busOptions.OnProduced;
+            if (busOptions.OnProductError != null)
+                OnProductError = busOptions.OnProductError;
+            if (busOptions.OnConsuming != null)
+                OnConsuming = busOptions.OnConsuming;
+            if (busOptions.OnConsumed != null)
+                OnConsumed = busOptions.OnConsumed;
+            if (busOptions.OnConsumeError != null)
+                OnConsumeError = busOptions.OnConsumeError;
 
             _disruptor = new Disruptor.Dsl.Disruptor<EventWrapper>(
                 eventFactory: () => new EventWrapper(),
-                ringBufferSize: options.BufferSize,
+                ringBufferSize: busOptions.BufferSize,
                 taskScheduler: TaskScheduler.Default,
                 producerType: Disruptor.Dsl.ProducerType.Single,
                 waitStrategy: new Disruptor.YieldingWaitStrategy());
@@ -66,7 +69,7 @@ namespace Rye.EventBus.InMemory
             {
                 try
                 {
-                    var context = new InMemoryEventContext()
+                    var context = new LightweightEventContext()
                     {
                         EventBus = this,
                         ServiceProvider = scope.ServiceProvider,
@@ -90,7 +93,7 @@ namespace Rye.EventBus.InMemory
                     if (OnConsumeError == null)
                         throw;
 
-                    var context = new InMemoryEventErrorContext
+                    var context = new LightweightEventErrorContext
                     {
                         EventBus = this,
                         ServiceProvider = scope.ServiceProvider,
@@ -122,7 +125,7 @@ namespace Rye.EventBus.InMemory
             {
                 try
                 {
-                    var context = new InMemoryEventContext
+                    var context = new LightweightEventContext
                     {
                         ServiceProvider = scope.ServiceProvider,
                         EventBus = this,
@@ -148,7 +151,7 @@ namespace Rye.EventBus.InMemory
                     if (OnProductError == null)
                         throw;
 
-                    var context = new InMemoryEventErrorContext
+                    var context = new LightweightEventErrorContext
                     {
                         ServiceProvider = scope.ServiceProvider,
                         EventBus = this,

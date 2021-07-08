@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using Polly;
 using Polly.Retry;
@@ -55,36 +56,39 @@ namespace Rye.EventBus.RabbitMQ
 
         public IRabbitMQPersistentConnection Connection => _connection;
 
-        public RabbitMQEventBus(RabbitMQEventBusOptions options, IServiceScopeFactory scopeFactory,
+        public RabbitMQEventBus(IOptions<RabbitMQEventBusOptions> options, IServiceScopeFactory scopeFactory,
             ILoggerFactory loggerFactory)
         {
             Check.NotNull(options, nameof(options));
-            Check.NotNull(options.ConnectionFactory, nameof(options.ConnectionFactory));
+
+            var busOptions = options.Value;
+
+            Check.NotNull(busOptions.ConnectionFactory, nameof(busOptions.ConnectionFactory));
 
             _serviceScopeFactory = scopeFactory;
             _logger = loggerFactory.CreateLogger<RabbitMQEventBus>();
-            _exchange = string.IsNullOrEmpty(options.Exchange) ? "RyeEventBus" : options.Exchange;
-            _queue = string.IsNullOrEmpty(options.Queue) ? "RyeQueue" : options.Queue;
+            _exchange = string.IsNullOrEmpty(busOptions.Exchange) ? "RyeEventBus" : busOptions.Exchange;
+            _queue = string.IsNullOrEmpty(busOptions.Queue) ? "RyeQueue" : busOptions.Queue;
             _handler = new InternalRabbitMQEventHandler();
             _handler.OnConsumeEvent += OnConsumeEvent;
 
-            _connection = new RabbitMQPersistentConnection(options.ConnectionFactory,
+            _connection = new RabbitMQPersistentConnection(busOptions.ConnectionFactory,
                 loggerFactory.CreateLogger<RabbitMQPersistentConnection>(),
-                options.RetryCount);
+                busOptions.RetryCount);
 
             _consumerChannel = CreateConsumerChannel();
-            if (options.OnProducing != null)
-                OnProducing = options.OnProducing;
-            if (options.OnProduced != null)
-                OnProduced = options.OnProduced;
-            if (options.OnProductError != null)
-                OnProductError = options.OnProductError;
-            if (options.OnConsuming != null)
-                OnConsuming = options.OnConsuming;
-            if (options.OnConsumed != null)
-                OnConsumed = options.OnConsumed;
-            if (options.OnConsumeError != null)
-                OnConsumeError = options.OnConsumeError;
+            if (busOptions.OnProducing != null)
+                OnProducing = busOptions.OnProducing;
+            if (busOptions.OnProduced != null)
+                OnProduced = busOptions.OnProduced;
+            if (busOptions.OnProductError != null)
+                OnProductError = busOptions.OnProductError;
+            if (busOptions.OnConsuming != null)
+                OnConsuming = busOptions.OnConsuming;
+            if (busOptions.OnConsumed != null)
+                OnConsumed = busOptions.OnConsumed;
+            if (busOptions.OnConsumeError != null)
+                OnConsumeError = busOptions.OnConsumeError;
         }
 
         public Task PublishAsync(string eventRoute, IEvent @event)

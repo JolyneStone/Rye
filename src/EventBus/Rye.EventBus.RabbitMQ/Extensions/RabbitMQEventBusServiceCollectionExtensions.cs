@@ -18,13 +18,11 @@ namespace Rye.EventBus.RabbitMQ
         /// <returns></returns>
         public static IServiceCollection AddRabbitMQEventBus(this IServiceCollection serviceCollection, Action<RabbitMQEventBusOptions> action)
         {
-            var options = new RabbitMQEventBusOptions();
-            action(options);
+            //var options = new RabbitMQEventBusOptions();
+            //action(options);
 
-            serviceCollection.AddEventBus<IRabbitMQEventBus>(service => new RabbitMQEventBus(
-                options, 
-                service.GetRequiredService<IServiceScopeFactory>(),
-                service.GetRequiredService<ILoggerFactory>()));
+            serviceCollection.Configure(action);
+            serviceCollection.AddEventBus<IRabbitMQEventBus, RabbitMQEventBus>();
             serviceCollection.AddEventPublisher<IRabbitMQEventPublisher>(service => service.GetService<IRabbitMQEventBus>());
             serviceCollection.AddEventSubscriber<IRabbitMQEventSubscriber>(service => service.GetService<IRabbitMQEventBus>());
             serviceCollection.AddEventBus<IEventBus>(sevice => sevice.GetService<IRabbitMQEventBus>());

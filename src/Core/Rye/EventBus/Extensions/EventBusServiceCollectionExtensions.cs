@@ -15,6 +15,23 @@ namespace Rye.EventBus
         /// </summary>
         /// <typeparam name="TEventBus"></typeparam>
         /// <param name="serviceCollection"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddEventBus<TIEventBus, TEventBus>(this IServiceCollection serviceCollection)
+           where TIEventBus: class, IEventBus
+            where TEventBus : class, TIEventBus
+        {
+            Check.NotNull(serviceCollection, nameof(serviceCollection));
+
+            serviceCollection.RemoveAll<TEventBus>();
+            serviceCollection.TryAddSingleton<TIEventBus, TEventBus>();
+            return serviceCollection;
+        }
+
+        /// <summary>
+        /// 添加事件总线依赖
+        /// </summary>
+        /// <typeparam name="TEventBus"></typeparam>
+        /// <param name="serviceCollection"></param>
         /// <param name="eventBus"></param>
         /// <returns></returns>
         public static IServiceCollection AddEventBus<TEventBus>(this IServiceCollection serviceCollection, TEventBus eventBus)

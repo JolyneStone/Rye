@@ -1,5 +1,7 @@
 ﻿using CSRedis;
 
+using Microsoft.Extensions.Options;
+
 using Rye.Cache.Redis.Builder;
 using Rye.Cache.Redis.Internal;
 using Rye.Cache.Redis.Options;
@@ -23,11 +25,12 @@ namespace Rye.Cache.Redis.Store
         private static readonly string SERVICE_ID = Guid.NewGuid().ToString("N");
         private static readonly string TOPIC_NAME = "Rye_Cache_Sub";
         private readonly SubscribeObject _subscribeObject;
-        public RedisStore(RedisOptions options)
+        public RedisStore(IOptions<RedisOptions> options)
         {
-            _redisClient = new CSRedisClient(new RedisConnectionBuilder().BuildConnectionString(options), options.Sentinels, options.ReadOnly);
-            _readOnly = options.ReadOnly;
-            _multiCacheEnabled = options.MultiCacheEnabled;
+            var redisOptions = options.Value;
+            _redisClient = new CSRedisClient(new RedisConnectionBuilder().BuildConnectionString(redisOptions), redisOptions.Sentinels, redisOptions.ReadOnly);
+            _readOnly = options.Value.ReadOnly;
+            _multiCacheEnabled = options.Value.MultiCacheEnabled;
             _memoryStore = null;
         }
 
@@ -36,12 +39,13 @@ namespace Rye.Cache.Redis.Store
         /// </summary>
         /// <param name="options"></param>
         /// <param name="memoryStore"></param>
-        public RedisStore(RedisOptions options, IMemoryStore memoryStore)
+        public RedisStore(IOptions<RedisOptions> options, IMemoryStore memoryStore)
         {
-            _redisClient = new CSRedisClient(new RedisConnectionBuilder().BuildConnectionString(options), options.Sentinels, options.ReadOnly);
-            _memoryStore = options.MultiCacheEnabled ? memoryStore : null;
-            _readOnly = options.ReadOnly;
-            _multiCacheEnabled = options.MultiCacheEnabled;
+            var redisOptions = options.Value;
+            _redisClient = new CSRedisClient(new RedisConnectionBuilder().BuildConnectionString(redisOptions), redisOptions.Sentinels, redisOptions.ReadOnly);
+            _memoryStore = redisOptions.MultiCacheEnabled ? memoryStore : null;
+            _readOnly = redisOptions.ReadOnly;
+            _multiCacheEnabled = redisOptions.MultiCacheEnabled;
             if (_memoryStore != null)
             {
                 _subscribeObject = _redisClient.Subscribe((TOPIC_NAME, (msg) =>

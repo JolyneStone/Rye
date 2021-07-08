@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Rye.EventBus.InMemory.Internal
+namespace Rye.EventBus.Lightweight.Internal
 {
     internal class InternalDisruptorHandler : Disruptor.IEventHandler<EventWrapper>
     {

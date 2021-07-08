@@ -1,6 +1,7 @@
 ﻿using CSRedis;
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 using Rye.Cache.Redis.Builder;
 using Rye.Cache.Redis.Options;
@@ -35,18 +36,19 @@ namespace Rye.EventBus.Redis
 
         public event Func<IEvent, RedisEventErrorContext, Task> OnConsumeError;
 
-        public RedisEventBus(RedisEventBusOptions options, IServiceScopeFactory scopeFactory)
+        public RedisEventBus(IOptions<RedisEventBusOptions> options, IServiceScopeFactory scopeFactory)
         {
             Check.NotNull(options, nameof(options));
-            //Check.NotNullOrEmpty(options.ClientId, nameof(options.ClientId));
-            if (options.RedisClient != null)
+
+            var busOptions = options.Value;
+            if (busOptions.RedisClient != null)
             {
-                _redisClient = options.RedisClient;
+                _redisClient = busOptions.RedisClient;
             }
-            else if (options.RedisOptions != null)
+            else if (busOptions.RedisOptions != null)
             {
                 var redisOptions = new RedisOptions();
-                options.RedisOptions(redisOptions);
+                busOptions.RedisOptions(redisOptions);
 
                 _redisClient = new CSRedisClient(new RedisConnectionBuilder().BuildConnectionString(redisOptions), redisOptions.Sentinels, redisOptions.ReadOnly);
             }
@@ -56,23 +58,23 @@ namespace Rye.EventBus.Redis
             }
 
             _serviceScopeFactory = scopeFactory;
-            _key = string.IsNullOrEmpty(options.Key) ? "RyeEventBus" : options.Key;
-            var clientId = options.ClientId;
+            _key = string.IsNullOrEmpty(busOptions.Key) ? "RyeEventBus" : busOptions.Key;
+            var clientId = busOptions.ClientId;
             _handler = new InternalRedisEventHandler();
             _handler.OnConsumeEvent += OnConsumeEvent;
 
-            if (options.OnProducing != null)
-                OnProducing = options.OnProducing;
-            if (options.OnProduced != null)
-                OnProduced = options.OnProduced;
-            if (options.OnProductError != null)
-                OnProductError = options.OnProductError;
-            if (options.OnConsuming != null)
-                OnConsuming = options.OnConsuming;
-            if (options.OnConsumed != null)
-                OnConsumed = options.OnConsumed;
-            if (options.OnConsumeError != null)
-                OnConsumeError = options.OnConsumeError;
+            if (busOptions.OnProducing != null)
+                OnProducing = busOptions.OnProducing;
+            if (busOptions.OnProduced != null)
+                OnProduced = busOptions.OnProduced;
+            if (busOptions.OnProductError != null)
+                OnProductError = busOptions.OnProductError;
+            if (busOptions.OnConsuming != null)
+                OnConsuming = busOptions.OnConsuming;
+            if (busOptions.OnConsumed != null)
+                OnConsumed = busOptions.OnConsumed;
+            if (busOptions.OnConsumeError != null)
+                OnConsumeError = busOptions.OnConsumeError;
 
             _redisClient.SubscribeListBroadcast(_key, clientId, RedisSubscribe);
         }

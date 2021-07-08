@@ -3,6 +3,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 using Rye.Cache;
 using Rye.Cache.Redis;
@@ -51,18 +52,19 @@ namespace Rye.Cache.Redis
             var options = new RedisOptions();
             action?.Invoke(options);
 
+            serviceCollection.Configure(action);
             var redisClient = new CSRedisClient(new RedisConnectionBuilder().BuildConnectionString(options));
             RedisHelper.Initialization(redisClient);
             serviceCollection.AddSingleton<IDistributedCache>(new Microsoft.Extensions.Caching.Redis.CSRedisCache(RedisHelper.Instance));
             if (options.MultiCacheEnabled)
             {
-                serviceCollection.TryAddSingleton<IRedisStore>(service => new RedisStore(options, service.GetRequiredService<IMemoryStore>()));
+                serviceCollection.TryAddSingleton<IRedisStore>(service => new RedisStore(service.GetService<IOptions<RedisOptions>>(), service.GetRequiredService<IMemoryStore>()));
                 serviceCollection.RemoveAll<ICacheStore>();
                 serviceCollection.TryAddSingleton<ICacheStore>(service => service.GetRequiredService<IRedisStore>());
             }
             else
             {
-                serviceCollection.TryAddSingleton<IRedisStore>(_ => new RedisStore(options));
+                serviceCollection.TryAddSingleton<IRedisStore>(service => new RedisStore(service.GetService<IOptions<RedisOptions>>()));
             }
             return serviceCollection;
         }

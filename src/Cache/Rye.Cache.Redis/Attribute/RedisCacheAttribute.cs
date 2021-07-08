@@ -114,10 +114,12 @@ namespace Rye.Cache.Redis
             if (parameters != null && parameters.Length > 0)
             {
                 var sb = new StringBuilder(cacheKey);
+                sb.Append(":");
                 foreach (var param in parameters)
                 {
-                    sb.Append("_" + param?.GetHashCode());
+                    sb.Append(param?.ToString() + "_");
                 }
+                sb.Length--;
 
                 return sb.ToString();
             }

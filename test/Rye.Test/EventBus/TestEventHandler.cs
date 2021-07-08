@@ -1,5 +1,5 @@
 ﻿using Rye.EventBus;
-using Rye.EventBus.InMemory;
+using Rye.EventBus.Lightweight;
 using Rye.EventBus.Redis;
 
 using System.Diagnostics;
@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Rye.Test.EventBus
 {
-    public class TestApplicationEventHandler : Rye.EventBus.InMemory.InMemoryEventHandler<TestEvent>
+    public class TestApplicationEventHandler : Rye.EventBus.Lightweight.LightweightEventHandler<TestEvent>
     {
         public int Id { get; set; }
-        protected override Task OnEvent(TestEvent @event, InMemoryEventContext eventContext)
+        protected override Task OnEvent(TestEvent @event, LightweightEventContext eventContext)
         {
             Debug.WriteLine($"handler: {Id}, event: {@event.Id}");
             return Task.CompletedTask;

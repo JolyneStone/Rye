@@ -6,7 +6,7 @@ using Rye.Logger;
 
 using System;
 
-namespace Rye.EventBus.InMemory.Policy
+namespace Rye.EventBus.Lightweight.Policy
 {
     //public static class ApplicationEventBusRetryPolicy
     //{

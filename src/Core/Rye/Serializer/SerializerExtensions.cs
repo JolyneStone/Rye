@@ -25,6 +25,7 @@ namespace Rye
         }
 
         private static readonly JsonSerializerOptions _serializerOptions;
+        private static readonly Type StringType = typeof(string);
         public static string ToJsonString(this object obj, JsonSerializerOptions options = null)
         {
             if (obj == null)
@@ -68,6 +69,12 @@ namespace Rye
                 options = _serializerOptions;
             }
 
+            var type = typeof(T);
+            if (type.IsPrimitive)
+                return (T)value.Parse(type);
+            if (type == StringType)
+                return (T)(object)value;
+
             return JsonSerializer.Deserialize<T>(value, options);
         }
 
@@ -84,6 +91,11 @@ namespace Rye
             {
                 options = _serializerOptions;
             }
+
+            if (type.IsPrimitive)
+                return (T)value.Parse(type);
+            if (type == StringType)
+                return (T)(object)value;
 
             return JsonSerializer.Deserialize(value, type, options);
         }
