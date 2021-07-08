@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Rye.EventBus.Lightweight
 {
-    public class LightweightEventBus : IMemoryEventBus
+    public class LightweightEventBus : ILightweightEventBus
     {
         private readonly Disruptor.Dsl.Disruptor<EventWrapper> _disruptor;
         private readonly Disruptor.RingBuffer<EventWrapper> _ringBuffer;

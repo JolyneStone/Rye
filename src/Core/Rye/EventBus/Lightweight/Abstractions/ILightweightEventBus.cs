@@ -2,7 +2,7 @@
 
 namespace Rye.EventBus.Lightweight
 {
-    public interface IMemoryEventBus: IEventBus, IMemoryEventPublisher, IMemoryEventSubscriber
+    public interface ILightweightEventBus: IEventBus, ILightweightEventPublisher, ILightweightEventSubscriber
     {
     }
 }

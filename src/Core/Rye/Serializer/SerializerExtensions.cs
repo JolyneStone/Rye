@@ -93,9 +93,9 @@ namespace Rye
             }
 
             if (type.IsPrimitive)
-                return (T)value.Parse(type);
+                return value.Parse(type);
             if (type == StringType)
-                return (T)(object)value;
+                return value;
 
             return JsonSerializer.Deserialize(value, type, options);
         }
