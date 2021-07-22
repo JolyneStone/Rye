@@ -10,6 +10,7 @@ namespace Rye.EventBus
     {
         private static readonly Dictionary<Type, string> _eventRouteDict = new Dictionary<Type, string>();
         private static readonly Dictionary<Type, Type> _eventTypeDict = new Dictionary<Type, Type>();
+        private static readonly Type _eventType = typeof(IEvent);
         private static readonly object _routeLocker = new object();
         private static readonly object _typeLocker = new object();
 
@@ -72,12 +73,51 @@ namespace Rye.EventBus
             }
 
             var attribute = type.GetCustomAttribute<EventTypeAttribute>(true);
-            Type eventType = attribute?.EventType;
-            lock (_typeLocker)
+            if (attribute != null)
             {
-                _eventTypeDict[type] = eventType;
+                Type eventType = attribute.EventType;
+                lock (_typeLocker)
+                {
+                    _eventTypeDict[type] = eventType;
+                }
+
+                return eventType;
             }
-            return eventType;
+            else
+            {
+                var baseType = type.BaseType;
+                while (baseType != null)
+                {
+                    if (baseType.IsGenericType)
+                    {
+                        var defineType = baseType.GetGenericArguments()[0];
+                        if (_eventType.IsAssignableFrom(defineType))
+                        {
+                            return defineType;
+                        }
+                    }
+
+                    baseType = baseType.BaseType;
+                }
+
+                var interfaceTypes = type.GetInterfaces();
+                if (interfaceTypes == null)
+                    return null;
+
+                foreach (var interfaceType in interfaceTypes)
+                {
+                    if (interfaceType.IsGenericType)
+                    {
+                        var defineType = interfaceType.GetGenericArguments()[0];
+                        if (_eventType.IsAssignableFrom(defineType))
+                        {
+                            return defineType;
+                        }
+                    }
+                }
+
+                return null;
+            }
         }
     }
 }

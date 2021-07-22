@@ -45,14 +45,20 @@ namespace Rye.EventBus
         }
 
         /// <summary>
-        /// 订阅Redis EventBus
+        /// 配置Redis EventBus
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <param name="subscriberAction"></param>
         /// <returns></returns>
-        public static IServiceCollection SubscriberRedisEventBus(this IServiceCollection serviceCollection, Action<IServiceProvider, IRedisEventBus> subscriberAction)
+        public static IServiceCollection ConfigRedisEventBus(this IServiceCollection serviceCollection, Action<IServiceProvider, IRedisEventBus> subscriberAction)
         {
-            return serviceCollection.Subscriber<IRedisEventBus>(subscriberAction);
+            return serviceCollection.ConfigBus<IRedisEventBus>(subscriberAction);
+        }
+
+        public static IServiceProvider ApplySubscriberHandler(this IServiceProvider services)
+        {
+            return services.ApplySubscriberHandler<IRedisEventBus, EventRouteAttribute>(
+                (bus, attribute, handler) => bus.Subscribe(attribute.Route, handler));
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Rye.Test.EventBus
                     options.Key = "RyeEventBus";
                     options.ClientId = "1";
                 });
-            serviceCollection.SubscriberRedisEventBus((_, bus) =>
+            serviceCollection.ConfigRedisEventBus((_, bus) =>
             {
                 bus.Subscribe<TestEvent>(new TestRedisEventHandler { Id = 1 });
                 bus.Subscribe<TestEvent>(new TestRedisEventHandler { Id = 2 });

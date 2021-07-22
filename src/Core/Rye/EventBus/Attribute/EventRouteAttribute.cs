@@ -15,6 +15,7 @@ namespace Rye.EventBus
 
         public EventRouteAttribute(string route)
         {
+            Check.NotNull(route, nameof(route));
             Route = route;
         }
     }

@@ -2,9 +2,14 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using Rye.EventBus.Abstractions;
+using Rye.EventBus.Internal;
+using Rye.EventBus.Lightweight;
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Rye.EventBus
 {
@@ -17,7 +22,7 @@ namespace Rye.EventBus
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
         public static IServiceCollection AddEventBus<TIEventBus, TEventBus>(this IServiceCollection serviceCollection)
-           where TIEventBus: class, IEventBus
+           where TIEventBus : class, IEventBus
             where TEventBus : class, TIEventBus
         {
             Check.NotNull(serviceCollection, nameof(serviceCollection));
@@ -53,7 +58,7 @@ namespace Rye.EventBus
         /// <param name="eventBusFactory"></param>
         /// <returns></returns>
         public static IServiceCollection AddEventBus<TEventBus>(this IServiceCollection serviceCollection, Func<IServiceProvider, TEventBus> eventBusFactory)
-            where TEventBus: class, IEventBus
+            where TEventBus : class, IEventBus
         {
             Check.NotNull(serviceCollection, nameof(serviceCollection));
             Check.NotNull(eventBusFactory, nameof(eventBusFactory));
@@ -136,14 +141,14 @@ namespace Rye.EventBus
         }
 
         /// <summary>
-        /// 订阅事件
+        /// 配置事件总线
         /// </summary>
         /// <typeparam name="TEventBus"></typeparam>
         /// <param name="serviceCollection"></param>
         /// <param name="subscriberAction"></param>
         /// <returns></returns>
-        public static IServiceCollection Subscriber<TEventBus>(this IServiceCollection serviceCollection, Action<IServiceProvider, TEventBus> subscriberAction)
-            where TEventBus: class, IEventBus
+        public static IServiceCollection ConfigBus<TEventBus>(this IServiceCollection serviceCollection, Action<IServiceProvider, TEventBus> subscriberAction)
+            where TEventBus : class, IEventBus
         {
             Check.NotNull(serviceCollection, nameof(serviceCollection));
             Check.NotNull(subscriberAction, nameof(subscriberAction));
@@ -174,6 +179,178 @@ namespace Rye.EventBus
             }
 
             return serviceCollection;
+        }
+
+        /// <summary>
+        /// 应用事件订阅
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <returns></returns>
+        public static IServiceProvider ApplySubscriberHandler<TSubscriber, TAttribute>(this IServiceProvider services,
+            Action<TSubscriber, TAttribute, IEventHandler> action)
+            where TSubscriber : IEventSubscriber
+            where TAttribute : Attribute
+        {
+            // 查找所有贴了 [SubscribeMessage] 特性的方法，并且含有两个参数，第一个参数为 string eventId，第二个参数为 T payload
+            var handlerType = typeof(ISubscribeEventHandler);
+            var attributeType = typeof(TAttribute);
+            var typeMethods = App.ScanTypes
+                    // 查询符合条件的订阅类型
+                    .Where(u => u.IsClass && !u.IsInterface && !u.IsAbstract && handlerType.IsAssignableFrom(u))
+                    // 查询符合条件的订阅方法
+                    .SelectMany(u =>
+                        u.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                         .Where(m =>
+                         {
+                             if (!m.IsDefined(attributeType, false))
+                                 return false;
+
+                             var p = m.GetParameters();
+                             return p.Length == 2 &&
+                                    typeof(IEvent).IsAssignableFrom(p[0].ParameterType) &&
+                                    typeof(EventContext).IsAssignableFrom(p[1].ParameterType);
+                         })
+                         .GroupBy(m => m.DeclaringType));
+
+            if (!typeMethods.Any()) return services;
+
+            var subscribeMethod = typeof(EventBusServiceCollectionExtensions).GetMethod("Subscribe", BindingFlags.NonPublic | BindingFlags.Static);
+
+            using (var scope = services.CreateScope())
+            {
+                var sub = scope.ServiceProvider.GetRequiredService<TSubscriber>();
+                // 遍历所有订阅类型
+                foreach (var item in typeMethods)
+                {
+                    if (!item.Any()) continue;
+
+                    foreach (var method in item)
+                    {
+                        var p = method.GetParameters();
+                        var parameterTypes = new Type[]
+                        {
+                            typeof(TSubscriber),
+                            typeof(TAttribute),
+                            p[0].ParameterType,
+                            p[1].ParameterType
+                        };
+                        subscribeMethod.MakeGenericMethod(parameterTypes)
+                            .Invoke(null, new object[] { sub, item.Key, method, action });
+                    }
+                }
+            }
+
+            return services;
+        }
+
+        private static void Subscribe<TSubscriber, TAttribute, TEvent, TContext>(
+            TSubscriber subscriber,
+            Type type,
+            MethodInfo method,
+            Action<TSubscriber, TAttribute, IEventHandler> action)
+            where TSubscriber : IEventSubscriber
+            where TAttribute : Attribute
+            where TEvent : IEvent
+            where TContext : EventContext
+        {
+            var handler = CallSubscribeExpression<TEvent, TContext>(type, method);
+
+            // 获取所有消息特性
+            var subscribeMessageAttributes = method.GetCustomAttributes<TAttribute>();
+
+            // 注册订阅
+            foreach (var subscribeMessageAttribute in subscribeMessageAttributes)
+            {
+                action(subscriber, subscribeMessageAttribute, new InternalEventHandler<TEvent, TContext>(handler));
+                //subscriber.Subscribe(
+                //    subscribeMessageAttribute.Exchange,
+                //    subscribeMessageAttribute.Queue,
+                //    subscribeMessageAttribute.RouteKey,
+                //    handler);
+            }
+        }
+
+        /// <summary>
+        /// 生成调用订阅者表达式
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        private static Func<TEvent, TContext, Task> CallSubscribeExpression<TEvent, TContext>(Type type, MethodInfo method)
+        {
+            var paramHandlerExpression = Expression.Parameter(typeof(object));
+            var paramEventExpression = Expression.Parameter(typeof(TEvent));
+            var paramContextExpression = Expression.Parameter(typeof(TContext));
+
+            var convertExpression = Expression.Convert(paramHandlerExpression, type);
+            var callExpression = Expression.Call(
+                convertExpression,
+                method,
+                paramEventExpression,
+                paramContextExpression);
+
+
+            // 对返回Task或Task<>的方法进行处理
+            if (method.ReturnType != null && typeof(Task).IsAssignableFrom(method.ReturnType))
+            {
+                var lambdaExpression = Expression.Lambda<Func<object, TEvent, TContext, Task>>(
+                   callExpression,
+                   paramHandlerExpression,
+                   paramEventExpression,
+                   paramContextExpression);
+
+                var lambda = lambdaExpression.Compile();
+
+                return async (s, o) =>
+                {
+                    using (var scope = App.GetRequiredService<IServiceScopeFactory>()
+                            .CreateScope())
+                    {
+                        await lambda(scope.ServiceProvider.GetRequiredService(type), s, o);
+                    }
+                };
+            }
+            // 对返回ValueTask或ValueTask<>的方法进行处理
+            else if (method.ReturnType != null && typeof(ValueTask).IsAssignableFrom(method.ReturnType))
+            {
+                var lambdaExpression = Expression.Lambda<Func<object, TEvent, TContext, ValueTask>>(
+                   callExpression,
+                   paramHandlerExpression,
+                   paramEventExpression,
+                   paramContextExpression);
+
+                var lambda = lambdaExpression.Compile();
+
+                return async (s, o) =>
+                {
+                    using (var scope = App.GetRequiredService<IServiceScopeFactory>()
+                            .CreateScope())
+                    {
+                        await lambda(scope.ServiceProvider.GetRequiredService(type), s, o);
+                    }
+                };
+            }
+            // 对无返回值或返回普通类型的方法进行处理
+            else
+            {
+                var lambdaExpression = Expression.Lambda<Action<object, TEvent, TContext>>(
+                    callExpression,
+                    paramHandlerExpression,
+                    paramEventExpression,
+                    paramContextExpression);
+
+                var lambda = lambdaExpression.Compile();
+
+                return (s, o) =>
+                {
+                    using (var scope = App.GetRequiredService<IServiceScopeFactory>()
+                            .CreateScope())
+                    {
+                        lambda(scope.ServiceProvider.GetRequiredService(type), s, o);
+                        return Task.CompletedTask;
+                    }
+                };
+            }
         }
     }
 }

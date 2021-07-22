@@ -2,6 +2,7 @@
 {
     internal class EventWrapper
     {
+        public string Key { get; set; }
         public string Exchange { get; set; }
         public string Queue { get; set; }
         public string RouteKey { get; set; }

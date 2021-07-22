@@ -46,14 +46,20 @@ namespace Rye.EventBus
         }
 
         /// <summary>
-        /// 订阅Application EventBus
+        /// 配置轻量级 EventBus
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <param name="subscriberAction"></param>
         /// <returns></returns>
-        public static IServiceCollection SubscriberLightweightEventBus(this IServiceCollection serviceCollection, Action<IServiceProvider, ILightweightEventBus> subscriberAction)
+        public static IServiceCollection ConfigLightweightEventBus(this IServiceCollection serviceCollection, Action<IServiceProvider, ILightweightEventBus> subscriberAction)
         {
-            return serviceCollection.Subscriber<ILightweightEventBus>(subscriberAction);
+            return serviceCollection.ConfigBus<ILightweightEventBus>(subscriberAction);
+        }
+
+        public static IServiceProvider ApplySubscriberHandler(this IServiceProvider services)
+        {
+            return services.ApplySubscriberHandler<ILightweightEventBus, EventRouteAttribute>(
+                (bus, attribute, handler) => bus.Subscribe(attribute.Route, handler));
         }
     }
 }

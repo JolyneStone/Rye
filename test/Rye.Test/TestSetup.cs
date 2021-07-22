@@ -11,16 +11,9 @@ namespace Rye.Test
     {
         public static IServiceProvider ConfigService(Action<IServiceCollection> configAction)
         {
-            var devSetting = App.Configuration.GetSection("ASPNETCORE_ENVIRONMENT").Value == "Development" ? ".Development" : "";
-            var host = Host.CreateDefaultBuilder()
-                .ConfigureHostConfiguration(configure =>
-                {
-                    configure.SetBasePath(Directory.GetCurrentDirectory())
-                        .AddJsonFile($"appsettings{devSetting}.json")
-                        .Build();
-
-                })
-                .ConfigureServices((context, services) =>
+            var host = Host.CreateDefaultBuilder(null)
+               .ConfigureApp()
+               .ConfigureServices((context, services) =>
                 {
                     configAction(services);
                 }).Build();

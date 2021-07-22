@@ -41,14 +41,14 @@ namespace Rye.EventBus.CAP
         }
 
         /// <summary>
-        /// 订阅Rabbit MQ EventBus
+        /// 配置 CAP EventBus
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <param name="subscriberAction"></param>
         /// <returns></returns>
-        public static IServiceCollection SubscriberCapEventBus(this IServiceCollection serviceCollection, Action<IServiceProvider, ICapEventBus> subscriberAction)
+        public static IServiceCollection ConfigCapEventBus(this IServiceCollection serviceCollection, Action<IServiceProvider, ICapEventBus> subscriberAction)
         {
-            return serviceCollection.Subscriber<ICapEventBus>(subscriberAction);
+            return serviceCollection.ConfigBus<ICapEventBus>(subscriberAction);
         }
     }
 }

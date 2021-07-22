@@ -17,9 +17,8 @@ namespace Rye.EventBus.RabbitMQ.Internal
         private readonly AsyncLock _locker = new AsyncLock();
         private volatile bool _canRead = true;
 
-        internal void AddHandlers(string eventRoute, IEnumerable<IEventHandler> handlers)
+        internal void AddHandlers(string route, IEnumerable<IEventHandler> handlers)
         {
-            Check.NotNull(eventRoute, nameof(eventRoute));
             Check.NotNull(handlers, nameof(handlers));
 
             using (_locker.Lock())
@@ -27,13 +26,13 @@ namespace Rye.EventBus.RabbitMQ.Internal
                 _canRead = false;
                 try
                 {
-                    if (_handler.TryGetValue(eventRoute, out var list))
+                    if (_handler.TryGetValue(route, out var list))
                     {
                         list.AddRange(handlers);
                     }
                     else
                     {
-                        _handler.Add(eventRoute, handlers.ToList());
+                        _handler.Add(route, handlers.ToList());
                     }
                 }
                 finally
@@ -63,7 +62,7 @@ namespace Rye.EventBus.RabbitMQ.Internal
 
         private async Task OnEventCoreAsync(EventWrapper wrapper, BasicDeliverEventArgs eventArgs)
         {
-            var eventRoute = wrapper.RouteKey;
+            var eventRoute = wrapper.Key;
             if (_handler.TryGetValue(eventRoute, out var list))
             {
                 await OnConsumeEvent?.Invoke(eventArgs, wrapper, list);

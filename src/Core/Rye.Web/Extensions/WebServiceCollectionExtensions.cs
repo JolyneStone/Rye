@@ -71,6 +71,7 @@ namespace Rye.Web
                     options.JsonSerializerOptions.WriteIndented = true;
                     options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
                     options.JsonSerializerOptions.Converters.Add(new DateTimeJsonConverter());
+                    options.JsonSerializerOptions.Converters.Add(new DateTimeOffsetJsonConverter());
                 });
             }
         }

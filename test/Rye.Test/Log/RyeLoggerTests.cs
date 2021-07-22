@@ -9,6 +9,7 @@ using Rye.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rye.Options;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace Rye.Logger.Tests
 {
@@ -16,7 +17,7 @@ namespace Rye.Logger.Tests
     {
         public RyeLoggerTests()
         {
-            TestSetup.ConfigService(serviceCollection=>serviceCollection.AddRye().ConfigureModule());
+            TestSetup.ConfigService(serviceCollection => serviceCollection.AddRye().ConfigureModule());
         }
 
         [Fact()]

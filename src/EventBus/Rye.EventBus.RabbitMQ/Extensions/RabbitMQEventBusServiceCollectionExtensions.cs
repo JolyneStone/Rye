@@ -45,14 +45,20 @@ namespace Rye.EventBus.RabbitMQ
         }
 
         /// <summary>
-        /// 订阅Rabbit MQ EventBus
+        /// 配置Rabbit MQ EventBus
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <param name="subscriberAction"></param>
         /// <returns></returns>
-        public static IServiceCollection SubscriberRabbitMQEventBus(this IServiceCollection serviceCollection, Action<IServiceProvider, IRabbitMQEventBus> subscriberAction)
+        public static IServiceCollection ConfigRabbitMQEventBus(this IServiceCollection serviceCollection, Action<IServiceProvider, IRabbitMQEventBus> subscriberAction)
         {
-            return serviceCollection.Subscriber<IRabbitMQEventBus>(subscriberAction);
+            return serviceCollection.ConfigBus<IRabbitMQEventBus>(subscriberAction);
+        }
+
+        public static IServiceProvider ApplySubscriberHandler(this IServiceProvider services)
+        {
+            return services.ApplySubscriberHandler<IRabbitMQEventBus, RabbitMQEventRouteAttribute>(
+                (bus, attribute, handler) => bus.Subscribe(attribute.Exchange, attribute.Queue, attribute.RouteKey, new[] { handler }));
         }
     }
 }

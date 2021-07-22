@@ -17,6 +17,8 @@ namespace Rye.EventBus
         {
             if (@event != null && @event is TEvent e)
                 await OnEvent(e, eventContext as TContext);
+            else
+                await OnEvent(default(TEvent), eventContext as TContext);
         }
 
         protected abstract Task OnEvent(TEvent @event, TContext eventContext);
