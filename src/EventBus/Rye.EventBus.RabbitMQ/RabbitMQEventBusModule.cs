@@ -28,5 +28,10 @@ namespace Rye.EventBus.RabbitMQ
         {
             services.AddRabbitMQEventBus(_action);
         }
+
+        public override void Use(IServiceProvider serviceProvider)
+        {
+            serviceProvider.ApplyRabbitMQSubscriberHandler();
+        }
     }
 }

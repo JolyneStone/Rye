@@ -55,7 +55,7 @@ namespace Rye.EventBus
             return serviceCollection.ConfigBus<IRedisEventBus>(subscriberAction);
         }
 
-        public static IServiceProvider ApplySubscriberHandler(this IServiceProvider services)
+        public static IServiceProvider ApplyRedisSubscriberHandler(this IServiceProvider services)
         {
             return services.ApplySubscriberHandler<IRedisEventBus, EventRouteAttribute>(
                 (bus, attribute, handler) => bus.Subscribe(attribute.Route, handler));

@@ -55,7 +55,7 @@ namespace Rye.EventBus.RabbitMQ
             return serviceCollection.ConfigBus<IRabbitMQEventBus>(subscriberAction);
         }
 
-        public static IServiceProvider ApplySubscriberHandler(this IServiceProvider services)
+        public static IServiceProvider ApplyRabbitMQSubscriberHandler(this IServiceProvider services)
         {
             return services.ApplySubscriberHandler<IRabbitMQEventBus, RabbitMQEventRouteAttribute>(
                 (bus, attribute, handler) => bus.Subscribe(attribute.Exchange, attribute.Queue, attribute.RouteKey, new[] { handler }));

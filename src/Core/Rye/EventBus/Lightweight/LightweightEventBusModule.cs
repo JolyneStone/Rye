@@ -27,5 +27,9 @@ namespace Rye.EventBus.Lightweight
             services.AddLightweightEventBus(_action);
         }
 
+        public override void Use(IServiceProvider serviceProvider)
+        {
+            serviceProvider.ApplySubscriberHandler();
+        }
     }
 }

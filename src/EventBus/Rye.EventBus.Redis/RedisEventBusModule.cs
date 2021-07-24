@@ -28,5 +28,10 @@ namespace Rye.EventBus.Redis
         {
             services.AddRedisEventBus(_action);
         }
+
+        public override void Use(IServiceProvider serviceProvider)
+        {
+            serviceProvider.ApplyRedisSubscriberHandler();
+        }
     }
 }

@@ -62,6 +62,9 @@ namespace Rye
             }
 
             serviceCollection.Configure<RyeOptions>(action);
+            serviceCollection.AddTransient(
+                  typeof(Lazy<>),
+                  typeof(LazilyResolved<>));
             using (var services = serviceCollection.BuildServiceProvider())
             {
                 using (var scope = services.CreateScope())
@@ -76,7 +79,6 @@ namespace Rye
                     App.Assemblies = GetDenpencyAssemblies(scope.ServiceProvider);
                     App.ScanTypes = GetEffectiveTypes(App.Assemblies);
                     serviceCollection.AutoInject();
-
                     return serviceCollection;
                 }
             }
