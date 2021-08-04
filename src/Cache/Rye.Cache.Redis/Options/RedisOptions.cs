@@ -51,10 +51,6 @@
         /// </summary>
         public bool Ssl { get; set; }
         /// <summary>
-        /// 是否使用多级缓存
-        /// </summary>
-        public bool MultiCacheEnabled { get; set; }
-        /// <summary>
         /// 是否只读
         /// </summary>
         public bool ReadOnly { get; set; }

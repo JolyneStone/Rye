@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Caching.Memory;
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rye.Cache.Store
@@ -16,30 +15,26 @@ namespace Rye.Cache.Store
             _cache = cache;
         }
 
-        public bool ReadOnly { get => false; }
-
-        public bool MultiCacheEnabled { get => false; }
-
-        public bool Exist(string key)
+        public bool Exists(string key)
         {
             Check.NotNullOrEmpty(key, nameof(key));
             return _cache.TryGetValue(key, out object _);
         }
 
-        public Task<bool> ExistAsync(string key)
+        public Task<bool> ExistsAsync(string key)
         {
             Check.NotNullOrEmpty(key, nameof(key));
             return Task.FromResult(_cache.TryGetValue(key, out object _));
         }
 
-        public bool Exist(CacheOptionEntry entry)
+        public bool Exists(CacheOptionEntry entry)
         {
             Check.NotNull(entry, nameof(entry));
             Check.NotNullOrEmpty(entry.Key, nameof(entry.Key));
             return _cache.TryGetValue(entry.Key, out object _);
         }
 
-        public Task<bool> ExistAsync(CacheOptionEntry entry)
+        public Task<bool> ExistsAsync(CacheOptionEntry entry)
         {
             Check.NotNull(entry, nameof(entry));
             Check.NotNullOrEmpty(entry.Key, nameof(entry.Key));
@@ -93,7 +88,7 @@ namespace Rye.Cache.Store
             Check.NotNull(func, nameof(func));
             return _cache.GetOrCreate<T>(key, func, cacheSeconds);
         }
-        
+
         public T Get<T>(CacheOptionEntry entry)
         {
             Check.NotNull(entry, nameof(entry));

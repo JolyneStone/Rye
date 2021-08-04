@@ -405,10 +405,10 @@ namespace Rye.AspectFlare.DynamicProxy
 
         private static void GenerateCallerMethod(GeneratorContext context)
         {
-            if (context.Parameters.Length != 0)
-            {
-                return;
-            }
+            //if (context.Parameters.Length != 0)
+            //{
+            //    return;
+            //}
 
             MethodBase baseMethod;
             Type returnType;

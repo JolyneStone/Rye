@@ -42,6 +42,10 @@ namespace Rye.AspectFlare.DependencyInjection
             if (item.ServiceType.IsInterface)
             {
                 _provider.TryGetProxyType(item.ServiceType, classType, out implementType);
+                if (implementType != null)
+                    _provider.TryGetProxyType(implementType, out implementType);
+                else
+                    _provider.TryGetProxyType(classType, out implementType);
             }
             else
             {

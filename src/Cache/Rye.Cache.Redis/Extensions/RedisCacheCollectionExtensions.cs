@@ -56,16 +56,13 @@ namespace Rye.Cache.Redis
             var redisClient = new CSRedisClient(new RedisConnectionBuilder().BuildConnectionString(options));
             RedisHelper.Initialization(redisClient);
             serviceCollection.AddSingleton<IDistributedCache>(new Microsoft.Extensions.Caching.Redis.CSRedisCache(RedisHelper.Instance));
-            if (options.MultiCacheEnabled)
-            {
-                serviceCollection.TryAddSingleton<IRedisStore>(service => new RedisStore(service.GetService<IOptions<RedisOptions>>(), service.GetRequiredService<IMemoryStore>()));
-                serviceCollection.RemoveAll<ICacheStore>();
-                serviceCollection.TryAddSingleton<ICacheStore>(service => service.GetRequiredService<IRedisStore>());
-            }
-            else
-            {
-                serviceCollection.TryAddSingleton<IRedisStore>(service => new RedisStore(service.GetService<IOptions<RedisOptions>>()));
-            }
+            serviceCollection.TryAddSingleton<IRedisStore, RedisStore>();
+            serviceCollection.RemoveAll<ICacheStore>();
+            serviceCollection.TryAddSingleton<ICacheStore>(service => service.GetRequiredService<IRedisStore>());
+            serviceCollection.RemoveAll<IMutilCacheStore>();
+            serviceCollection.TryAddSingleton<IMutilCacheStore, MutilCacheStore>();
+            serviceCollection.RemoveAll<IAppCacheStore>();
+            serviceCollection.TryAddSingleton<IAppCacheStore, AppRedisCacheStore>();
             return serviceCollection;
         }
 

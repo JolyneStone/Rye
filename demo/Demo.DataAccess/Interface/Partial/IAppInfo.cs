@@ -1,4 +1,7 @@
-﻿using Rye.Cache.Redis;
+﻿using Demo.Common;
+
+using Rye;
+using Rye.Cache.Redis;
 
 using System.Threading.Tasks;
 
@@ -9,16 +12,16 @@ namespace Demo.DataAccess
         AppInfo GetModel(string appKey);
         Task<AppInfo> GetModelAsync(string appKey);
 
-        [RedisCache(cacheKey: "AppInfoByKey", cacheSeconds: 60 * 5)]
+        [Cache(CacheScheme.Redis, cacheKey: "AppInfoByKey", cacheSeconds: CacheStrategy.FIVE_MINUTES)]
         AppInfo GetModelWithCache(string appKey);
 
-        [RedisCache(cacheKey: "AppInfoByKey", cacheSeconds: 60 * 5)]
+        [Cache(CacheScheme.Redis, cacheKey: "AppInfoByKey", cacheSeconds: CacheStrategy.FIVE_MINUTES)]
         Task<AppInfo> GetModelWithCacheAsync(string appKey);
 
-        [RedisCache(cacheKey: "AppInfoById", cacheSeconds: 60 * 5)]
+        [Cache(CacheScheme.Redis, cacheKey: "AppInfoById", cacheSeconds: CacheStrategy.FIVE_MINUTES)]
         AppInfo GetModelWithCache(int appId);
 
-        [RedisCache(cacheKey: "AppInfoById", cacheSeconds: 60 * 5)]
+        [Cache(CacheScheme.Redis, cacheKey: "AppInfoById", cacheSeconds: CacheStrategy.FIVE_MINUTES)]
         Task<AppInfo> GetModelWithCacheAsync(int appId);
     }
 }

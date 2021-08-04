@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 
-using Rye;
 using Rye.AspectFlare;
 using Rye.Cache;
 using Rye.Cache.Store;
@@ -18,52 +17,66 @@ namespace Rye
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class CacheAttribute : InterceptAttribute, ICallingInterceptor, ICalledInterceptor
     {
-        private static readonly Lazy<IMemoryStore> _cacheLazy = new Lazy<IMemoryStore>(() => App.ApplicationServices.GetService<IMemoryStore>());
+        private static readonly Lazy<IAppCacheStore> _cacheLazy = new Lazy<IAppCacheStore>(() => App.GetService<IAppCacheStore>());
 
-        private static IMemoryStore Cache { get => _cacheLazy.Value; }
+        private static IAppCacheStore Cache { get => _cacheLazy.Value; }
 
-        public CacheAttribute()
+        public CacheAttribute(CacheScheme scheme)
         {
+            Scheme = scheme;
         }
 
-        public CacheAttribute(string cacheKey)
+        public CacheAttribute(CacheScheme scheme, string cacheKey)
         {
             Check.NotNullOrEmpty(cacheKey, nameof(cacheKey));
+            Scheme = scheme;
             CacheKey = cacheKey;
         }
 
-        public CacheAttribute(string cacheKey, int cacheSeconds)
+        public CacheAttribute(CacheScheme scheme, string cacheKey, int cacheSeconds)
         {
             Check.NotNullOrEmpty(cacheKey, nameof(cacheKey));
+            Scheme = scheme;
             CacheKey = cacheKey;
             CacheSeconds = cacheSeconds;
         }
 
-        public CacheAttribute(string cacheKey, int cacheSeconds, bool isSliding)
+        public CacheAttribute(CacheScheme scheme, string cacheKey, int cacheSeconds, bool isSliding)
         {
             Check.NotNullOrEmpty(cacheKey, nameof(cacheKey));
-
+            Scheme = scheme;
             CacheKey = cacheKey;
             CacheSeconds = cacheSeconds;
             IsSliding = isSliding;
         }
 
-        public CacheAttribute(int cacheSeconds)
+        public CacheAttribute(CacheScheme scheme, int cacheSeconds)
         {
+            Scheme = scheme;
             CacheSeconds = cacheSeconds;
         }
 
-        public CacheAttribute(int cacheSeconds, bool isSliding)
+        public CacheAttribute(CacheScheme scheme, int cacheSeconds, bool isSliding)
         {
+            Scheme = scheme;
             CacheSeconds = cacheSeconds;
             IsSliding = isSliding;
         }
-
+        /// <summary>
+        /// 缓存方案
+        /// </summary>
+        public CacheScheme Scheme { get; set; }
         /// <summary>
         /// 缓存Key
         /// </summary>
         public string CacheKey { get; set; }
+        /// <summary>
+        /// 缓存时间
+        /// </summary>
         public int CacheSeconds { get; set; } = 30;
+        /// <summary>
+        /// 是否是滑动过期
+        /// </summary>
         public bool IsSliding { get; set; } = false;
 
         public void Calling(CallingInterceptContext callingInterceptorContext)
@@ -73,7 +86,7 @@ namespace Rye
                 CacheKey = callingInterceptorContext.Owner.GetType().FullName + "." + callingInterceptorContext.MethodName;
             }
             var key = GetKey(CacheKey, callingInterceptorContext.Parameters);
-            var result = Cache.Get<string>(key);
+            var result = Cache.Get<string>(Scheme, key);
             if (result != null)
             {
                 callingInterceptorContext.HasResult = true;
@@ -88,7 +101,7 @@ namespace Rye
         public void Called(CalledInterceptContext calledInterceptorContext)
         {
             var key = GetKey(CacheKey, calledInterceptorContext.Parameters);
-            if (!Cache.Exist(key))
+            if (!Cache.Exists(Scheme, key))
             {
                 var result = calledInterceptorContext.Result ?? calledInterceptorContext.ReturnValue;
                 if (result != null)
@@ -103,7 +116,7 @@ namespace Rye
                     {
                         entry.SetAbsoluteExpiration(TimeSpan.FromSeconds(CacheSeconds));
                     }
-                    Cache.Set(entry, result.ToJsonString());
+                    Cache.Set(Scheme, entry, result.ToJsonString());
                 }
             }
         }
@@ -116,7 +129,7 @@ namespace Rye
                 sb.Append(":");
                 foreach (var param in parameters)
                 {
-                    sb.Append(param?.ToString() + "_");
+                    sb.Append(param?.ToJsonString() + "_");
                 }
                 sb.Length--;
                 return sb.ToString();

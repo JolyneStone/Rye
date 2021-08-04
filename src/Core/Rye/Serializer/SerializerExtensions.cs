@@ -32,10 +32,10 @@ namespace Rye
                 return null;
             if (obj is string str)
                 return str;
+            if (obj is Guid guid)
+                return guid.ToString();
             if (options == null)
-            {
                 options = _serializerOptions;
-            }
             return JsonSerializer.Serialize(obj, options);
         }
 
@@ -71,7 +71,7 @@ namespace Rye
 
             var type = typeof(T);
             if (type.IsPrimitive)
-                return (T)value.Parse(type);
+                return (T)value.ParseByType(type);
             if (type == StringType)
                 return (T)(object)value;
 
@@ -93,7 +93,7 @@ namespace Rye
             }
 
             if (type.IsPrimitive)
-                return value.Parse(type);
+                return value.ParseByType(type);
             if (type == StringType)
                 return value;
 

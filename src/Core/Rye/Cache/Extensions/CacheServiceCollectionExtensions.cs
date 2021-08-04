@@ -19,6 +19,7 @@ namespace Rye
             services.AddDistributedMemoryCache();
             services.TryAddSingleton<IMemoryStore, MemoryStore>();
             services.TryAddSingleton<ICacheStore>(services => services.GetRequiredService<IMemoryStore>());
+            services.TryAddSingleton<IAppCacheStore, AppMemoryCacheStore>();
             return services;
         }
 

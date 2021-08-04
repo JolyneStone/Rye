@@ -308,14 +308,15 @@ namespace Rye
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="conversionType"></param>
+        /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public static object Parse(this object obj, Type conversionType)
+        public static object ParseByType(this object obj, Type conversionType, object defaultValue = default)
         {
             try
             {
                 if (obj == null)
                 {
-                    return conversionType.IsValueType ? Activator.CreateInstance(conversionType) : null;
+                    return defaultValue == null && conversionType.IsValueType ? Activator.CreateInstance(conversionType) : defaultValue;
                 }
                 if (conversionType.IsNullableType())
                 {
@@ -329,11 +330,15 @@ namespace Rye
                 {
                     return Guid.Parse(obj.ToString());
                 }
+                if (conversionType == typeof(bool))
+                {
+                    return bool.Parse(obj.ToString());
+                }
                 return Convert.ChangeType(obj, conversionType);
             }
             catch
             {
-                return conversionType.IsValueType ? Activator.CreateInstance(conversionType) : null;
+                return conversionType.IsValueType ? Activator.CreateInstance(conversionType) : defaultValue;
             }
         }
 
@@ -356,7 +361,7 @@ namespace Rye
                 {
                     return (T)obj;
                 }
-                object result = Parse(obj, typeof(T));
+                object result = ParseByType(obj, typeof(T));
                 return (T)result;
             }
             catch (Exception)

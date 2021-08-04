@@ -1,23 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rye.Cache.Store
 {
     public interface ICacheStore: IDisposable
     {
-        /// <summary>
-        /// 是否只读
-        /// </summary>
-        bool ReadOnly { get; }
-        /// <summary>
-        /// 是否启用多级缓存
-        /// </summary>
-        bool MultiCacheEnabled { get; }
-
         /// <summary>
         /// 设置缓存，当 cacheSeconds == -1 时，表示永不过期
         /// </summary>
@@ -53,6 +40,22 @@ namespace Rye.Cache.Store
         /// <param name="data"></param>
         /// <returns></returns>
         Task SetAsync<T>(CacheOptionEntry entry, T data);
+
+        /// <summary>
+        /// 从缓存中获取值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        T Get<T>(string key);
+
+        /// <summary>
+        /// 异步从缓存中获取值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<T> GetAsync<T>(string key);
 
         /// <summary>
         /// 从缓存中获取值，若键不存在，则使用func参数获取值，并添加到缓存中，当 cacheSeconds == -1 时，表示永不过期
@@ -147,24 +150,24 @@ namespace Rye.Cache.Store
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        bool Exist(string key);
+        bool Exists(string key);
         /// <summary>
         /// 判断缓存中是否存在该键值
         /// </summary>
         /// <param name="entry"></param>
         /// <returns></returns>
-        bool Exist(CacheOptionEntry entry);
+        bool Exists(CacheOptionEntry entry);
         /// <summary>
         /// 判断缓存中是否存在该键值
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        Task<bool> ExistAsync(string key);
+        Task<bool> ExistsAsync(string key);
         /// <summary>
         /// 判断缓存中是否存在该键值
         /// </summary>
         /// <param name="entry"></param>
         /// <returns></returns>
-        Task<bool> ExistAsync(CacheOptionEntry entry);
+        Task<bool> ExistsAsync(CacheOptionEntry entry);
     }
 }
