@@ -83,7 +83,10 @@ namespace Rye
         {
             if (string.IsNullOrEmpty(CacheKey))
             {
-                CacheKey = callingInterceptorContext.Owner.GetType().FullName + "." + callingInterceptorContext.MethodName;
+                var method = callingInterceptorContext.MethodName;
+                if (method.EndsWith("Async"))
+                    method = method.Substring(0, method.Length - 5);
+                CacheKey = callingInterceptorContext.Owner.GetType().FullName + "." + method;
             }
             var key = GetKey(CacheKey, callingInterceptorContext.Parameters);
             var result = Cache.Get<string>(Scheme, key);
