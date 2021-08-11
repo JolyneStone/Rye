@@ -118,11 +118,9 @@ namespace Rye.Web.Middleware
 
                             await _next(context).ConfigureAwait(false); //执行action
 
-                            using (StreamReader streamReader = new StreamReader(newResponse))
-                            {
-                                newResponse.Position = 0;
-                                responseTempBody = await streamReader.ReadToEndAsync(); //action返回的数据
-                            }
+                            using StreamReader streamReader = new StreamReader(newResponse);
+                            newResponse.Position = 0;
+                            responseTempBody = await streamReader.ReadToEndAsync(); //action返回的数据
                         }
 
                         context.Response.Body = originResponse;
@@ -145,7 +143,7 @@ namespace Rye.Web.Middleware
             }
         }
 
-        private async Task WriteResponseAsync(HttpContext context, bool encrypt, ISecurityService securityService, string appKey, string appSecret, string value)
+        private static async Task WriteResponseAsync(HttpContext context, bool encrypt, ISecurityService securityService, string appKey, string appSecret, string value)
         {
             if (encrypt && !appKey.IsNullOrEmpty() && !appSecret.IsNullOrEmpty())
             {
@@ -154,10 +152,8 @@ namespace Rye.Web.Middleware
             context.Response.Headers["Content-length"] = value.Length.ToString();
             Stream responseOrigin = context.Response.Body;
             await responseOrigin.FlushAsync();
-            using (StreamWriter streamWriter = new StreamWriter(responseOrigin))
-            {
-                await streamWriter.WriteAsync(value);
-            }
+            using StreamWriter streamWriter = new StreamWriter(responseOrigin);
+            await streamWriter.WriteAsync(value);
         }
 
         private class SecurityBody

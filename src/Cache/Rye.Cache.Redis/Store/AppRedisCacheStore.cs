@@ -4,9 +4,9 @@ namespace Rye.Cache.Redis.Store
 {
     public class AppRedisCacheStore : AppCacheStore
     {
-        private IMemoryStore _memoryStore;
-        private IRedisStore _redisStore;
-        private IMutilCacheStore _mutilCacheStore;
+        private readonly IMemoryStore _memoryStore;
+        private readonly IRedisStore _redisStore;
+        private readonly IMutilCacheStore _mutilCacheStore;
 
         public AppRedisCacheStore(
             IMemoryStore memoryStore,

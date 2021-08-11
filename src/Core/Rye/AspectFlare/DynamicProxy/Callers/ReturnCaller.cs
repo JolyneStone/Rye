@@ -14,7 +14,7 @@ namespace Rye.AspectFlare.DynamicProxy
             }
 
             InterceptResult result;
-            T returnValue = default(T);
+            T returnValue = default;
             var returnType = typeof(T);
             try
             {

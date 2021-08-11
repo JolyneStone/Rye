@@ -85,7 +85,7 @@ namespace Rye
             {
                 var method = callingInterceptorContext.MethodName;
                 if (method.EndsWith("Async"))
-                    method = method.Substring(0, method.Length - 5);
+                    method = method[0..^5];
                 CacheKey = callingInterceptorContext.Owner.GetType().FullName + "." + method;
             }
             var key = GetKey(CacheKey, callingInterceptorContext.Parameters);
@@ -129,7 +129,7 @@ namespace Rye
             if (parameters != null && parameters.Length > 0)
             {
                 var sb = new StringBuilder(cacheKey);
-                sb.Append(":");
+                sb.Append(':');
                 foreach (var param in parameters)
                 {
                     sb.Append(param?.ToJsonString() + "_");

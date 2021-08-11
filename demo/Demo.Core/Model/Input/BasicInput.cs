@@ -5,11 +5,11 @@ namespace Demo.Model.Input
 {
     public class BasicInput
     {
-        /// <summary>
-        /// App Key
-        /// </summary>
-        [Required(ErrorMessage = "INVALID_PARAMS")]
-        public string AppKey { get; set; }
+        ///// <summary>
+        ///// App Key
+        ///// </summary>
+        //[Required(ErrorMessage = "INVALID_PARAMS")]
+        //public string AppKey { get; set; }
 
         /// <summary>
         /// 客户端类型

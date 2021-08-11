@@ -17,6 +17,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Rye.Web;
 
 namespace Demo.WebApi.Controllers
 {
@@ -59,7 +60,7 @@ namespace Demo.WebApi.Controllers
             //}
 
             var (code, userInfo) = await loginService.LoginAsync(
-                basicInput.AppKey,
+                Request.GetString("appKey"),
                 input.Account.FromBase64String(),
                 input.Password.FromBase64String());
             if (code != DefaultStatusCode.Success)

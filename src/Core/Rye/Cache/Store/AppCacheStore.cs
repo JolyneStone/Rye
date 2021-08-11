@@ -52,7 +52,7 @@ namespace Rye.Cache.Store
         public T Get<T>(CacheScheme scheme, string key, Func<T> func, int cacheSeconds = 60)
         {
             var store = AssignStore(scheme);
-            return store == null ? default : store.Get<T>(key, func, cacheSeconds);
+            return store == null ? func() : store.Get<T>(key, func, cacheSeconds);
         }
 
         public T Get<T>(CacheScheme scheme, CacheOptionEntry entry)
@@ -64,7 +64,7 @@ namespace Rye.Cache.Store
         public T Get<T>(CacheScheme scheme, CacheOptionEntry entry, Func<T> func)
         {
             var store = AssignStore(scheme);
-            return store == null ? default : store.Get<T>(entry, func);
+            return store == null ? func() : store.Get<T>(entry, func);
         }
 
         public async Task<T> GetAsync<T>(CacheScheme scheme, string key)
@@ -76,7 +76,7 @@ namespace Rye.Cache.Store
         public async Task<T> GetAsync<T>(CacheScheme scheme, string key, Func<T> func, int cacheSeconds = 60)
         {
             var store = AssignStore(scheme);
-            return store == null ? default : await store.GetAsync<T>(key, func, cacheSeconds);
+            return store == null ? func() : await store.GetAsync<T>(key, func, cacheSeconds);
         }
 
         public async Task<T> GetAsync<T>(CacheScheme scheme, CacheOptionEntry entry)
@@ -88,19 +88,19 @@ namespace Rye.Cache.Store
         public async Task<T> GetAsync<T>(CacheScheme scheme, CacheOptionEntry entry, Func<T> func)
         {
             var store = AssignStore(scheme);
-            return store == null ? default : await store.GetAsync<T>(entry, func);
+            return store == null ? func() : await store.GetAsync<T>(entry, func);
         }
 
         public async Task<T> GetAsync<T>(CacheScheme scheme, string key, Func<Task<T>> func, int cacheSeconds = 60)
         {
             var store = AssignStore(scheme);
-            return store == null ? default : await store.GetAsync<T>(key, func, cacheSeconds);
+            return store == null ? await func() : await store.GetAsync<T>(key, func, cacheSeconds);
         }
 
         public async Task<T> GetAsync<T>(CacheScheme scheme, CacheOptionEntry entry, Func<Task<T>> func)
         {
             var store = AssignStore(scheme);
-            return store == null ? default : await store.GetAsync<T>(entry, func);
+            return store == null ? await func() : await store.GetAsync<T>(entry, func);
         }
 
         public void Set<T>(CacheScheme scheme, string key, T data, int cacheSeconds = 60)
