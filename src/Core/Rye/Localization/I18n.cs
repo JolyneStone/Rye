@@ -17,6 +17,11 @@ namespace Rye
         private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
         /// <summary>
+        /// 是否已初始化本地化配置
+        /// </summary>
+        internal static bool IsInitLocalizer { get; set; }
+
+        /// <summary>
         /// 语言类型
         /// </summary>
         internal static Type LangType { get; set; }
@@ -24,7 +29,7 @@ namespace Rye
         /// <summary>
         /// String 多语言
         /// </summary>
-        public static IStringLocalizer @Text => LangType == null ? null : App.GetService<IStringLocalizerFactory>()?.Create(LangType);
+        public static IStringLocalizer @Text => IsInitLocalizer && LangType == null ? null : App.GetService<IStringLocalizerFactory>()?.Create(LangType);
 
 
         internal static Action<string> OnSetCultured { get; set; }
@@ -68,6 +73,9 @@ namespace Rye
         /// <returns></returns>
         public static string GetText(string key, string defaultValue = "")
         {
+            if (!IsInitLocalizer)
+                return defaultValue;
+
             var culture = GetSelectCulture().Name;
             string val = null;
             Dictionary<string, string> dict = null;
@@ -170,6 +178,9 @@ namespace Rye
         /// <returns></returns>
         public static IDictionary<string, string> GetAllStrings()
         {
+            if (!IsInitLocalizer)
+                return default;
+
             var culture = GetSelectCulture().Name;
 
             Dictionary<string, string> dict = null;

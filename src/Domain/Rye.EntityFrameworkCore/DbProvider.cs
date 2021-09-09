@@ -12,6 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using Rye.DataAccess.Options;
+using Microsoft.Extensions.Configuration;
 
 namespace Rye.EntityFrameworkCore
 {
@@ -163,6 +164,7 @@ namespace Rye.EntityFrameworkCore
                 var dbContextType = typeof(TDbContext);
                 IDbContext dbContextInstance;
                 var dbConnectionOptionsMap = serviceProvider.GetRequiredService<IOptions<DbConnectionMapOptions>>().Value;
+                var configuration = serviceProvider.GetRequiredService<IConfigurationRoot>();
                 if (dbConnectionOptionsMap == null || dbConnectionOptionsMap.Count <= 0)
                 {
                     throw new RyeException("无法获取数据库配置");

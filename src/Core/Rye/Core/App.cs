@@ -7,6 +7,7 @@ using Rye;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -53,13 +54,25 @@ namespace Rye
         /// <param name="ignoreConfigurationFiles"></param>
         private static void AutoAddJsonFiles(IConfigurationBuilder config, IHostEnvironment env, string[] ignoreConfigurationFiles)
         {
+            //// 获取服务运行的目录
+            //var processModule = Process.GetCurrentProcess()?.MainModule;
+            //if (processModule != null)
+            //{
+            //    var pathToExe = processModule.FileName;
+            //    var pathToContentRoot = Path.GetDirectoryName(pathToExe);
+            //    Directory.SetCurrentDirectory(pathToContentRoot);
+            //}
+
             // 获取程序目录下的所有配置文件
-            var jsonFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.json", SearchOption.TopDirectoryOnly)
+            var jsonFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.json", SearchOption.TopDirectoryOnly)
                 .Where(u => CheckIncludeDefaultSettings(Path.GetFileName(u)) && 
                     !ignoreConfigurationFiles.Contains(Path.GetFileName(u)) && 
                     !runtimeJsonSuffixs.Any(j => u.EndsWith(j)));
 
-            if (!jsonFiles.Any()) return;
+            if (jsonFiles == null || !jsonFiles.Any())
+            {
+                return;
+            }
 
             // 获取环境变量名
             var envName = env.EnvironmentName;

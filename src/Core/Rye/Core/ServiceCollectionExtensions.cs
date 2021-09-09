@@ -54,6 +54,11 @@ namespace Rye
 
         private static IServiceCollection AddRyeCore(IServiceCollection serviceCollection, Action<RyeOptions> action)
         {
+            serviceCollection.RemoveAll<IConfiguration>();
+            serviceCollection.RemoveAll<IConfigurationRoot>();
+            serviceCollection.AddSingleton<IConfiguration>(App.Configuration);
+            serviceCollection.AddSingleton<IConfigurationRoot>((IConfigurationRoot)App.Configuration);
+
             serviceCollection.AddOptions();
             if (action == null)
             {
@@ -74,6 +79,7 @@ namespace Rye
                     {
                         serviceCollection.AddLogging(builder => builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, RyeLoggerProvider>()));
                         LogRecord.Options = options.Value?.Logger;
+                        Log.Current = new DefaultStaticLog();
                     }
 
                     App.Assemblies = GetDenpencyAssemblies(scope.ServiceProvider);

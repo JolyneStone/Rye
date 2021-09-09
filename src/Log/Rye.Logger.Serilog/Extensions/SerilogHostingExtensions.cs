@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Rye.Logger.Serilog;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -33,6 +34,8 @@ namespace Microsoft.Extensions.Hosting
                     config.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
                           .WriteTo.File(Path.Combine("logs", "application.log"), LogEventLevel.Information, rollingInterval: RollingInterval.Day, retainedFileCountLimit: null, encoding: Encoding.UTF8);
                 }
+
+                Rye.Log.Current = new SerilogStaticLog();
             });
 
             return hostBuilder;

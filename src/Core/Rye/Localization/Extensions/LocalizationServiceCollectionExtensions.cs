@@ -48,6 +48,7 @@ namespace Rye
 
             //serviceCollection.TryAddSingleton<IStringLocalizerFactory, MutilStringLocalizerFactory>();
 
+            I18n.IsInitLocalizer = true;
             return serviceCollection;
         }
 

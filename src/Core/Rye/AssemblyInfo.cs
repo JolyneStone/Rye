@@ -15,3 +15,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("1a077f26-5305-47d9-bae5-929deb7aec42")]
 
 [assembly: InternalsVisibleTo("Rye.Web")]
+[assembly: InternalsVisibleTo("Rye.Logger.Serilog")]
