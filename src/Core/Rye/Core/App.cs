@@ -49,10 +49,10 @@ namespace Rye
         /// <summary>
         /// 自动加载自定义 .json 配置文件
         /// </summary>
-        /// <param name="config"></param>
+        /// <param name="configBuilder"></param>
         /// <param name="env"></param>
         /// <param name="ignoreConfigurationFiles"></param>
-        private static void AutoAddJsonFiles(IConfigurationBuilder config, IHostEnvironment env, string[] ignoreConfigurationFiles)
+        private static void AutoAddJsonFiles(IConfigurationBuilder configBuilder, IHostEnvironment env, string[] ignoreConfigurationFiles)
         {
             //// 获取服务运行的目录
             //var processModule = Process.GetCurrentProcess()?.MainModule;
@@ -77,6 +77,18 @@ namespace Rye
             // 获取环境变量名
             var envName = env.EnvironmentName;
 
+            var appsettings = jsonFiles.FirstOrDefault(d => Path.GetFileName(d) == "appsettings.json");
+            if (appsettings != null)
+            {
+                var newConfigBuilder = new ConfigurationBuilder();
+                var newEnvName = newConfigBuilder.AddJsonFile(appsettings).Build()
+                    .GetSection("DOTNET_ENVIRONMENT")?.Value;
+                if (!newEnvName.IsNullOrEmpty())
+                {
+                    envName = newEnvName;
+                }
+            }
+
             // 遍历所有配置分组
             foreach (var jsonFile in jsonFiles.Where(j =>
                                                 {
@@ -84,7 +96,7 @@ namespace Rye
                                                     return fileName.IndexOf('.') < 0 || fileName.EndsWith($".{envName}");
                                                 }).OrderBy(j => Path.GetFileName(j).Length))
             {
-                config.AddJsonFile(jsonFile, optional: true, reloadOnChange: true);
+                configBuilder.AddJsonFile(jsonFile, optional: true, reloadOnChange: true);
             }
         }
 
