@@ -61,10 +61,10 @@ namespace Rye.Cache.Redis.Store
 
             var data = _redisClient.Get<T>(key);
 
-            if (Equals(data, default))
+            if (Equals(data, default(T)))
             {
                 data = func();
-                if (!Equals(data, default))
+                if (!Equals(data, default(T)))
                     return data;
             }
 
@@ -92,10 +92,10 @@ namespace Rye.Cache.Redis.Store
             Check.NotNull(func, nameof(func));
 
             var data = _redisClient.Get<T>(entry.Key);
-            if (!Equals(data, default))
+            if (!Equals(data, default(T)))
             {
                 data = func();
-                if (!Equals(data, default))
+                if (!Equals(data, default(T)))
                     return data;
             }
 
@@ -115,10 +115,10 @@ namespace Rye.Cache.Redis.Store
             Check.NotNull(func, nameof(func));
 
             var data = await _redisClient.GetAsync<T>(key);
-            if (!Equals(data, default))
+            if (!Equals(data, default(T)))
             {
                 data = func();
-                if (!Equals(data, default))
+                if (!Equals(data, default(T)))
                     return data;
             }
 
@@ -140,10 +140,10 @@ namespace Rye.Cache.Redis.Store
             Check.NotNull(func, nameof(func));
 
             var data = await _redisClient.GetAsync<T>(entry.Key);
-            if (Equals(data, default))
+            if (Equals(data, default(T)))
             {
                 data = func();
-                if (!Equals(data, default))
+                if (!Equals(data, default(T)))
                     return data;
             }
 
@@ -156,10 +156,10 @@ namespace Rye.Cache.Redis.Store
             Check.NotNullOrEmpty(key, nameof(key));
             Check.NotNull(func, nameof(func));
             T data = await _redisClient.GetAsync<T>(key);
-            if (!Equals(data, default))
+            if (!Equals(data, default(T)))
             {
                 data = await func();
-                if (!Equals(data, default))
+                if (!Equals(data, default(T)))
                     return data;
             }
 
@@ -174,10 +174,10 @@ namespace Rye.Cache.Redis.Store
             Check.NotNull(func, nameof(func));
 
             var data = await _redisClient.GetAsync<T>(entry.Key);
-            if (!Equals(data, default))
+            if (!Equals(data, default(T)))
             {
                 data = await func();
-                if (!Equals(data, default))
+                if (!Equals(data, default(T)))
                     return data;
             }
 
@@ -280,7 +280,7 @@ namespace Rye.Cache.Redis.Store
             {
                 keyvalues[i] = pair.Key;
                 keyvalues[i + 1] = pair.Value;
-                i++;
+                i += 2;
             }
 
             await _redisClient.HMSetAsync(key, keyvalues);
@@ -302,7 +302,7 @@ namespace Rye.Cache.Redis.Store
             {
                 keyvalues[i] = pair.Key;
                 keyvalues[i + 1] = pair.Value;
-                i++;
+                i += 2;
             }
 
             _redisClient.HMSet(key, keyvalues);
