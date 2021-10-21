@@ -55,6 +55,24 @@ namespace Rye.Cache.Redis.Store
         Task<T> GetFromHashAsync<T>(string key, string field);
 
         /// <summary>
+        /// 从哈希表中获取数据
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="fields"></param>
+        /// <returns></returns>
+        T[] GetFromHash<T>(string key, params string[] fields);
+
+        /// <summary>
+        /// 异步从哈希表中获取数据
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="fields"></param>
+        /// <returns></returns>
+        Task<T[]> GetFromHashAsync<T>(string key, params string[] fields);
+
+        /// <summary>
         /// 将哈希表 key 中的字段 field 的值设为 value
         /// </summary>
         /// <param name="key"></param>

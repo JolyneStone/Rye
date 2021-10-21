@@ -13,6 +13,7 @@ using Rye.Logger;
 using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace Rye.EventBus.RabbitMQ.Connect
 {
@@ -24,6 +25,7 @@ namespace Rye.EventBus.RabbitMQ.Connect
         private IConnection _connection;
         private bool _disposed;
         private readonly object sync_root = new object();
+        private Task _loopTask;
 
         public RabbitMQPersistentConnection(IConnectionFactory connectionFactory, 
             ILogger<RabbitMQPersistentConnection> logger,
@@ -56,11 +58,15 @@ namespace Rye.EventBus.RabbitMQ.Connect
         {
             if (_disposed) return;
 
-            _disposed = true;
-
             try
             {
+                if(_loopTask!=null)
+                {
+                    _loopTask.Dispose();
+                    _loopTask = null;
+                }    
                 _connection.Dispose();
+                _disposed = true;
             }
             catch (IOException ex)
             {
@@ -71,6 +77,8 @@ namespace Rye.EventBus.RabbitMQ.Connect
         public bool TryConnect()
         {
             _logger.LogInformation("RabbitMQ Client is trying to connect");
+
+            if (IsConnected) return true;
 
             lock (sync_root)
             {
@@ -102,6 +110,16 @@ namespace Rye.EventBus.RabbitMQ.Connect
                 {
                     _logger.LogCritical("FATAL ERROR: RabbitMQ connections could not be created and opened");
 
+                    if (_loopTask != null)
+                    {
+                        _loopTask = Task.Run(async () =>
+                        {
+                            while (!TryConnect())
+                                await Task.Delay(5000);
+
+                            _loopTask = null;
+                        });
+                    }
                     return false;
                 }
             }

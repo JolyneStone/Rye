@@ -7,6 +7,7 @@ using Rye.Cache.Redis.Options;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Rye.Cache.Redis.Store
@@ -257,6 +258,22 @@ namespace Rye.Cache.Redis.Store
         public Task<T> GetFromHashAsync<T>(string key, string field)
         {
             return _redisClient.HGetAsync<T>(key, field);
+        }
+
+        public T[] GetFromHash<T>(string key, params string[] fields)
+        {
+            var arr = _redisClient.HMGet<T>(key, fields);
+            if (arr != null)
+                return arr.Where(d => d != null).ToArray();
+            return arr;
+        }
+
+        public async Task<T[]> GetFromHashAsync<T>(string key, params string[] fields)
+        {
+            var arr = await _redisClient.HMGetAsync<T>(key, fields);
+            if (arr != null)
+                return arr.Where(d => d != null).ToArray();
+            return arr;
         }
 
         public void SetToHash(string key, string field, object value)
