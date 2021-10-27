@@ -11,5 +11,7 @@ namespace Rye.EventBus.RabbitMQ
         bool TryConnect();
 
         IModel CreateModel();
+
+        event EventHandler<IConnection> OnConnection;
     }
 }

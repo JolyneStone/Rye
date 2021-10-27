@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Rye.Logger.Serilog;
-using Serilog;
-using Serilog.Events;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
+using Microsoft.AspNetCore.Hosting;
+using Rye.Logger;
+using Serilog;
+using Serilog.Events;
 
 namespace Microsoft.Extensions.Hosting
 {

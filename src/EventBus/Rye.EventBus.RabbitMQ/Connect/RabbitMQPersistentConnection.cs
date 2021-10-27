@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Rye.EventBus.RabbitMQ.Connect
 {
-    public class RabbitMQPersistentConnection: IRabbitMQPersistentConnection
+    public class RabbitMQPersistentConnection : IRabbitMQPersistentConnection
     {
         private readonly ILogger<RabbitMQPersistentConnection> _logger;
         private readonly IConnectionFactory _connectionFactory;
@@ -27,7 +27,7 @@ namespace Rye.EventBus.RabbitMQ.Connect
         private readonly object sync_root = new object();
         private Task _loopTask;
 
-        public RabbitMQPersistentConnection(IConnectionFactory connectionFactory, 
+        public RabbitMQPersistentConnection(IConnectionFactory connectionFactory,
             ILogger<RabbitMQPersistentConnection> logger,
             int retryCount = 5)
         {
@@ -35,6 +35,8 @@ namespace Rye.EventBus.RabbitMQ.Connect
             _retryCount = retryCount;
             _logger = logger;
         }
+
+        public event EventHandler<IConnection> OnConnection;
 
         public bool IsConnected
         {
@@ -60,11 +62,11 @@ namespace Rye.EventBus.RabbitMQ.Connect
 
             try
             {
-                if(_loopTask!=null)
+                if (_loopTask != null)
                 {
                     _loopTask.Dispose();
                     _loopTask = null;
-                }    
+                }
                 _connection.Dispose();
                 _disposed = true;
             }
@@ -102,26 +104,31 @@ namespace Rye.EventBus.RabbitMQ.Connect
                     _connection.CallbackException += OnCallbackException;
                     _connection.ConnectionBlocked += OnConnectionBlocked;
 
-                   _logger.LogInformation($"RabbitMQ Client acquired a persistent connection to '{_connection.Endpoint.HostName}' and is subscribed to failure events");
-
+                    OnConnection?.Invoke(this, _connection);
                     return true;
                 }
                 else
                 {
                     _logger.LogCritical("FATAL ERROR: RabbitMQ connections could not be created and opened");
-
-                    if (_loopTask != null)
-                    {
-                        _loopTask = Task.Run(async () =>
-                        {
-                            while (!TryConnect())
-                                await Task.Delay(5000);
-
-                            _loopTask = null;
-                        });
-                    }
+                    LoopTryConnect();
                     return false;
                 }
+            }
+        }
+
+        private void LoopTryConnect()
+        {
+            if (_loopTask != null)
+            {
+                _loopTask = Task.Run(async () =>
+                {
+                    while (!TryConnect())
+                    {
+                        await Task.Delay(5000);
+                    }
+
+                    _loopTask = null;
+                });
             }
         }
 

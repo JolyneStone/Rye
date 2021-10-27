@@ -5,13 +5,14 @@ using RabbitMQ.Client.Events;
 using Rye.EventBus.Abstractions;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Rye.EventBus.RabbitMQ.Internal
 {
-    internal class InternalRabbitMQEventHandler
+    internal class InternalRabbitMQEventHandler : IEnumerable<KeyValuePair<string, List<IEventHandler>>>
     {
         private readonly Dictionary<string, List<IEventHandler>> _handler = new Dictionary<string, List<IEventHandler>>();
         private readonly AsyncLock _locker = new AsyncLock();
@@ -69,6 +70,16 @@ namespace Rye.EventBus.RabbitMQ.Internal
             }
         }
 
-        public event Func<BasicDeliverEventArgs, EventWrapper, List<IEventHandler>,  Task> OnConsumeEvent;
+        public IEnumerator<KeyValuePair<string, List<IEventHandler>>> GetEnumerator()
+        {
+            return ((IEnumerable<KeyValuePair<string, List<IEventHandler>>>)_handler).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)_handler).GetEnumerator();
+        }
+
+        public event Func<BasicDeliverEventArgs, EventWrapper, List<IEventHandler>, Task> OnConsumeEvent;
     }
 }
