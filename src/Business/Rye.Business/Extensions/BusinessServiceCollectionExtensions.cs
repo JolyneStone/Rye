@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using Rye.Business;
 using Rye.Business.Options;
-using Rye.Business.QRCode;
 using Rye.Business.Validate;
 
 using System;
@@ -26,7 +25,6 @@ namespace Rye
 
             serviceCollection.Configure<BusinessOptions>(action);
             serviceCollection.TryAddSingleton<IVerifyCodeService, VerifyCodeService>();
-            serviceCollection.TryAddSingleton<IQRCodeService, QRCodeService>();
             return serviceCollection;
         }
 
