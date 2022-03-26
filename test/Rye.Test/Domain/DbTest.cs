@@ -6,7 +6,7 @@ namespace Rye.Test.Domain
 {
     public class DbTest : EntityBase<int>
     {
-        public override int Key { get => Id; }
+        //public override int Key { get => Id; }
 
         public int Id { get; set; }
         public string Name { get; set; }

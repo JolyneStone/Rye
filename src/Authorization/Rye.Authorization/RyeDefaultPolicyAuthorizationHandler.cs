@@ -28,9 +28,8 @@ namespace Rye.Authorization.Abstraction
         /// </summary>
         /// <param name = "context" ></ param >
         /// < returns ></ returns >
-        protected override async Task<bool> AuthorizeCoreAsync(AuthorizationHandlerContext context)
+        protected override async Task<bool> AuthorizeCoreAsync(HttpContext httpContext)
         {
-            var httpContext = context.Resource as HttpContext;
             var endpointMetadata = httpContext.Features.Get<IEndpointFeature>()?.Endpoint.Metadata;
             var allowAnonymousAttribute = endpointMetadata.GetMetadata<AllowAnonymousAttribute>();
             if (allowAnonymousAttribute != null)
@@ -61,8 +60,8 @@ namespace Rye.Authorization.Abstraction
                 return true;
             }
 
-            await WriteResponseAsync(httpContext, result);
             SetHttpStatusCode(httpContext, HttpStatusCode.OK);
+            await WriteResponseAsync(httpContext, result);
             return false;
         }
 

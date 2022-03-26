@@ -21,11 +21,32 @@ namespace Rye.Authorization.Abstraction
     {
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, RyeRequirement requirement)
         {
-            if (await AuthorizeCoreAsync(context))
+            var httpContext = context.Resource as HttpContext;
+            if (httpContext.Request.Headers.TryGetValue("auth-res", out var res))
             {
+                var str = res.ToString();
+                if (!str.IsNullOrEmpty())
+                {
+                    if (str == "1")
+                    {
+                        context.Succeed(requirement);
+                        return;
+                    }
+                    else
+                    {
+                        context.Fail();
+                        return;
+                    }
+                }
+            }
+
+            if (await AuthorizeCoreAsync(httpContext))
+            {
+                httpContext.Request.Headers.Add("auth-res", "1");
                 context.Succeed(requirement);
                 return;
             }
+            httpContext.Request.Headers.Add("auth-res", "0");
             context.Fail();
         }
 
@@ -34,7 +55,7 @@ namespace Rye.Authorization.Abstraction
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected virtual Task<bool> AuthorizeCoreAsync(AuthorizationHandlerContext context)
+        protected virtual Task<bool> AuthorizeCoreAsync(HttpContext context)
         {
             return Task.FromResult(true);
         }

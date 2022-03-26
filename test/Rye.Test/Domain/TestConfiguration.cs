@@ -8,7 +8,7 @@ namespace Rye.Test.Domain
         public void Configure(EntityTypeBuilder<DbTest> builder)
         {
             builder.HasKey(d => d.Id);
-            builder.Ignore(d => d.Key);
+            //builder.Ignore(d => d.Key);
             builder.Property(d => d.Id).ValueGeneratedOnAdd();
         }
     }
