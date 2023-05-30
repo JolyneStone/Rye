@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace Rye
 {
-    [Scan]
     public static class ReflectionExtensions
     {
         /// <summary>

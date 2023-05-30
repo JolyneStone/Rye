@@ -115,10 +115,10 @@ namespace Rye.Jwt
             }
             TokenValidationParameters parameters = options.GetValidationParameters();
             JwtSecurityToken jwtSecurityToken = _tokenHandler.ReadJwtToken(refreshToken);
-            string clientId = jwtSecurityToken.Claims.FirstOrDefault(m => m.Type == "clientId")?.Value;
+            string clientId = jwtSecurityToken.Claims.FirstOrDefault(m => m.Type == nameof(TokenEntityBase.ClientType))?.Value;
             if (clientId == null)
             {
-                throw new RyeException("RefreshToken中不包含ClientId声明");
+                throw new RyeException($"RefreshToken中不包含{nameof(TokenEntityBase.ClientType)}声明");
             }
 
             ClaimsPrincipal principal = _tokenHandler.ValidateToken(refreshToken, parameters, out _);

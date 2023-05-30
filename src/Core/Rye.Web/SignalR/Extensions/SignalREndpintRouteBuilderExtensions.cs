@@ -12,7 +12,6 @@ using System.Reflection;
 
 namespace Rye.Web
 {
-    [Scan]
     public static class SignalREndpintRouteBuilderExtensions
     {
         /// <summary>
