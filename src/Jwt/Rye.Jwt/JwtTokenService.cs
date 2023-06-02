@@ -121,7 +121,7 @@ namespace Rye.Jwt
                 throw new RyeException($"RefreshToken中不包含{nameof(TokenEntityBase.ClientType)}声明");
             }
 
-            ClaimsPrincipal principal = _tokenHandler.ValidateToken(refreshToken, parameters, out _);
+            ClaimsPrincipal principal = await ValidateTokenAsync(JwtTokenType.RefreshToken, refreshToken, options);
 
             return await GenerateTokenAsync(principal.Claims.ToList(), options);
         }

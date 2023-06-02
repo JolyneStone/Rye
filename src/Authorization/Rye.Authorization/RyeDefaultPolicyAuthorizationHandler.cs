@@ -128,7 +128,7 @@ namespace Rye.Authorization.Abstraction
 
             try
             {
-                var principal = await jwtTokenService.ValidateTokenAsync(JwtTokenType.RefreshToken, refreshToken, jwtOptions);
+                //var principal = await jwtTokenService.ValidateTokenAsync(JwtTokenType.RefreshToken, refreshToken, jwtOptions);
                 var jwtToken = await jwtTokenService.RefreshTokenAsync(refreshToken, jwtOptions);
                 httpContext.Response.Headers.Add("access-token", jwtToken.AccessToken);
                 httpContext.Response.Headers.Add("x-access-token", jwtToken.RefreshToken);
