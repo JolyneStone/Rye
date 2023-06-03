@@ -53,7 +53,7 @@ namespace Rye.Jwt
                 Issuer = _jwtOptions.Issuer,
                 AccessExpireMins = _jwtOptions.AccessExpireMins,
                 RefreshExpireMins = _jwtOptions.RefreshExpireMins,
-                Audience = appKey.IsNullOrEmpty() ? _jwtOptions.Audience : appKey,
+                Audience = _jwtOptions.Audience.IsNullOrEmpty() ? appKey : _jwtOptions.Audience,
                 Cache = _jwtOptions.Cache
             };
         }
