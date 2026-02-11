@@ -11,15 +11,13 @@ namespace Rye.Test
     {
         public static IServiceProvider ConfigService(Action<IServiceCollection> configAction)
         {
-            var host = Host.CreateDefaultBuilder(null)
-               .ConfigureApp()
-               .ConfigureServices((context, services) =>
-                {
-                    configAction(services);
-                }).Build();
+            var builder = Host.CreateApplicationBuilder()
+               .ConfigureApp();
 
-            App.ConfigureServiceLocator(host.Services);
-            return host.Services;
+            configAction(builder.Services);
+
+            App.ConfigureServiceLocator(builder.Services.BuildServiceProvider());
+            return App.ApplicationServices;
         }
     }
 }

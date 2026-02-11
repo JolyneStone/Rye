@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 using Rye.DataAccess;
 using Rye.Enums;
 using System.Data;
-using MySqlConnector;
 
 namespace Rye.EntityFrameworkCore.MySql
 {

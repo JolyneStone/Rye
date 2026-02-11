@@ -1,10 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Rye.Logger;
 using Serilog;
 using Serilog.Events;
+using System;
+using System.IO;
+using System.Text;
+using static System.Net.WebRequestMethods;
 
 namespace Microsoft.Extensions.Hosting
 {
@@ -19,24 +21,29 @@ namespace Microsoft.Extensions.Hosting
         /// <param name="hostBuilder"></param>
         /// <param name="configAction"></param>
         /// <returns>IWebHostBuilder</returns>
-        public static IWebHostBuilder UseSerilogDefault(this IWebHostBuilder hostBuilder, Action<LoggerConfiguration> configAction = default)
+        public static WebApplicationBuilder UseSerilogDefault(this WebApplicationBuilder hostBuilder, Action<LoggerConfiguration> configAction = default)
         {
-            hostBuilder.UseSerilog((context, configuration) =>
+            // 加载配置文件
+            var config = new LoggerConfiguration()
+                .ReadFrom.Configuration(hostBuilder.Configuration)
+                .Enrich.FromLogContext();
+            if (configAction != null) configAction.Invoke(config);
+            else
             {
-                // 加载配置文件
-                var config = configuration
-                    .ReadFrom.Configuration(context.Configuration)
-                    .Enrich.FromLogContext();
+                config.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
+                      .WriteTo.File(Path.Combine("logs", "application.log"), LogEventLevel.Information, rollingInterval: RollingInterval.Day, retainedFileCountLimit: null, encoding: Encoding.UTF8);
+            }
 
-                if (configAction != null) configAction.Invoke(config);
-                else
-                {
-                    config.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                          .WriteTo.File(Path.Combine("logs", "application.log"), LogEventLevel.Information, rollingInterval: RollingInterval.Day, retainedFileCountLimit: null, encoding: Encoding.UTF8);
-                }
 
-                Rye.Log.Current = new SerilogStaticLog();
-            });
+            if (configAction != null) configAction.Invoke(config);
+            else
+            {
+                config.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
+                      .WriteTo.File(Path.Combine("logs", "application.log"), LogEventLevel.Information, rollingInterval: RollingInterval.Day, retainedFileCountLimit: null, encoding: Encoding.UTF8);
+            }
+
+            Serilog.Log.Logger = config.CreateLogger();
+            Rye.Log.Current = new SerilogStaticLog();
 
             return hostBuilder;
         }

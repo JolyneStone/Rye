@@ -16,7 +16,7 @@ namespace Rye.EventBus.RabbitMQ
 
     public class RabbitMQEventSubscribeErrorContext : EventErrorContext
     {
-        private readonly IModel _channel;
+        private readonly IChannel _channel;
         public ReadOnlyMemory<byte> Body { get; init; }
         public string ConsumerTag { get; init; }
         public ulong DeliveryTag { get; init; }
@@ -24,9 +24,9 @@ namespace Rye.EventBus.RabbitMQ
         public bool Ack { get; set; }
         public string Exchange { get; init; }
         public string Queue { get; init; }
-        public IBasicProperties BasicProperties { get; set; }
+        public IReadOnlyBasicProperties BasicProperties { get; set; }
 
-        public RabbitMQEventSubscribeErrorContext(IModel channel, BasicDeliverEventArgs eventArgs)
+        public RabbitMQEventSubscribeErrorContext(IChannel channel, BasicDeliverEventArgs eventArgs)
         {
             BasicProperties = eventArgs.BasicProperties;
             Body = eventArgs.Body;

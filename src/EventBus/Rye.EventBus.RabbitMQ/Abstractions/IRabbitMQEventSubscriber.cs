@@ -1,6 +1,7 @@
 ﻿using Rye.EventBus.Abstractions;
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Rye.EventBus.RabbitMQ
 {
@@ -8,6 +9,6 @@ namespace Rye.EventBus.RabbitMQ
     {
         IRabbitMQPersistentConnection Connection { get; }
 
-        void Subscribe(string exchange, string queue, string eventRoute, IEnumerable<IEventHandler> handlers);
+        Task Subscribe(string exchange, string queue, string eventRoute, IEnumerable<IEventHandler> handlers);
     }
 }

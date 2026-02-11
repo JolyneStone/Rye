@@ -1,6 +1,8 @@
 ﻿using RabbitMQ.Client;
-
+using RabbitMQ.Client.Events;
+using Rye.EventBus.RabbitMQ.Event;
 using System;
+using System.Threading.Tasks;
 
 namespace Rye.EventBus.RabbitMQ
 {
@@ -8,10 +10,10 @@ namespace Rye.EventBus.RabbitMQ
     {
         bool IsConnected { get; }
 
-        bool TryConnect();
+        Task<bool> TryConnectAsync();
 
-        IModel CreateModel();
+        Task<IChannel> CreateChannelAsync();
 
-        event EventHandler<IConnection> OnConnection;
+        event AsyncEventHandler<ConnectionEventArgs> OnConnection;
     }
 }

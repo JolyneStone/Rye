@@ -42,7 +42,7 @@ namespace Rye.EventBus.RabbitMQ
         private readonly int _retryCount = 3;
 
         private readonly ILogger<RabbitMQEventBus> _logger;
-        private ConcurrentDictionary<string, IModel> _channelDict = new ConcurrentDictionary<string, IModel>();
+        private ConcurrentDictionary<string, IChannel> _channelDict = new();
         public Func<IEvent, RabbitMQEventPublishContext, Task> OnProducing { get; set; }
 
         public Func<IEvent, RabbitMQEventPublishContext, Task> OnProduced { get; set; }
@@ -90,7 +90,7 @@ namespace Rye.EventBus.RabbitMQ
             if (busOptions.OnConsumeError != null)
                 OnConsumeError = busOptions.OnConsumeError;
 
-            _connection.OnConnection += (_, conn) =>
+            _connection.OnConnection += async (_, args) =>
             {
                 if (_handler != null && !_handler.Any())
                 {
@@ -112,9 +112,9 @@ namespace Rye.EventBus.RabbitMQ
                         var queue = keys[1];
                         var routeKey = keys[2];
 
-                        var channel = CreateConsumerChannel(exchange, queue, routeKey);
+                        var channel = await CreateConsumerChannel(exchange, queue, routeKey);
                         _channelDict.TryAdd($"{exchange}:{queue}", channel);
-                        StartBasicConsume(channel, queue);
+                        await StartBasicConsume(channel, queue);
                     }
                 }
             };
@@ -176,20 +176,20 @@ namespace Rye.EventBus.RabbitMQ
         {
             if (!_connection.IsConnected)
             {
-                _connection.TryConnect();
+                await _connection.TryConnectAsync();
             }
 
             if (!_channelDict.TryGetValue($"{exchange}:{queue}", out var channel))
             {
-                channel = _connection.CreateModel();
+                channel = await _connection.CreateChannelAsync();
 
-                channel.ExchangeDeclare(exchange: exchange,
+                await channel.ExchangeDeclareAsync(exchange: exchange,
                                         type: ExchangeType.Direct,
                                         durable: true,
                                         autoDelete: false,
                                         arguments: null);
 
-                channel.QueueDeclare(queue: queue,
+                await channel.QueueDeclareAsync(queue: queue,
                                      durable: true,
                                      exclusive: false,
                                      autoDelete: false,
@@ -198,7 +198,7 @@ namespace Rye.EventBus.RabbitMQ
 
             var policy = RetryPolicy.Handle<BrokerUnreachableException>()
             .Or<SocketException>()
-            .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+            .WaitAndRetryAsync(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
             {
                 _logger.LogInformation($"Could not publish event: {@event.EventId} after {time.TotalSeconds:n1}s ({ex.Message})");
             });
@@ -206,9 +206,16 @@ namespace Rye.EventBus.RabbitMQ
             var message = @event.ToJsonString();
             var body = Encoding.UTF8.GetBytes(message);
 
-            var properties = channel.CreateBasicProperties();
-            properties.DeliveryMode = 2; // persistent
-            properties.Headers["retry-count"] = retryCount;
+            var properties = new BasicProperties
+            {
+                Persistent = true,
+                DeliveryMode = DeliveryModes.Persistent,
+                ContentType = "text/plain",
+                Headers = new Dictionary<string, object>()
+                {
+                    {"retry-count", retryCount }
+                }
+            };
 
             using (var scope = _serviceScopeFactory.CreateScope())
             {
@@ -228,9 +235,9 @@ namespace Rye.EventBus.RabbitMQ
                     if (OnProducing != null)
                         await OnProducing(@event, context);
 
-                    policy.Execute(() =>
+                    await policy.ExecuteAsync(async () =>
                     {
-                        channel.BasicPublish(
+                        await channel.BasicPublishAsync(
                                 exchange: exchange,
                                 routingKey: routeKey,
                                 mandatory: true,
@@ -263,33 +270,33 @@ namespace Rye.EventBus.RabbitMQ
             }
         }
 
-        private IModel CreateConsumerChannel(string exchange, string queue, string routeKey)
+        private async Task<IChannel> CreateConsumerChannel(string exchange, string queue, string routeKey)
         {
             if (!_connection.IsConnected)
             {
-                _connection.TryConnect();
+                await _connection.TryConnectAsync();
             }
 
             _logger.LogTrace("Creating RabbitMQ channel");
 
-            var channel = _connection.CreateModel();
+            var channel = await _connection.CreateChannelAsync();
 
-            channel.ExchangeDeclare(exchange: exchange,
+            await channel.ExchangeDeclareAsync(exchange: exchange,
                                     type: ExchangeType.Direct,
                                     durable: true,
                                     autoDelete: false,
                                     arguments: null);
 
-            channel.QueueDeclare(queue: queue,
+            await channel.QueueDeclareAsync(queue: queue,
                                  durable: true,
                                  exclusive: false,
                                  autoDelete: false,
                                  arguments: null);
 
             // 绑定路由键
-            channel.QueueBind(queue, exchange, routeKey);
+            await channel.QueueBindAsync(queue, exchange, routeKey);
 
-            channel.CallbackException += (sender, ea) =>
+            channel.CallbackExceptionAsync += async (sender, ea) =>
             {
                 _logger.LogWarning(ea.Exception, "Recreating RabbitMQ channel");
 
@@ -297,9 +304,9 @@ namespace Rye.EventBus.RabbitMQ
                 if (_channelDict.TryGetValue(key, out var oldChannel))
                 {
                     oldChannel.Dispose();
-                    var newChannel = CreateConsumerChannel(exchange, queue, routeKey);
+                    var newChannel = await CreateConsumerChannel(exchange, queue, routeKey);
                     _channelDict.TryUpdate(key, newChannel, oldChannel);
-                    StartBasicConsume(newChannel, queue);
+                    await StartBasicConsume(newChannel, queue);
                 }
             };
 
@@ -311,12 +318,12 @@ namespace Rye.EventBus.RabbitMQ
         {
             if (!_connection.IsConnected)
             {
-                _connection.TryConnect();
+                await _connection.TryConnectAsync();
             }
 
             var policy = RetryPolicy.Handle<BrokerUnreachableException>()
                 .Or<SocketException>()
-                .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                .WaitAndRetryAsync(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                 {
                     _logger.LogInformation($"Could not publish event: {@event.EventId} after {time.TotalSeconds:n1}s ({ex.Message})");
                 });
@@ -326,25 +333,32 @@ namespace Rye.EventBus.RabbitMQ
 
             if (!_channelDict.TryGetValue($"{exchange}:{queue}", out var channel))
             {
-                channel = _connection.CreateModel();
+                channel = await _connection.CreateChannelAsync();
 
-                channel.ExchangeDeclare(exchange: exchange,
+                await channel.ExchangeDeclareAsync(exchange: exchange,
                                         type: ExchangeType.Direct,
                                         durable: true,
                                         autoDelete: false,
                                         arguments: null);
 
-                channel.QueueDeclare(queue: queue,
+                await channel.QueueDeclareAsync(queue: queue,
                                      durable: true,
                                      exclusive: false,
                                      autoDelete: false,
                                      arguments: null);
             }
-            var properties = channel.CreateBasicProperties();
-            properties.DeliveryMode = 2; // persistent
-            properties.Headers["retry-count"] = retryCount;
-
-            channel.ConfirmSelect(); // 开启发布确认
+            //var properties = channel.CreateBasicProperties();
+            var properties = new BasicProperties
+            {
+                Persistent = true,
+                DeliveryMode = DeliveryModes.Persistent,
+                ContentType = "text/plain",
+                Headers = new Dictionary<string, object>()
+                {
+                    {"retry-count", retryCount }
+                }
+            };
+            // 注册确认监听器
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 try
@@ -363,9 +377,9 @@ namespace Rye.EventBus.RabbitMQ
                     if (OnProducing != null)
                         await OnProducing(@event, context);
 
-                    policy.Execute(() =>
+                    await policy.ExecuteAsync(async () =>
                     {
-                        channel.BasicPublish(
+                        await channel.BasicPublishAsync(
                                 exchange: exchange,
                                 routingKey: routeKey,
                                 mandatory: true,
@@ -376,7 +390,7 @@ namespace Rye.EventBus.RabbitMQ
                     if (OnProduced != null)
                         await OnProduced(@event, context);
 
-                    return channel.WaitForConfirms();
+                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -409,7 +423,7 @@ namespace Rye.EventBus.RabbitMQ
             _handler.AddHandlers($"{_exchange}:{_queue}:{eventRoute}", handlers);
         }
 
-        public void Subscribe(string exchange, string queue, string eventRoute, IEnumerable<IEventHandler> handlers)
+        public async Task Subscribe(string exchange, string queue, string eventRoute, IEnumerable<IEventHandler> handlers)
         {
             Check.NotNull(eventRoute, nameof(eventRoute));
             Check.NotNull(handlers, nameof(handlers));
@@ -424,13 +438,13 @@ namespace Rye.EventBus.RabbitMQ
             var key = $"{exchange}:{queue}";
             if (!_channelDict.ContainsKey(key))
             {
-                var channel = CreateConsumerChannel(exchange, queue, eventRoute);
+                var channel = await CreateConsumerChannel(exchange, queue, eventRoute);
                 _channelDict.TryAdd(key, channel);
-                StartBasicConsume(channel, queue);
+                await StartBasicConsume(channel, queue);
             }
         }
 
-        private void StartBasicConsume(IModel channel, string queue)
+        private async Task StartBasicConsume(IChannel channel, string queue)
         {
             _logger.LogTrace("Starting RabbitMQ basic consume");
 
@@ -438,9 +452,9 @@ namespace Rye.EventBus.RabbitMQ
             {
                 var consumer = new AsyncEventingBasicConsumer(channel);
 
-                consumer.Received += (sender, args) => Consumer_Received(queue).Invoke(sender, args);
+                consumer.ReceivedAsync += async (sender, args) => await Consumer_Received(queue).Invoke(sender, args);
 
-                channel.BasicConsume(
+                await channel.BasicConsumeAsync(
                     queue: _queue,
                     autoAck: false,
                     consumer: consumer);
@@ -473,7 +487,7 @@ namespace Rye.EventBus.RabbitMQ
                     _logger.LogError($"ERROR Processing message \"{message}\", exception: {ex.Message}");
                     if (_channelDict.TryGetValue($"{eventArgs.Exchange}:{queue}", out var channel))
                     {
-                        channel.BasicNack(eventArgs.DeliveryTag, false, false);
+                        await channel.BasicNackAsync(eventArgs.DeliveryTag, false, false);
                     }
                 }
             };
@@ -541,11 +555,11 @@ namespace Rye.EventBus.RabbitMQ
 
                     if (context.Ack)
                     {
-                        channel.BasicAck(eventArgs.DeliveryTag, false);
+                        await channel.BasicAckAsync(eventArgs.DeliveryTag, false);
                     }
                     else
                     {
-                        channel.BasicNack(eventArgs.DeliveryTag, false, false);
+                        await channel.BasicNackAsync(eventArgs.DeliveryTag, false, false);
                     }
 
                 }
@@ -553,7 +567,7 @@ namespace Rye.EventBus.RabbitMQ
                 {
                     if (OnConsumeError == null || firstEvent == null)
                     {
-                        channel.BasicNack(eventArgs.DeliveryTag, false, false);
+                        await channel.BasicNackAsync(eventArgs.DeliveryTag, false, false);
                         throw;
                     }
 
@@ -570,11 +584,11 @@ namespace Rye.EventBus.RabbitMQ
 
                     if (context.Ack)
                     {
-                        channel.BasicAck(eventArgs.DeliveryTag, false);
+                        await channel.BasicAckAsync(eventArgs.DeliveryTag, false);
                     }
                     else
                     {
-                        channel.BasicNack(eventArgs.DeliveryTag, false, false);
+                        await channel.BasicNackAsync(eventArgs.DeliveryTag, false, false);
                     }
                 }
             }

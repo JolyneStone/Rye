@@ -1,10 +1,11 @@
-﻿using Rye;
+﻿using Microsoft.SqlServer.Server;
+using Rye;
 using Rye.CodeGenerator;
 using Rye.CodeGenerator.MySql;
 
 using System.Threading.Tasks;
-
 using Xunit;
+
 
 namespace Demo.DataAccess.Tests
 {

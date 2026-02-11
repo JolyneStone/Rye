@@ -1,21 +1,19 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Builder;
 
 namespace Rye
 {
     public static class WebHostBuilderExtensions
     {
-        public static IWebHostBuilder ConfigureApp(this IWebHostBuilder builder)
+        public static WebApplicationBuilder ConfigureApp(this WebApplicationBuilder builder)
         {
-            return builder.ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                // 存储环境对象
-                App.HostEnvironment = hostingContext.HostingEnvironment;
-                WebApp.WebHostEnvironment = hostingContext.HostingEnvironment;
+            // 存储环境对象
+            App.HostEnvironment = builder.Environment;
+            WebApp.WebHostEnvironment = builder.Environment;
 
-                // 加载配置
-                App.AddConfigureFiles(config, hostingContext.HostingEnvironment);
-            })
-            .ConfigureServices(services => services.AddRye());
+            // 加载配置
+            App.AddConfigureFiles(builder.Configuration, builder.Environment);
+
+            return builder;
         }
     }
 }

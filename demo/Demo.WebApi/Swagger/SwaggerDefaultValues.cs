@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
-
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Demo.WebApi.Swagger
 {
@@ -29,12 +24,12 @@ namespace Demo.WebApi.Swagger
                     parameter.Description = description.ModelMetadata?.Description;
                 }
 
-                if (parameter.Schema.Default == null && description.DefaultValue != null)
-                {
-                    parameter.Schema.Default = new OpenApiString(description.DefaultValue.ToString());
-                }
+                //if (parameter.Schema.Default == null && description.DefaultValue != null)
+                //{
+                //    parameter.Schema.Default = new OpenApiString(description.DefaultValue.ToString());
+                //}
 
-                parameter.Required |= description.IsRequired;
+                //parameter.Required |= description.IsRequired;
             }
         }
     }

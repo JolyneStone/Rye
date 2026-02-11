@@ -1,5 +1,5 @@
 ﻿using Demo;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace Demo.Tests
         {
             var password = "admin123";
             password = password.ToPassword();
-            Assert.NotNull(password);
+            Assert.IsNotNull(password);
         }
     }
 }
