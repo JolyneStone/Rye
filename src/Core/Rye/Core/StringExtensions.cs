@@ -15,6 +15,26 @@ namespace Rye
 {
     public static class StringExtensions
     {
+        // 使用正则表达式一次性过滤所有不可见字符，包括换行符
+        private static readonly Regex InvisibleCharRegex = new Regex(
+            @"[\u0000-\u001F\u007F-\u009F\u200B-\u200D\u2028-\u2029\uFEFF\r\n]",
+            RegexOptions.Compiled
+        );
+
+        /// <summary>
+        /// 清理输入字符串，移除所有不可见字符
+        /// </summary>
+        /// <param name="input">原始输入</param>
+        /// <returns>清理后的字符串</returns>
+        public static string CleanStr(this string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            // 使用正则表达式一次性移除所有不可见字符
+            return InvisibleCharRegex.Replace(input, "").Trim();
+        }
+
         /// <summary>
         /// 指示指定的字符串是 null 或者 System.String.Empty 字符串
         /// </summary>
@@ -490,6 +510,12 @@ namespace Rye
             return new string(list.ToArray());
         }
 
+        /// <summary>
+        /// 将字符串转换成指定类型，如果转换失败则返回默认值
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="conversionType"></param>
+        /// <returns></returns>
         public static object TryConvertType(this string str, Type conversionType)
         {
             try
@@ -520,6 +546,60 @@ namespace Rye
             {
                 return default;
             }
+        }
+
+        /// <summary>
+        /// 字符串左取处理
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <param name="length">左取长度</param>
+        /// <returns></returns>
+        public static string SubstringLeft(this string str, int length)
+        {
+            if (str.Length < length)
+            {
+                return str;
+            }
+            return str.Substring(0, length);
+        }
+
+        /// <summary>
+        /// 字符串右取处理
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <param name="length">右取长度</param>
+        /// <returns></returns>
+        public static string SubstringRight(this string str, int length)
+        {
+            if (str.Length < length)
+            {
+                return str;
+            }
+            return str.Substring(str.Length - length, length);
+        }
+
+        /// <summary>
+        /// 字符串补充字符串和左取处理
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <param name="length">左取长度</param>
+        /// <param name="paddingChar">补充字符</param>
+        /// <returns></returns>
+        public static string SubstringPadLeft(this string str, int length, char paddingChar)
+        {
+            return str.PadLeft(length, paddingChar).SubstringLeft(length);
+        }
+
+        /// <summary>
+        /// 字符串补充字符串和右取处理
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <param name="length">右取长度</param>
+        /// <param name="paddingChar">补充字符</param>
+        /// <returns></returns>
+        public static string SubstringPadRight(this string str, int length, char paddingChar)
+        {
+            return str.PadRight(length, paddingChar).SubstringRight(length);
         }
     }
 }

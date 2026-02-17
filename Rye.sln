@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29324.140
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11506.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{215176BD-3D59-4345-8D89-4B567EFCD759}"
 EndProject
@@ -88,6 +88,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rye.Schedule.Quartz", "src\Schedule\Rye.Schedule.Quartz\Rye.Schedule.Quartz.csproj", "{38C30E72-D980-469F-94CC-ED434CB706E7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rye.Logger.Serilog", "src\Log\Rye.Logger.Serilog\Rye.Logger.Serilog.csproj", "{B3A8CF98-68E8-48FF-9E34-200E517BB6A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rye.SqlSugarCore", "src\Domain\Rye.SqlSugarCore\Rye.SqlSugarCore.csproj", "{CF7944F5-8A93-1417-1C23-E562D7CBCF9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -211,6 +213,10 @@ Global
 		{B3A8CF98-68E8-48FF-9E34-200E517BB6A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3A8CF98-68E8-48FF-9E34-200E517BB6A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3A8CF98-68E8-48FF-9E34-200E517BB6A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF7944F5-8A93-1417-1C23-E562D7CBCF9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF7944F5-8A93-1417-1C23-E562D7CBCF9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF7944F5-8A93-1417-1C23-E562D7CBCF9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF7944F5-8A93-1417-1C23-E562D7CBCF9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -256,6 +262,7 @@ Global
 		{15E3CC35-B1F5-446E-8E38-AC2356B60D63} = {215176BD-3D59-4345-8D89-4B567EFCD759}
 		{38C30E72-D980-469F-94CC-ED434CB706E7} = {15E3CC35-B1F5-446E-8E38-AC2356B60D63}
 		{B3A8CF98-68E8-48FF-9E34-200E517BB6A7} = {03CACEA9-B304-4830-832C-522ED852C481}
+		{CF7944F5-8A93-1417-1C23-E562D7CBCF9B} = {427AE615-ABEE-4124-8541-D5EE34FB93AD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C43E25F-90B8-4370-9470-A77C131B5EB6}

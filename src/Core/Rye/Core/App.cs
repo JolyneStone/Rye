@@ -30,12 +30,12 @@ namespace Rye
         /// </summary>
         /// <param name="config"></param>
         /// <param name="env"></param>
-        internal static void AddConfigureFiles(IConfigurationBuilder config, IHostEnvironment env)
+        public static void AddConfigureFiles(IConfigurationBuilder config, IHostEnvironment env)
         {
             var appsettingsConfiguration = config.Build();
             // 读取忽略的配置文件
             var ignoreConfigurationFiles = appsettingsConfiguration
-                    .GetSection("IgnoreConfigurationFiles")
+                    .GetSection("AppSettings:IgnoreConfigurationFiles")
                     .Get<string[]>()
                 ?? Array.Empty<string>();
 
