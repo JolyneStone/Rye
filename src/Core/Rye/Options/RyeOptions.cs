@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rye.Enums;
+using Rye.Util;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Rye.Options
 {
@@ -15,7 +17,7 @@ namespace Rye.Options
             //DbConnections = new Dictionary<string, DbConnectionOptions>();
             Logger = new LoggerOptions
             {
-                LogPath = @"/home/admin/logs/temp",
+                LogPath = Path.Combine(DirectoryUtil.BaseDirectory(), "logs"),
                 IsConsoleEnabled = false,
                 LogLevel = LogLevel.Debug,
                 UseDefaultLog = true

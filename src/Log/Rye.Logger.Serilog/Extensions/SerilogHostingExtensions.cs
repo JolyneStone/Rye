@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.Hosting
                       .WriteTo.File(Path.Combine("logs", "application.log"), LogEventLevel.Information, rollingInterval: RollingInterval.Day, retainedFileCountLimit: null, encoding: Encoding.UTF8);
             }
 
-            Serilog.Log.Logger = config.CreateLogger();
+            //Serilog.Log.Logger = config.CreateLogger();
             Rye.Log.Current = new SerilogStaticLog();
 
             return hostBuilder;
@@ -69,6 +69,9 @@ namespace Microsoft.Extensions.Hosting
                     config.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
                           .WriteTo.File(Path.Combine("logs", "application.log"), LogEventLevel.Information, rollingInterval: RollingInterval.Day, retainedFileCountLimit: null, encoding: Encoding.UTF8);
                 }
+
+                //Serilog.Log.Logger = config.CreateLogger();
+                Rye.Log.Current = new SerilogStaticLog();
             });
 
             return builder;

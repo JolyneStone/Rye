@@ -220,7 +220,8 @@ namespace Rye.Logger
                 return;
 
             logMessage = $"[{Thread.CurrentThread.ManagedThreadId}] {logMessage}";
-            WriteLog($"{fileName}_{logLevel.ToString()}", logMessage);
+            //WriteLog($"{fileName}_{logLevel.ToString()}", logMessage);
+            WriteLog(fileName, logMessage);
             if (_isConsoleEnabled)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
